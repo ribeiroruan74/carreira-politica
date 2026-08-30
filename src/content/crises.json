@@ -1,0 +1,197 @@
+{
+  "$comment": "Eventos de crise e oportunidade com escolha. 'quando' = predicados simples do estado (todos precisam bater). 'peso' pondera o sorteio. 'cooldown' meses até poder repetir. efeitos das opções: rep.{aprovacao|rejeicao|confianca|notoriedade|ecoMidiatico}, dinheiroPessoal, campanha, gabinete, energia, territorioTodos.presenca, relacaoPrefeitura, memoria (texto que volta depois).",
+  "eventos": [
+    {
+      "id": "enchente_bairro",
+      "cat": "CIDADE", "peso": 1.4, "cooldown": 8,
+      "quando": { "faseIn": ["VIDA_PUBLICA", "PARTIDO", "CANDIDATO", "MANDATO"], "mesChuvaBR": true },
+      "titulo": "Temporal alaga bairros da cidade",
+      "contexto": "Uma frente de chuva forte alagou várias ruas. Famílias desabrigadas, imprensa no local, população cobrando os políticos.",
+      "opcoes": [
+        { "texto": "Ir a campo ajudar na retirada e distribuir donativos", "rep": { "aprovacao": [3, 8], "confianca": [2, 6], "notoriedade": [2, 5] }, "dinheiroPessoal": [-4000, -1500], "energia": [-20, -10] },
+        { "texto": "Gravar um vídeo cobrando a prefeitura", "rep": { "notoriedade": [3, 7], "ecoMidiatico": [3, 8], "rejeicao": [0, 3] }, "relacaoPrefeitura": [-10, -3] },
+        { "texto": "Ficar em silêncio — não é sua área", "rep": { "aprovacao": [-6, -1], "confianca": [-5, 0] }, "cascata": "bairro_ignorado" }
+      ]
+    },
+    {
+      "id": "falta_agua",
+      "cat": "CIDADE", "peso": 1.1, "cooldown": 10,
+      "quando": { "faseIn": ["PARTIDO", "CANDIDATO", "MANDATO"] },
+      "titulo": "Bairros passam dias sem água",
+      "contexto": "A companhia de saneamento não explica o rodízio. Moradores organizam protesto na avenida.",
+      "opcoes": [
+        { "texto": "Marcar reunião com a companhia e cobrar cronograma", "rep": { "aprovacao": [2, 6], "confianca": [2, 5] }, "energia": [-12, -6] },
+        { "texto": "Levar caminhões-pipa pagos com recurso próprio", "rep": { "aprovacao": [4, 9], "notoriedade": [1, 4] }, "dinheiroPessoal": [-9000, -4000] },
+        { "texto": "Aproveitar para atacar o governo nas redes", "rep": { "ecoMidiatico": [2, 6], "rejeicao": [1, 4] }, "relacaoPrefeitura": [-8, -2] }
+      ]
+    },
+    {
+      "id": "jornalista_contrato",
+      "cat": "IMPRENSA", "peso": 1.2, "cooldown": 12,
+      "quando": { "faseIn": ["CANDIDATO", "MANDATO"] },
+      "titulo": "Jornalista questiona um contrato seu",
+      "contexto": "Uma repórter pede explicações sobre um contrato de aluguel de veículo do seu gabinete/campanha. Nada de ilegal, mas o valor chama atenção.",
+      "opcoes": [
+        { "texto": "Abrir todos os documentos publicamente", "rep": { "confianca": [3, 8], "notoriedade": [1, 4], "rejeicao": [-3, 0] } },
+        { "texto": "Dar uma resposta evasiva e mudar de assunto", "rep": { "confianca": [-6, -1], "rejeicao": [2, 6], "ecoMidiatico": [1, 5] } },
+        { "texto": "Acusar a jornalista de perseguição", "rep": { "rejeicao": [4, 12], "ecoMidiatico": [3, 9], "aprovacao": [-4, 1] }, "memoria": "Você bateu boca publicamente com a imprensa.", "cascata": "gafe_publica", "memoriaDados": { "investigavel": true, "tituloInvestigacao": "O contrato do gabinete/campanha que você não quis explicar" } }
+      ]
+    },
+    {
+      "id": "declaracao_polemica",
+      "cat": "PESSOAL", "peso": 1.0, "cooldown": 10,
+      "quando": { "atributoMin": { "ambicao": 60 }, "atributoMax": { "disciplina": 45 } },
+      "titulo": "Uma fala sua sai do controle",
+      "contexto": "Num evento, você fez uma piada infeliz que foi gravada e está circulando fora de contexto.",
+      "opcoes": [
+        { "texto": "Pedir desculpas rápido e sem rodeios", "rep": { "rejeicao": [-4, 1], "confianca": [1, 4], "notoriedade": [1, 3] } },
+        { "texto": "Dizer que tiraram de contexto e seguir em frente", "rep": { "rejeicao": [1, 5], "ecoMidiatico": [2, 6] } },
+        { "texto": "Dobrar a aposta e peitar os críticos", "rep": { "rejeicao": [5, 14], "aprovacao": [-3, 3], "notoriedade": [3, 8], "ecoMidiatico": [4, 10] }, "memoria": "Você virou meme depois de peitar os críticos.", "cascata": "gafe_publica" }
+      ]
+    },
+    {
+      "id": "assessor_vaza",
+      "cat": "GABINETE", "peso": 1.3, "cooldown": 14,
+      "quando": { "temMandato": true },
+      "titulo": "Vazamento vindo de dentro do gabinete",
+      "contexto": "Conversas internas do seu gabinete vazaram para um portal. Alguém da sua equipe está falando com a imprensa.",
+      "opcoes": [
+        { "texto": "Investigar internamente com discrição", "rep": { "confianca": [0, 3] }, "energia": [-10, -4] },
+        { "texto": "Demitir o suspeito imediatamente", "rep": { "notoriedade": [1, 4], "rejeicao": [0, 3] }, "demiteAssessorAleatorio": true },
+        { "texto": "Assumir publicamente e tratar como aprendizado", "rep": { "confianca": [2, 6], "rejeicao": [-2, 2] } }
+      ]
+    },
+    {
+      "id": "convite_tv",
+      "cat": "IMPRENSA", "peso": 1.1, "cooldown": 6,
+      "quando": { "notoriedadeMin": 25 },
+      "titulo": "Convite para um programa de TV",
+      "contexto": "Um programa de entrevistas de audiência quer você no estúdio. Exposição grande — e imprevisível ao vivo.",
+      "opcoes": [
+        { "texto": "Aceitar e ir preparado", "rep": { "notoriedade": [4, 10], "aprovacao": [-2, 4], "ecoMidiatico": [3, 8], "rejeicao": [-1, 3] }, "energia": [-12, -6], "usaImproviso": true },
+        { "texto": "Aceitar só se puderem gravar (sem ao vivo)", "rep": { "notoriedade": [2, 5], "ecoMidiatico": [1, 4] } },
+        { "texto": "Recusar — não vale o risco agora", "rep": { "notoriedade": [-1, 1] } }
+      ]
+    },
+    {
+      "id": "apoio_surpresa",
+      "cat": "POLITICA", "peso": 0.9, "cooldown": 12,
+      "quando": { "faseIn": ["PARTIDO", "CANDIDATO", "MANDATO"], "aprovacaoMin": 45 },
+      "titulo": "Uma liderança quer se aproximar de você",
+      "contexto": "Um político influente sinaliza, por interlocutores, que apoiaria você — em troca de espaço futuro.",
+      "opcoes": [
+        { "texto": "Topar o acordo e selar o compromisso", "rep": { "notoriedade": [2, 5] }, "apoioPartido": [6, 15], "memoria": "Você firmou um acordo com uma liderança que vai querer troco depois." },
+        { "texto": "Agradecer mas manter independência", "rep": { "confianca": [1, 4] }, "apoioPartido": [-2, 2] },
+        { "texto": "Recusar publicamente para se diferenciar", "rep": { "rejeicao": [-2, 2], "notoriedade": [1, 4], "aprovacao": [0, 3] }, "apoioPartido": [-8, -2] }
+      ]
+    },
+    {
+      "id": "obra_parada",
+      "cat": "MANDATO", "peso": 1.2, "cooldown": 8,
+      "quando": { "temMandato": true },
+      "titulo": "Obra prometida está parada",
+      "contexto": "Uma obra num bairro seu está parada há meses. A comunidade te procura cobrando — foi você quem anunciou.",
+      "opcoes": [
+        { "texto": "Ir ao canteiro, cobrar a empreiteira e a secretaria", "rep": { "aprovacao": [2, 6], "confianca": [1, 4] }, "energia": [-12, -6], "relacaoPrefeitura": [-6, 0] },
+        { "texto": "Protocolar requerimento e audiência pública", "rep": { "notoriedade": [2, 5], "confianca": [1, 3] } },
+        { "texto": "Dizer que o problema é do Executivo e lavar as mãos", "rep": { "confianca": [-6, -1], "rejeicao": [2, 6] }, "cascata": "bairro_ignorado" }
+      ]
+    },
+    {
+      "id": "fake_news",
+      "cat": "REDES", "peso": 1.1, "cooldown": 9,
+      "quando": { "notoriedadeMin": 20 },
+      "titulo": "Boato sobre você viraliza",
+      "contexto": "Um print falso atribuindo a você uma declaração que nunca fez está circulando em grupos de WhatsApp.",
+      "opcoes": [
+        { "texto": "Desmentir com um vídeo direto e provas", "rep": { "rejeicao": [-3, 1], "confianca": [1, 4], "notoriedade": [1, 4] } },
+        { "texto": "Acionar a Justiça contra os responsáveis", "rep": { "notoriedade": [2, 5], "rejeicao": [0, 3] }, "dinheiroPessoal": [-3000, -800] },
+        { "texto": "Ignorar — dar palco só piora", "rep": { "rejeicao": [1, 6], "aprovacao": [-3, 1] } }
+      ]
+    },
+    {
+      "id": "reels_explode",
+      "cat": "REDES", "peso": 0.8, "cooldown": 10,
+      "quando": { "seguidoresMin": 2000 },
+      "titulo": "Um Reels antigo ressurge",
+      "contexto": "Um vídeo seu de meses atrás voltou a circular e está bombando — mais gente vendo do que quando você postou.",
+      "opcoes": [
+        { "texto": "Surfar a onda: responder comentários, postar em sequência", "rep": { "notoriedade": [3, 8], "ecoMidiatico": [4, 10] }, "seguidoresPct": [0.03, 0.12], "energia": [-8, -4] },
+        { "texto": "Aproveitar para lançar uma pauta séria", "rep": { "notoriedade": [2, 5], "confianca": [1, 4], "aprovacao": [1, 4] }, "seguidoresPct": [0.01, 0.05] },
+        { "texto": "Não fazer nada de diferente", "rep": { "notoriedade": [1, 3] }, "seguidoresPct": [0.0, 0.03] }
+      ]
+    },
+    {
+      "id": "doacao_suspeita",
+      "cat": "CANDIDATO", "peso": 1.0, "cooldown": 99,
+      "quando": { "fase": "CANDIDATO" },
+      "titulo": "Oferta de doação de origem duvidosa",
+      "contexto": "Um empresário oferece um valor alto para a campanha — mas a origem do dinheiro é nebulosa e ele quer 'só uma conversa depois'.",
+      "opcoes": [
+        { "texto": "Recusar e registrar a oferta", "rep": { "confianca": [2, 6] } },
+        { "texto": "Aceitar via caixa oficial e prometer 'ouvir'", "campanha": [30000, 70000], "rep": { "rejeicao": [1, 4] }, "memoria": "Você aceitou uma doação que pode voltar a te assombrar.", "gatilho": { "aposMeses": [16, 34], "chance": 0.4, "disparo": "COBRANCA", "textoCobranca": "O doador de campanha voltou cobrando o favor prometido." } },
+        { "texto": "Aceitar por fora", "campanha": [50000, 90000], "rep": { "rejeicao": [3, 9] }, "memoria": "Caixa dois: uma bomba-relógio na sua biografia.", "memoriaDados": { "investigavel": true, "tituloInvestigacao": "A doação de origem obscura que financiou sua campanha" }, "gatilho": { "aposMeses": [12, 26], "chance": 0.7, "disparo": "INVESTIGACAO" } }
+      ]
+    },
+    {
+      "id": "ataque_debate",
+      "cat": "CANDIDATO", "peso": 1.2, "cooldown": 4,
+      "quando": { "fase": "CANDIDATO" },
+      "titulo": "Rival te ataca num debate",
+      "contexto": "Ao vivo, um adversário te acusa de não ter feito nada pela cidade e joga números na sua cara.",
+      "opcoes": [
+        { "texto": "Responder com dados e propostas concretas", "rep": { "notoriedade": [3, 7], "aprovacao": [1, 5], "ecoMidiatico": [3, 8] }, "usaImproviso": true },
+        { "texto": "Rebater atacando o histórico dele", "rep": { "rejeicao": [2, 7], "notoriedade": [3, 8], "ecoMidiatico": [4, 10] } },
+        { "texto": "Manter a calma e ironizar", "rep": { "notoriedade": [1, 4], "aprovacao": [-2, 4] }, "usaImproviso": true }
+      ]
+    },
+    {
+      "id": "greve_servidores",
+      "cat": "CIDADE", "peso": 1.0, "cooldown": 14,
+      "quando": { "faseIn": ["PARTIDO", "CANDIDATO", "MANDATO"] },
+      "titulo": "Servidores municipais entram em greve",
+      "contexto": "Professores e agentes de saúde param por reajuste. A cidade fica dividida entre apoio e irritação.",
+      "opcoes": [
+        { "texto": "Apoiar a pauta dos servidores publicamente", "rep": { "aprovacao": [-2, 4], "confianca": [1, 4] }, "eixoBonus": -1 },
+        { "texto": "Defender diálogo e fim da greve", "rep": { "aprovacao": [0, 4], "confianca": [1, 3] } },
+        { "texto": "Criticar a greve como irresponsável", "rep": { "aprovacao": [-3, 3], "rejeicao": [2, 6] }, "eixoBonus": 1 }
+      ]
+    },
+    {
+      "id": "conquista_projeto",
+      "cat": "MANDATO", "peso": 0.7, "cooldown": 10,
+      "quando": { "temMandato": true, "projetosAprovadosMin": 2 },
+      "titulo": "Uma entrega sua vira notícia boa",
+      "contexto": "Uma obra ou programa que você emplacou foi inaugurado e a imprensa deu destaque positivo.",
+      "opcoes": [
+        { "texto": "Fazer um evento de entrega com a comunidade", "rep": { "aprovacao": [3, 8], "confianca": [3, 7], "notoriedade": [2, 5] }, "territorioTodos": [1, 3] },
+        { "texto": "Postar e agradecer os parceiros", "rep": { "aprovacao": [2, 5], "notoriedade": [2, 5] }, "seguidoresPct": [0.01, 0.05] },
+        { "texto": "Usar para cobrar mais recursos do governo", "rep": { "notoriedade": [2, 5] }, "relacaoPrefeitura": [-5, 2] }
+      ]
+    },
+    {
+      "id": "conflito_aliado",
+      "cat": "POLITICA", "peso": 1.0, "cooldown": 10,
+      "quando": { "temGrupoPolitico": true },
+      "titulo": "Um aliado do seu grupo te contraria em público",
+      "contexto": "Alguém que declarou apoio a você votou contra sua posição e ainda deu declaração ácida.",
+      "opcoes": [
+        { "texto": "Conversar reservadamente e recompor", "rep": { "confianca": [0, 3] }, "energia": [-8, -3] },
+        { "texto": "Responder à altura publicamente", "rep": { "rejeicao": [2, 6], "notoriedade": [2, 5] }, "rompeAliadoAleatorio": true },
+        { "texto": "Ignorar e deixar esfriar", "rep": { "confianca": [-3, 1] } }
+      ]
+    },
+    {
+      "id": "problema_saude",
+      "cat": "PESSOAL", "peso": 0.6, "cooldown": 20,
+      "quando": { "energiaMax": 40 },
+      "titulo": "Seu corpo cobra a conta",
+      "contexto": "Meses de ritmo puxado te derrubaram. O médico recomenda pausa.",
+      "opcoes": [
+        { "texto": "Parar de verdade por umas semanas", "rep": { "notoriedade": [-2, 0] }, "energia": [30, 50] },
+        { "texto": "Reduzir o ritmo, mas não parar", "rep": {}, "energia": [12, 22] },
+        { "texto": "Ignorar e seguir no mesmo ritmo", "rep": { "aprovacao": [-3, 0] }, "energia": [-10, -2], "memoria": "Você ignorou um alerta de saúde." }
+      ]
+    }
+  ]
+}

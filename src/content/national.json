@@ -1,0 +1,15 @@
+{
+  "$comment": "Fase 24 — cenário nacional. Eventos macro que criam 'clima' (-100 vento de centro-esquerda .. +100 vento de centro-direita) e afetam de leve aprovação/partidos. 'lado' indica a quem o evento favorece. Conteúdo genérico e fictício, sem acusações a pessoas reais.",
+  "eventos": [
+    { "id": "economia_aquece", "texto": "A economia nacional acelera e o desemprego cai. O governo federal colhe o bônus.", "clima": 14, "duracaoMeses": [4, 8], "aprovacaoGov": 3 },
+    { "id": "inflacao_dispara", "texto": "A inflação volta a subir e o preço da comida pesa no bolso. Clima de insatisfação com quem está no poder.", "clima": -10, "duracaoMeses": [3, 7], "aprovacaoGov": -4 },
+    { "id": "escandalo_brasilia", "texto": "Um escândalo de corrupção estoura em Brasília e respinga em vários partidos.", "clima": -6, "duracaoMeses": [2, 5], "antipolitica": true },
+    { "id": "reforma_aprovada", "texto": "O Congresso aprova uma reforma econômica que divide opiniões.", "clima": 8, "duracaoMeses": [3, 6] },
+    { "id": "onda_conservadora", "texto": "Pautas de costumes dominam o debate nacional e mobilizam o eleitorado conservador.", "clima": 18, "duracaoMeses": [4, 9] },
+    { "id": "mobilizacao_social", "texto": "Grandes manifestações por direitos e serviços públicos tomam as ruas do país.", "clima": -16, "duracaoMeses": [3, 6] },
+    { "id": "crise_seguranca", "texto": "Uma onda de violência ganha repercussão nacional e endurece o discurso público.", "clima": 12, "duracaoMeses": [3, 7] },
+    { "id": "auxilio_ampliado", "texto": "O governo federal amplia programas de transferência de renda.", "clima": -9, "duracaoMeses": [4, 8], "aprovacaoGov": 2 },
+    { "id": "recessao", "texto": "O país entra em recessão técnica. Frustração generalizada com a classe política.", "clima": -4, "duracaoMeses": [4, 9], "antipolitica": true, "aprovacaoGov": -6 },
+    { "id": "calmaria", "texto": "Semanas sem grandes fatos nacionais. O noticiário volta para os assuntos locais.", "clima": 0, "duracaoMeses": [2, 4] }
+  ]
+}

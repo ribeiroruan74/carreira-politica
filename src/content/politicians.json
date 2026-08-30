@@ -1,0 +1,37 @@
+{
+  "$comment": "Mundo político persistente do Recife. 'semente' = atores fixos (nomes reais de 2024 quando cabível). O resto é gerado. Cada político age todo mês via engine/world.js.",
+  "objetivos": [
+    { "id": "reeleicao", "nome": "Se reeleger", "peso": 3 },
+    { "id": "subir", "nome": "Disputar cargo maior", "peso": 2 },
+    { "id": "prefeitura", "nome": "Chegar à prefeitura", "peso": 1 },
+    { "id": "influencia", "nome": "Acumular influência nos bastidores", "peso": 2 },
+    { "id": "pauta", "nome": "Marcar uma pauta", "peso": 1.5 },
+    { "id": "sobreviver", "nome": "Sobreviver politicamente", "peso": 1 }
+  ],
+  "estilos": [
+    { "id": "articulador", "ataca": 0.15, "alia": 0.45, "midia": 0.2, "territorio": 0.2 },
+    { "id": "combativo", "ataca": 0.5, "alia": 0.1, "midia": 0.3, "territorio": 0.1 },
+    { "id": "midiatico", "ataca": 0.25, "alia": 0.15, "midia": 0.5, "territorio": 0.1 },
+    { "id": "cabo_eleitoral", "ataca": 0.1, "alia": 0.25, "midia": 0.1, "territorio": 0.55 },
+    { "id": "tecnico", "ataca": 0.1, "alia": 0.3, "midia": 0.35, "territorio": 0.25 }
+  ],
+  "semente": [
+    { "id": "np_joao_campos", "nome": "João Campos", "cargo": "PREFEITO", "partidoId": "PSB", "influencia": 92, "notoriedade": 88, "rejeicao": 24, "ideologiaEixo": -25, "estilo": "articulador", "objetivo": "reeleicao", "lider": true },
+    { "id": "np_lider_pt", "nome": "Liderança do PT na Câmara", "cargo": "VEREADOR", "partidoId": "PT", "influencia": 70, "notoriedade": 55, "rejeicao": 30, "ideologiaEixo": -60, "estilo": "combativo", "objetivo": "pauta", "lider": true },
+    { "id": "np_lider_pl", "nome": "Liderança do PL na Câmara", "cargo": "VEREADOR", "partidoId": "PL", "influencia": 68, "notoriedade": 58, "rejeicao": 38, "ideologiaEixo": 65, "estilo": "combativo", "objetivo": "subir", "lider": true },
+    { "id": "np_presidente_camara", "nome": "Presidente da Câmara", "cargo": "VEREADOR", "partidoId": "PSD", "influencia": 78, "notoriedade": 50, "rejeicao": 22, "ideologiaEixo": 15, "estilo": "articulador", "objetivo": "influencia", "lider": true }
+  ],
+  "cargosGerados": [
+    { "cargo": "VEREADOR", "qtd": 20, "influencia": [30, 65], "notoriedade": [15, 55] },
+    { "cargo": "DEPUTADO ESTADUAL", "qtd": 6, "influencia": [45, 75], "notoriedade": [30, 65] },
+    { "cargo": "SECRETARIO", "qtd": 5, "influencia": [50, 78], "notoriedade": [20, 45] },
+    { "cargo": "LIDERANCA", "qtd": 4, "influencia": [40, 70], "notoriedade": [10, 35] }
+  ],
+  "cargoNome": {
+    "PREFEITO": "Prefeito",
+    "VEREADOR": "Vereador(a)",
+    "DEPUTADO ESTADUAL": "Deputado(a) estadual",
+    "SECRETARIO": "Secretário(a) municipal",
+    "LIDERANCA": "Dirigente partidário"
+  }
+}

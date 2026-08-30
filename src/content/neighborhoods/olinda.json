@@ -1,0 +1,21 @@
+{
+  "$comment": "Fase 26 — segunda cidade jogável. Olinda/PE, ~390 mil habitantes, RMR. Mesmo modelo de bairros do recife.json (mix de grupos, eixo, problemas). Câmara de Olinda: 21 vereadores.",
+  "cidade": "OLINDA",
+  "uf": "PE",
+  "bairros": [
+    { "id": "bairro_novo", "nome": "Bairro Novo", "regiao": "Orla", "populacao": 24000, "renda": 4, "densidade": "media", "eixo": 20, "problemas": ["mobilidade", "seguranca"], "mix": { "classe_media": 5, "idosos": 3, "trabalhadores_formais": 3, "empresarios": 2 } },
+    { "id": "casa_caiada", "nome": "Casa Caiada", "regiao": "Orla", "populacao": 26000, "renda": 4, "densidade": "media", "eixo": 15, "problemas": ["mobilidade", "saneamento"], "mix": { "classe_media": 5, "trabalhadores_formais": 3, "idosos": 3, "jovens": 2 } },
+    { "id": "rio_doce", "nome": "Rio Doce", "regiao": "Norte", "populacao": 45000, "renda": 2, "densidade": "alta", "eixo": -5, "problemas": ["saneamento", "seguranca", "emprego"], "mix": { "periferia": 5, "informais": 4, "trabalhadores_formais": 3, "jovens": 3 } },
+    { "id": "peixinhos", "nome": "Peixinhos", "regiao": "Sul", "populacao": 38000, "renda": 1, "densidade": "alta", "eixo": -15, "problemas": ["saneamento", "seguranca", "assistencia"], "mix": { "periferia": 5, "informais": 4, "movimentos_sociais": 3, "jovens": 3 } },
+    { "id": "jardim_brasil", "nome": "Jardim Brasil", "regiao": "Norte", "populacao": 30000, "renda": 2, "densidade": "alta", "eixo": 0, "problemas": ["mobilidade", "saneamento"], "mix": { "periferia": 4, "informais": 4, "trabalhadores_formais": 3, "catolicos_praticantes": 2 } },
+    { "id": "ouro_preto", "nome": "Ouro Preto", "regiao": "Centro", "populacao": 28000, "renda": 3, "densidade": "alta", "eixo": 5, "problemas": ["mobilidade", "comercio"], "mix": { "trabalhadores_formais": 4, "classe_media": 3, "informais": 3, "servidores": 2 } },
+    { "id": "aguas_compridas", "nome": "Águas Compridas", "regiao": "Alto", "populacao": 22000, "renda": 1, "densidade": "alta", "eixo": 10, "problemas": ["agua", "assistencia", "seguranca"], "mix": { "periferia": 5, "religiosos_evangelicos": 4, "informais": 4, "idosos": 2 } },
+    { "id": "sitio_novo", "nome": "Sítio Novo", "regiao": "Alto", "populacao": 18000, "renda": 1, "densidade": "alta", "eixo": 8, "problemas": ["agua", "seguranca", "moradia"], "mix": { "periferia": 5, "religiosos_evangelicos": 3, "informais": 4, "jovens": 3 } },
+    { "id": "alto_da_bondade", "nome": "Alto da Bondade", "regiao": "Alto", "populacao": 20000, "renda": 1, "densidade": "alta", "eixo": 12, "problemas": ["agua", "assistencia"], "mix": { "periferia": 5, "religiosos_evangelicos": 4, "informais": 3, "idosos": 3 } },
+    { "id": "varadouro", "nome": "Varadouro", "regiao": "Sítio Histórico", "populacao": 9000, "renda": 3, "densidade": "media", "eixo": -25, "problemas": ["turismo", "moradia", "cultura"], "mix": { "movimentos_sociais": 4, "estudantes_universitarios": 3, "informais": 3, "classe_media": 2 } },
+    { "id": "carmo", "nome": "Carmo e Sé", "regiao": "Sítio Histórico", "populacao": 7000, "renda": 3, "densidade": "baixa", "eixo": -30, "problemas": ["turismo", "cultura", "moradia"], "mix": { "movimentos_sociais": 4, "estudantes_universitarios": 3, "empresarios": 2, "catolicos_praticantes": 2 } },
+    { "id": "bultrins", "nome": "Bultrins", "regiao": "Centro", "populacao": 26000, "renda": 2, "densidade": "alta", "eixo": 0, "problemas": ["mobilidade", "saneamento", "emprego"], "mix": { "periferia": 4, "informais": 4, "trabalhadores_formais": 3, "jovens": 2 } },
+    { "id": "jardim_atlantico", "nome": "Jardim Atlântico", "regiao": "Norte", "populacao": 32000, "renda": 3, "densidade": "alta", "eixo": 5, "problemas": ["mobilidade", "seguranca"], "mix": { "trabalhadores_formais": 4, "classe_media": 3, "informais": 3, "idosos": 2 } },
+    { "id": "fragoso", "nome": "Fragoso", "regiao": "Norte", "populacao": 35000, "renda": 2, "densidade": "alta", "eixo": 2, "problemas": ["mobilidade", "saneamento"], "mix": { "periferia": 4, "informais": 4, "trabalhadores_formais": 3, "religiosos_evangelicos": 2 } }
+  ]
+}

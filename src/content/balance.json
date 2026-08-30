@@ -1,0 +1,93 @@
+{
+  "$comment": "Constantes de balanceamento. Ajustar aqui NUNCA exige mudar lógica. Usado pela simulação em lote na Etapa 6.",
+  "versaoSave": 1,
+  "calendario": {
+    "$comment": "Eleições municipais em ciclo fixo. mes 0 = janeiro de anoInicial (2026). Primeira eleição municipal disputável = outubro/2028 ≈ mês 33. Eleições gerais (deputado/governador/senador) 2 anos deslocadas: out/2026≈mês 9, depois +48.",
+    "cicloMeses": 48,
+    "mesPrimeiraEleicaoMunicipal": 33,
+    "janelaCandidaturaMeses": 6,
+    "campanhaMin": 3,
+    "campanhaMax": 6,
+    "mesPrimeiraEleicaoGeral": 9
+  },
+  "tempo": {
+    "pontosPorMesBase": 12,
+    "energiaMaxBase": 100,
+    "energiaRecuperaPorMes": 35,
+    "mesInicial": 0,
+    "idadeInicialPadrao": 28
+  },
+  "financas": {
+    "$comment": "4 caixas independentes, em R$.",
+    "pessoalInicial": {
+      "min": 2000,
+      "max": 40000
+    },
+    "custoVidaMensal": {
+      "min": 700,
+      "max": 1900
+    },
+    "multiplicadorDinheiroInicial": 1.5,
+    "campanhaInicial": {
+      "min": 0,
+      "max": 0
+    },
+    "partidariaInicial": 0,
+    "gabineteInicial": 0
+  },
+  "eleicao": {
+    "vereador": {
+      "cidade": "RECIFE",
+      "eleitoradoApto": 1150000,
+      "escalaCidade": 2.6,
+      "comparecimentoBase": 0.8,
+      "cadeiras": 39,
+      "totalCandidatos": {
+        "min": 130,
+        "max": 190
+      },
+      "candidatosReaisAlvo": 20,
+      "mesesDeCampanha": 5,
+      "votosParaEleitoTipico": {
+        "min": 3000,
+        "max": 25000
+      }
+    }
+  },
+  "reputacao": {
+    "aprovacaoInicial": 50,
+    "confiancaInicial": 40,
+    "rejeicaoInicial": 8,
+    "notoriedadeInicial": 3,
+    "decaimentoEcoMidiaticoMensal": 0.55
+  },
+  "relacionamentos": {
+    "niveis": [
+      "DESCONHECIDO",
+      "CONHECIDO",
+      "CONTATO",
+      "AMIGO",
+      "ALIADO",
+      "PARCEIRO"
+    ],
+    "limiaresConfianca": [
+      0,
+      15,
+      35,
+      55,
+      75,
+      90
+    ],
+    "decaimentoMensalSemContato": 1.2
+  },
+  "redes": {
+    "seguidoresIniciais": {
+      "min": 150,
+      "max": 3000
+    },
+    "seguidoresIniciaisInfluenciador": {
+      "min": 20000,
+      "max": 120000
+    }
+  }
+}

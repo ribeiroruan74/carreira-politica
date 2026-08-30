@@ -1,0 +1,268 @@
+{
+  "$comment": "Ações da fase MANDATO. Algumas pedem alvo de bairro. 'proporProjeto'/'negociarVotos'/'fiscalizar' são resolvidas em engine/mandate.js.",
+  "acoes": [
+    {
+      "id": "apresentar_projeto",
+      "categoria": "MANDATO",
+      "titulo": "Protocolar um projeto de lei",
+      "desc": "Escolha o tema e o bairro-foco. Projeto de lei precisa de maioria; indicação e requerimento não.",
+      "custo": {
+        "tempo": 3,
+        "energia": 12,
+        "gabineteGasto": 0
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "proporProjeto": true,
+        "alvoProjeto": true,
+        "atributoPeso": "inteligencia"
+      },
+      "peso": 1.4
+    },
+    {
+      "id": "negociar_votos",
+      "categoria": "MANDATO",
+      "titulo": "Negociar votos para um projeto",
+      "desc": "Rodar os gabinetes, oferecer apoio em troca. Sobe o apoio parlamentar de um projeto seu.",
+      "custo": {
+        "tempo": 2,
+        "energia": 12,
+        "dinheiroPessoal": 0
+      },
+      "requisitos": {
+        "faseMin": "MANDATO",
+        "temProjetoTramitando": true
+      },
+      "efeitos": {
+        "negociarVotos": true,
+        "alvoProjetoTramitando": true,
+        "atributoPeso": "negociacao"
+      },
+      "peso": 1.3
+    },
+    {
+      "id": "discurso_plenario",
+      "categoria": "MANDATO",
+      "titulo": "Discurso no plenário",
+      "desc": "Defender uma pauta da tribuna. Ganha notoriedade, pode subir o apoio a projetos do mesmo tema.",
+      "custo": {
+        "tempo": 1,
+        "energia": 8
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "reputacao": {
+          "notoriedade": [
+            1,
+            4
+          ]
+        },
+        "ecoMidiatico": [
+          1,
+          4
+        ],
+        "impulsoTemaProjetos": true,
+        "atributoPeso": "oratoria"
+      },
+      "peso": 1
+    },
+    {
+      "id": "fiscalizar_obra",
+      "categoria": "MANDATO",
+      "titulo": "Fiscalizar obra ou contrato",
+      "desc": "Visita, requisição de documentos, foto. Se achar irregularidade, repercute alto — e cria atrito com a prefeitura.",
+      "custo": {
+        "tempo": 2,
+        "energia": 14
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "fiscalizar": true,
+        "atributoPeso": "coragem"
+      },
+      "peso": 1.1
+    },
+    {
+      "id": "atender_demanda",
+      "categoria": "MANDATO",
+      "titulo": "Atender demanda de um bairro",
+      "desc": "Reunião com moradores, encaminhar pedido, assumir compromisso. Vira uma promessa — que você precisa cumprir.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10,
+        "gabineteGasto": 3000
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "registrarPromessa": true,
+        "alvoDemanda": true,
+        "territorioBairroAlvo": {
+          "presenca": [
+            2,
+            5
+          ]
+        },
+        "reputacao": {
+          "confianca": [
+            1,
+            3
+          ]
+        },
+        "atributoPeso": "empatia"
+      },
+      "peso": 1.2
+    },
+    {
+      "id": "cobrar_secretaria",
+      "categoria": "MANDATO",
+      "titulo": "Cobrar uma secretaria municipal",
+      "desc": "Ofício, reunião, pressão pública. Pode destravar um projeto — ou irritar o governo.",
+      "custo": {
+        "tempo": 1,
+        "energia": 8
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "cobrarSecretaria": true,
+        "atributoPeso": "influencia"
+      },
+      "peso": 1
+    },
+    {
+      "id": "audiencia_publica",
+      "categoria": "MANDATO",
+      "titulo": "Convocar audiência pública",
+      "desc": "Trazer a sociedade civil para debater uma pauta. Notoriedade e pressão sobre o Executivo.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10,
+        "gabineteGasto": 6000
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "reputacao": {
+          "notoriedade": [
+            2,
+            5
+          ],
+          "confianca": [
+            1,
+            3
+          ]
+        },
+        "ecoMidiatico": [
+          2,
+          6
+        ],
+        "atributoPeso": "comunicacao"
+      },
+      "peso": 0.9
+    },
+    {
+      "id": "trabalhar_base",
+      "categoria": "MANDATO",
+      "titulo": "Rodar a base pessoalmente",
+      "desc": "Sem projeto, sem imprensa: só presença nos bairros onde você foi mais votado.",
+      "custo": {
+        "tempo": 2,
+        "energia": 12
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            4,
+            8
+          ],
+          "penetracao": [
+            2,
+            5
+          ]
+        },
+        "atributoPeso": "carisma"
+      },
+      "peso": 1.1
+    },
+    {
+      "id": "buscar_financiador",
+      "categoria": "MANDATO",
+      "titulo": "Jantar com potenciais financiadores",
+      "desc": "Empresários e setores organizados que topam bancar sua próxima campanha — em troca de acesso. Cada doação fica registrada, com origem e interesse.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "captarDoacao": 38000,
+        "reputacao": {
+          "rejeicao": [
+            0,
+            1
+          ]
+        },
+        "atributoPeso": "negociacao"
+      },
+      "peso": 0.9
+    },
+    {
+      "id": "militancia_mandato",
+      "categoria": "MANDATO",
+      "titulo": "Organizar a base num bairro",
+      "desc": "Transformar quem votou em você em militância permanente: grupo de bairro, mutirões, plantão de demandas.",
+      "custo": {
+        "tempo": 2,
+        "energia": 12,
+        "gabineteGasto": 2000
+      },
+      "requisitos": {
+        "faseMin": "MANDATO"
+      },
+      "efeitos": {
+        "recrutarMilitancia": true,
+        "atributoPeso": "lideranca"
+      },
+      "peso": 1
+    },
+    {
+      "id": "conter_repercussao",
+      "categoria": "MANDATO",
+      "titulo": "Responder a uma repercussão negativa",
+      "desc": "Nota, vídeo direto ou coletiva para cortar uma bola de neve antes que cresça mais.",
+      "custo": {
+        "tempo": 1,
+        "energia": 8
+      },
+      "requisitos": {
+        "temCascata": true
+      },
+      "efeitos": {
+        "conterCascata": true,
+        "reputacao": {
+          "notoriedade": [
+            0,
+            2
+          ]
+        },
+        "atributoPeso": "comunicacao"
+      },
+      "peso": 1.7
+    }
+  ]
+}

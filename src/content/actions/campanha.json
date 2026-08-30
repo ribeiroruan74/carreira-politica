@@ -1,0 +1,352 @@
+{
+  "$comment": "Ações disponíveis só na fase CANDIDATO. Gastam caixa de CAMPANHA (não a pessoal). 'territorioBairroAlvo' pede escolha de bairro.",
+  "acoes": [
+    {
+      "id": "caminhada",
+      "categoria": "CAMPANHA",
+      "titulo": "Caminhada de rua",
+      "desc": "Corpo a corpo num bairro com militância e carro de som. O feijão com arroz da campanha.",
+      "custo": {
+        "tempo": 2,
+        "energia": 16,
+        "campanhaGasto": 4000
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            4,
+            9
+          ],
+          "penetracao": [
+            2,
+            5
+          ]
+        },
+        "reputacao": {
+          "notoriedade": [
+            1,
+            2
+          ]
+        },
+        "atributoPeso": "carisma"
+      },
+      "peso": 1.4
+    },
+    {
+      "id": "carreata",
+      "categoria": "CAMPANHA",
+      "titulo": "Carreata",
+      "desc": "Buzinaço por várias ruas. Barulho, visibilidade, pouca profundidade.",
+      "custo": {
+        "tempo": 2,
+        "energia": 12,
+        "campanhaGasto": 9000
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            3,
+            6
+          ]
+        },
+        "reputacao": {
+          "notoriedade": [
+            2,
+            4
+          ]
+        },
+        "atributoPeso": "organizacao"
+      },
+      "peso": 0.9
+    },
+    {
+      "id": "comicio",
+      "categoria": "CAMPANHA",
+      "titulo": "Comício",
+      "desc": "Palanque, discurso, aliados no palco. Energiza a base — e expõe.",
+      "custo": {
+        "tempo": 3,
+        "energia": 22,
+        "campanhaGasto": 18000
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            5,
+            11
+          ],
+          "penetracao": [
+            3,
+            7
+          ]
+        },
+        "reputacao": {
+          "notoriedade": [
+            2,
+            5
+          ],
+          "rejeicao": [
+            0,
+            3
+          ]
+        },
+        "ecoMidiatico": [
+          2,
+          6
+        ],
+        "atributoPeso": "oratoria"
+      },
+      "peso": 0.8
+    },
+    {
+      "id": "panfletagem",
+      "categoria": "CAMPANHA",
+      "titulo": "Panfletagem em ponto de fluxo",
+      "desc": "Terminal, feira, porta de fábrica. Barato e territorial.",
+      "custo": {
+        "tempo": 1,
+        "energia": 8,
+        "campanhaGasto": 1500
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            2,
+            5
+          ]
+        },
+        "atributoPeso": "disciplina"
+      },
+      "peso": 1.3
+    },
+    {
+      "id": "propaganda_digital",
+      "categoria": "CAMPANHA",
+      "titulo": "Impulsionar propaganda digital",
+      "desc": "Anúncios segmentados. Alcance previsível, engajamento morno.",
+      "custo": {
+        "tempo": 1,
+        "energia": 5,
+        "campanhaGasto": 12000
+      },
+      "efeitos": {
+        "reputacao": {
+          "notoriedade": [
+            3,
+            7
+          ]
+        },
+        "seguidores": {
+          "pct": [
+            0.01,
+            0.05
+          ]
+        },
+        "atributoPeso": "comunicacao"
+      },
+      "peso": 1.1
+    },
+    {
+      "id": "reels_campanha",
+      "categoria": "CAMPANHA",
+      "titulo": "Produzir um Reels de campanha",
+      "desc": "Sem custo de mídia, sem garantia de alcance. Pode viralizar — pra bem ou pra mal.",
+      "custo": {
+        "tempo": 1,
+        "energia": 6,
+        "campanhaGasto": 800
+      },
+      "efeitos": {
+        "viral": true,
+        "atributoPeso": "carisma"
+      },
+      "peso": 1.2
+    },
+    {
+      "id": "debate",
+      "categoria": "CAMPANHA",
+      "titulo": "Participar de debate",
+      "desc": "Palco compartilhado com rivais. Alto risco, alto retorno.",
+      "custo": {
+        "tempo": 2,
+        "energia": 18,
+        "campanhaGasto": 2000
+      },
+      "efeitos": {
+        "debate": true,
+        "atributoPeso": "improviso"
+      },
+      "peso": 0.7
+    },
+    {
+      "id": "porta_a_porta_time",
+      "categoria": "CAMPANHA",
+      "titulo": "Mobilizar time de porta a porta",
+      "desc": "Cabos eleitorais cobrindo quarteirão a quarteirão. Constrói voto firme.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10,
+        "campanhaGasto": 15000
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            3,
+            6
+          ],
+          "penetracao": [
+            5,
+            10
+          ]
+        },
+        "atributoPeso": "lideranca"
+      },
+      "peso": 1
+    },
+    {
+      "id": "evento_influenciador",
+      "categoria": "CAMPANHA",
+      "titulo": "Evento com influenciador local",
+      "desc": "Empresta audiência de alguém com alcance. Efeito rápido, meio volátil.",
+      "custo": {
+        "tempo": 1,
+        "energia": 8,
+        "campanhaGasto": 10000
+      },
+      "efeitos": {
+        "reputacao": {
+          "notoriedade": [
+            4,
+            9
+          ],
+          "rejeicao": [
+            1,
+            4
+          ]
+        },
+        "seguidores": {
+          "pct": [
+            0.02,
+            0.08
+          ]
+        },
+        "ecoMidiatico": [
+          1,
+          4
+        ]
+      },
+      "peso": 0.8
+    },
+    {
+      "id": "captacao_campanha",
+      "categoria": "CAMPANHA",
+      "titulo": "Jantar de captação de recursos",
+      "desc": "Doadores, empresários, apoiadores. Enche o caixa — cria compromissos.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10
+      },
+      "efeitos": {
+        "captarDoacao": 42000,
+        "reputacao": {
+          "rejeicao": [
+            0,
+            2
+          ]
+        },
+        "atributoPeso": "negociacao"
+      },
+      "peso": 1
+    },
+    {
+      "id": "militancia_campanha",
+      "categoria": "CAMPANHA",
+      "titulo": "Montar comitê de rua num bairro",
+      "desc": "Militância local puxando boca de urna, colando cartaz, batendo de porta em porta. Multiplica sua campanha onde há gente organizada.",
+      "custo": {
+        "tempo": 2,
+        "energia": 12,
+        "campanhaGasto": 2500
+      },
+      "efeitos": {
+        "recrutarMilitancia": true,
+        "atributoPeso": "lideranca"
+      },
+      "peso": 1.2
+    },
+    {
+      "id": "visita_associacao",
+      "categoria": "CAMPANHA",
+      "titulo": "Reunião fechada com associação de moradores",
+      "desc": "Compromissos concretos com quem organiza o bairro. Voto de confiança.",
+      "custo": {
+        "tempo": 2,
+        "energia": 9,
+        "campanhaGasto": 3000
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            3,
+            6
+          ],
+          "penetracao": [
+            4,
+            8
+          ]
+        },
+        "reputacao": {
+          "confianca": [
+            1,
+            3
+          ]
+        },
+        "relacionamentosNovos": 1,
+        "atributoPeso": "empatia"
+      },
+      "peso": 1.1
+    },
+    {
+      "id": "descansar_campanha",
+      "categoria": "CAMPANHA",
+      "titulo": "Recolher para descansar um fim de semana",
+      "desc": "O ritmo de campanha derruba. Recuperar energia custa dias preciosos.",
+      "custo": {
+        "tempo": 2,
+        "energia": 0,
+        "campanhaGasto": 0
+      },
+      "efeitos": {
+        "energia": [
+          22,
+          34
+        ]
+      },
+      "peso": 0.5
+    },
+    {
+      "id": "conter_repercussao",
+      "categoria": "CAMPANHA",
+      "titulo": "Responder a uma repercussão negativa",
+      "desc": "Nota, vídeo direto ou coletiva para cortar uma bola de neve antes que cresça mais.",
+      "custo": {
+        "tempo": 1,
+        "energia": 8
+      },
+      "requisitos": {
+        "temCascata": true
+      },
+      "efeitos": {
+        "conterCascata": true,
+        "reputacao": {
+          "notoriedade": [
+            0,
+            2
+          ]
+        },
+        "atributoPeso": "comunicacao"
+      },
+      "peso": 1.7
+    }
+  ]
+}

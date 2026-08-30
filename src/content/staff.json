@@ -1,0 +1,36 @@
+{
+  "$comment": "Gabinete de vereador. 'cargos' = vagas do organograma. Assessores são gerados a partir de 'pool' com competência/salário/lealdade/traço. Verba de gabinete mensal cobre os salários.",
+  "verbaMensalBase": 90000,
+  "cargos": [
+    { "chave": "chefe_gabinete", "nome": "Chefe de gabinete", "afeta": ["projetos", "negociacao_votos", "gabinete"], "essencial": true },
+    { "chave": "assessor_politico", "nome": "Assessor(a) político", "afeta": ["negociacao_votos", "aliancas"] },
+    { "chave": "assessor_comunicacao", "nome": "Assessor(a) de comunicação", "afeta": ["midia", "redes", "discurso"] },
+    { "chave": "assessor_juridico", "nome": "Assessor(a) jurídico", "afeta": ["projetos", "fiscalizacao"] },
+    { "chave": "assessor_territorial", "nome": "Assessor(a) territorial", "afeta": ["comunidade", "demandas", "territorio"] },
+    { "chave": "assessor_parlamentar", "nome": "Assessor(a) parlamentar", "afeta": ["projetos", "requerimentos"] },
+    { "chave": "social_media", "nome": "Social media", "afeta": ["redes", "viral"] },
+    { "chave": "assessor_orcamento", "nome": "Assessor(a) de orçamento", "afeta": ["fiscalizacao", "emendas"] }
+  ],
+  "traços": [
+    { "id": "leal", "nome": "Leal", "lealdade": 25, "competencia": -3 },
+    { "id": "competente", "nome": "Competente", "competencia": 18, "salario": 1.3 },
+    { "id": "ambicioso", "nome": "Ambicioso", "competencia": 10, "lealdade": -20, "risco": "vira rival" },
+    { "id": "problematico", "nome": "Problemático", "competencia": -8, "lealdade": -10, "risco": "gera crise" },
+    { "id": "mediano", "nome": "Mediano", "competencia": 0, "lealdade": 0 },
+    { "id": "novato", "nome": "Novato", "competencia": -12, "lealdade": 10, "salario": 0.6 }
+  ],
+  "poolNomes": {
+    "primeiros": ["Amanda", "Rafael", "Juliana", "Thiago", "Larissa", "Bruno", "Camila", "Diego", "Priscila", "Vinícius", "Natália", "Rodrigo", "Beatriz", "Felipe", "Carolina", "Leandro", "Mariana", "Gabriel", "Isabela", "Hugo"],
+    "sobrenomes": ["Correia", "Barros", "Lins", "Menezes", "Aragão", "Peixoto", "Cordeiro", "Dantas", "Fonseca", "Bittencourt", "Galvão", "Rabelo", "Sampaio", "Nogueira"]
+  },
+  "salarioPorCargo": {
+    "chefe_gabinete": [12000, 18000],
+    "assessor_politico": [7000, 12000],
+    "assessor_comunicacao": [6000, 11000],
+    "assessor_juridico": [7000, 13000],
+    "assessor_territorial": [4000, 8000],
+    "assessor_parlamentar": [5000, 9000],
+    "social_media": [3500, 7000],
+    "assessor_orcamento": [6000, 10000]
+  }
+}

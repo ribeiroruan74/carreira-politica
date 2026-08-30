@@ -1,0 +1,130 @@
+{
+  "$comment": "Fase 25 — cargos eletivos. 'sistema' PROPORCIONAL (quociente + D'Hondt por coligação) ou MAJORITARIO (mais votado; 2º turno se ninguém > 50% e a circunscrição exigir). 'circunscricao' MUNICIPIO (usa os bairros da cidade do personagem) ou ESTADO (usa as regiões de estado-pe.json). 'elegibilidade.exigeMandato' = precisa ter exercido um destes cargos antes. Números de eleitorado/cadeiras aproximam PE/Recife.",
+  "cargos": [
+    {
+      "id": "VEREADOR",
+      "nome": "Vereador(a)",
+      "nomeCurto": "vereador",
+      "sistema": "PROPORCIONAL",
+      "circunscricao": "MUNICIPIO",
+      "cadeirasPorCidade": {
+        "RECIFE": 39,
+        "OLINDA": 21,
+        "DEFAULT": 13
+      },
+      "escalaEleitorado": 2.6,
+      "comparecimentoBase": 0.8,
+      "totalCandidatos": {
+        "min": 130,
+        "max": 190
+      },
+      "competitivos": {
+        "min": 22,
+        "max": 32
+      },
+      "usaCandidatosReais": true,
+      "mesesDeCampanha": 6,
+      "tipoPleito": "MUNICIPAL",
+      "mandatoMeses": 48,
+      "subsidioMensal": 21000,
+      "elegibilidade": {
+        "idadeMin": 18
+      }
+    },
+    {
+      "id": "PREFEITO",
+      "nome": "Prefeito(a)",
+      "nomeCurto": "prefeito",
+      "sistema": "MAJORITARIO",
+      "circunscricao": "MUNICIPIO",
+      "segundoTurnoSePopulacaoMaiorQue": 200000,
+      "escalaEleitorado": 2.6,
+      "comparecimentoBase": 0.82,
+      "totalCandidatos": {
+        "min": 5,
+        "max": 9
+      },
+      "competitivos": {
+        "min": 5,
+        "max": 9
+      },
+      "usaCandidatosReais": false,
+      "mesesDeCampanha": 6,
+      "tipoPleito": "MUNICIPAL",
+      "mandatoMeses": 48,
+      "subsidioMensal": 35000,
+      "elegibilidade": {
+        "idadeMin": 21,
+        "notoriedadeMin": 32,
+        "exigeMandato": [
+          "VEREADOR",
+          "DEPUTADO_ESTADUAL",
+          "DEPUTADO_FEDERAL"
+        ]
+      }
+    },
+    {
+      "id": "DEPUTADO_ESTADUAL",
+      "nome": "Deputado(a) estadual",
+      "nomeCurto": "deputado estadual",
+      "sistema": "PROPORCIONAL",
+      "circunscricao": "ESTADO",
+      "cadeiras": 49,
+      "escalaEleitorado": 1,
+      "comparecimentoBase": 0.8,
+      "totalCandidatos": {
+        "min": 280,
+        "max": 420
+      },
+      "competitivos": {
+        "min": 60,
+        "max": 90
+      },
+      "usaCandidatosReais": false,
+      "mesesDeCampanha": 6,
+      "tipoPleito": "GERAL",
+      "mandatoMeses": 48,
+      "subsidioMensal": 33000,
+      "elegibilidade": {
+        "idadeMin": 21,
+        "notoriedadeMin": 22,
+        "exigeMandato": [
+          "VEREADOR",
+          "PREFEITO"
+        ]
+      }
+    },
+    {
+      "id": "DEPUTADO_FEDERAL",
+      "nome": "Deputado(a) federal",
+      "nomeCurto": "deputado federal",
+      "sistema": "PROPORCIONAL",
+      "circunscricao": "ESTADO",
+      "cadeiras": 25,
+      "escalaEleitorado": 1,
+      "comparecimentoBase": 0.8,
+      "totalCandidatos": {
+        "min": 180,
+        "max": 260
+      },
+      "competitivos": {
+        "min": 45,
+        "max": 70
+      },
+      "usaCandidatosReais": false,
+      "mesesDeCampanha": 6,
+      "tipoPleito": "GERAL",
+      "mandatoMeses": 48,
+      "subsidioMensal": 46000,
+      "elegibilidade": {
+        "idadeMin": 21,
+        "notoriedadeMin": 30,
+        "exigeMandato": [
+          "VEREADOR",
+          "PREFEITO",
+          "DEPUTADO_ESTADUAL"
+        ]
+      }
+    }
+  ]
+}

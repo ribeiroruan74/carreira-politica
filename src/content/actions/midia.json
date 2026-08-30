@@ -1,0 +1,35 @@
+{
+  "$comment": "Fase 14/15 — ações de mídia e influência disponíveis em TODA fase (misturadas ao leque por acoesDisponiveis). Podcasts moldam a imagem pública; influenciadores emprestam audiência de nicho.",
+  "acoes": [
+    {
+      "id": "gravar_podcast",
+      "categoria": "MIDIA",
+      "titulo": "Ir a um podcast / programa",
+      "desc": "Duas, três horas de conversa. Alcance grande num nicho e molda como o público te enxerga — mas exige preparo e cansa.",
+      "custo": { "tempo": 3, "energia": 15 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "gravarPodcast": true, "atributoPeso": "oratoria" },
+      "peso": 1.1
+    },
+    {
+      "id": "cultivar_influenciador",
+      "categoria": "MIDIA",
+      "titulo": "Aproximar-se de um influenciador",
+      "desc": "Café, convite para um evento, um follow com atenção. Relação com creator local se constrói antes de precisar dela.",
+      "custo": { "tempo": 1, "energia": 5, "dinheiroPessoal": 150 },
+      "requisitos": {},
+      "efeitos": { "cultivarInfluenciador": true, "atributoPeso": "carisma" },
+      "peso": 1
+    },
+    {
+      "id": "colaborar_influenciador",
+      "categoria": "MIDIA",
+      "titulo": "Gravar um vídeo com um influenciador",
+      "desc": "Uma collab. Precisa de relação prévia. Empresta a audiência dele — e se bombar, bomba junto.",
+      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 300 },
+      "requisitos": {},
+      "efeitos": { "colaborarInfluenciador": true, "atributoPeso": "comunicacao" },
+      "peso": 1
+    }
+  ]
+}

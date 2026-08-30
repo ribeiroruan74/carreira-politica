@@ -1,0 +1,31 @@
+{
+  "$comment": "17 atributos de personalidade (0-100, base ~40-55). 'efeitos' documenta onde o atributo pesa — consumido pelos sistemas por chave.",
+  "atributos": [
+    { "id": "carisma", "nome": "Carisma", "efeitos": ["eventos_publicos", "redes", "relacionamento_novo", "comicio"] },
+    { "id": "inteligencia", "nome": "Inteligência", "efeitos": ["projetos", "debate", "estrategia_campanha"] },
+    { "id": "comunicacao", "nome": "Comunicação", "efeitos": ["entrevista", "redes", "discurso", "pronunciamento"] },
+    { "id": "lideranca", "nome": "Liderança", "efeitos": ["equipe", "mobilizacao", "partido_interno"] },
+    { "id": "negociacao", "nome": "Negociação", "efeitos": ["aliancas", "projetos", "captacao"] },
+    { "id": "estrategia", "nome": "Estratégia", "efeitos": ["planejamento_campanha", "alocacao_recursos", "ia_reacao"] },
+    { "id": "empatia", "nome": "Empatia", "efeitos": ["comunidade", "crise_humana", "relacionamento_profundo"] },
+    { "id": "disciplina", "nome": "Disciplina", "efeitos": ["energia", "consistencia", "menos_gafes"] },
+    { "id": "coragem", "nome": "Coragem", "efeitos": ["confronto", "denuncia", "crise"] },
+    { "id": "popularidade", "nome": "Popularidade", "efeitos": ["notoriedade_base", "eventos_publicos"] },
+    { "id": "improviso", "nome": "Improviso", "efeitos": ["evento_inesperado", "debate_ao_vivo", "risco_gafe"] },
+    { "id": "oratoria", "nome": "Oratória", "efeitos": ["discurso", "comicio", "debate", "plenario"] },
+    { "id": "organizacao", "nome": "Organização", "efeitos": ["gabinete", "agenda", "campanha_estrutura"] },
+    { "id": "resiliencia", "nome": "Resiliência", "efeitos": ["recuperar_de_crise", "derrota", "ataque_sofrido"] },
+    { "id": "influencia", "nome": "Influência", "efeitos": ["abrir_portas", "captacao", "peso_politico"] },
+    { "id": "honestidadePercebida", "nome": "Honestidade percebida", "efeitos": ["confianca", "resistir_escandalo"] },
+    { "id": "ambicao", "nome": "Ambição", "efeitos": ["ritmo_carreira", "risco_declaracao_polemica", "energia_extra"] }
+  ],
+  "$comentario_traços": "Traços aplicados na criação — dão bônus e abrem/pesam certos eventos.",
+  "traços": [
+    { "id": "populista", "nome": "Populista", "atributos": { "carisma": 8, "improviso": 6, "honestidadePercebida": -4 }, "tags": ["risco_polemica"] },
+    { "id": "tecnocrata", "nome": "Tecnocrata", "atributos": { "inteligencia": 8, "organizacao": 6, "carisma": -5 }, "tags": ["forte_em_projetos"] },
+    { "id": "conciliador", "nome": "Conciliador", "atributos": { "negociacao": 8, "empatia": 5, "coragem": -4 }, "tags": ["facil_alianca"] },
+    { "id": "combativo", "nome": "Combativo", "atributos": { "coragem": 9, "oratoria": 5, "negociacao": -5 }, "tags": ["forte_oposicao", "risco_inimigos"] },
+    { "id": "trabalhador_de_base", "nome": "Trabalhador de base", "atributos": { "resiliencia": 7, "empatia": 6, "influencia": -4 }, "tags": ["forte_territorio"] },
+    { "id": "midiatico", "nome": "Midiático", "atributos": { "comunicacao": 8, "popularidade": 7, "disciplina": -5 }, "tags": ["forte_redes", "risco_exposicao"] }
+  ]
+}

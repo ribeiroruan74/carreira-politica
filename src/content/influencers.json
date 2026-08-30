@@ -1,0 +1,15 @@
+{
+  "$comment": "Fase 15/16 — influenciadores locais (fictícios). O roster é a semente; o runtime fica em mundo.influenciadores com alcance/cache/relação/humor dinâmicos. 'publico' = grupos do electorate.json. 'eixo' -100..100. 'plataforma' só sabor.",
+  "influenciadores": [
+    { "id": "inf_bia", "nome": "Bia do Recife", "nicho": "Cidade e cotidiano", "plataforma": "Instagram", "alcanceBase": 62, "eixo": -10, "publico": ["classe_media", "trabalhadores_formais", "jovens"] },
+    { "id": "inf_gordao", "nome": "Gordão da Quebrada", "nicho": "Humor de periferia", "plataforma": "TikTok", "alcanceBase": 74, "eixo": -20, "publico": ["periferia", "informais", "jovens"] },
+    { "id": "inf_marcelo", "nome": "Marcelo Investe", "nicho": "Finanças pessoais", "plataforma": "YouTube", "alcanceBase": 48, "eixo": 35, "publico": ["empresarios", "classe_media", "trabalhadores_formais"] },
+    { "id": "inf_dan", "nome": "Dan Sem Filtro", "nicho": "Política raiz", "plataforma": "YouTube", "alcanceBase": 55, "eixo": 45, "publico": ["classe_media", "empresarios", "religiosos_evangelicos"] },
+    { "id": "inf_leticia", "nome": "Letícia Fala", "nicho": "Direitos e causas", "plataforma": "Instagram", "alcanceBase": 51, "eixo": -55, "publico": ["estudantes_universitarios", "movimentos_sociais", "jovens"] },
+    { "id": "inf_pastor_web", "nome": "Palavra Diária", "nicho": "Fé e família", "plataforma": "Instagram", "alcanceBase": 58, "eixo": 30, "publico": ["religiosos_evangelicos", "catolicos_praticantes", "idosos"] },
+    { "id": "inf_esporte", "nome": "Central Esportiva PE", "nicho": "Futebol pernambucano", "plataforma": "Twitter/X", "alcanceBase": 67, "eixo": 0, "publico": ["jovens", "trabalhadores_formais", "informais", "periferia"] },
+    { "id": "inf_dona_lourdes", "nome": "Dona Lourdes Ensina", "nicho": "Receitas e vida prática", "plataforma": "Facebook", "alcanceBase": 44, "eixo": 10, "publico": ["idosos", "informais", "catolicos_praticantes"] },
+    { "id": "inf_tech", "nome": "PE Tech", "nicho": "Tecnologia e cidade", "plataforma": "YouTube", "alcanceBase": 39, "eixo": -15, "publico": ["estudantes_universitarios", "servidores", "classe_media"] },
+    { "id": "inf_ju", "nome": "Ju no Corre", "nicho": "MEI e autônomos", "plataforma": "Instagram", "alcanceBase": 46, "eixo": 5, "publico": ["informais", "empresarios", "trabalhadores_formais"] }
+  ]
+}

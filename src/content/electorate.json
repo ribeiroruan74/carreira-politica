@@ -1,0 +1,17 @@
+{
+  "$comment": "Grupos de eleitores. 'eixo' e 'eixoSocial' = preferência ideológica média (-100..100). 'interesses' pesam quais pautas/ações os movem. 'volatilidade' = quão rápido mudam de candidato.",
+  "grupos": [
+    { "id": "jovens", "nome": "Jovens (16-24)", "eixo": -20, "eixoSocial": -35, "volatilidade": 0.8, "comparecimento": 0.72, "interesses": { "digital": 1.0, "emprego": 0.8, "mobilidade": 0.6, "cultura": 0.7, "seguranca": 0.4 } },
+    { "id": "idosos", "nome": "Idosos (60+)", "eixo": 10, "eixoSocial": 25, "volatilidade": 0.3, "comparecimento": 0.85, "interesses": { "saude": 1.0, "seguranca": 0.8, "assistencia": 0.7, "religiao": 0.5 } },
+    { "id": "trabalhadores_formais", "nome": "Trabalhadores com carteira", "eixo": -25, "eixoSocial": -5, "volatilidade": 0.5, "comparecimento": 0.82, "interesses": { "emprego": 1.0, "mobilidade": 0.9, "saude": 0.7, "custo_vida": 0.8 } },
+    { "id": "informais", "nome": "Trabalhadores informais e autônomos", "eixo": -10, "eixoSocial": 5, "volatilidade": 0.7, "comparecimento": 0.68, "interesses": { "custo_vida": 1.0, "emprego": 0.9, "credito": 0.6, "assistencia": 0.7 } },
+    { "id": "empresarios", "nome": "Empresários e comerciantes", "eixo": 45, "eixoSocial": 20, "volatilidade": 0.4, "comparecimento": 0.88, "interesses": { "impostos": 1.0, "seguranca": 0.9, "burocracia": 0.8, "infraestrutura": 0.7 } },
+    { "id": "servidores", "nome": "Servidores públicos", "eixo": -15, "eixoSocial": 0, "volatilidade": 0.4, "comparecimento": 0.9, "interesses": { "funcionalismo": 1.0, "educacao": 0.7, "saude": 0.7, "gestao": 0.6 } },
+    { "id": "estudantes_universitarios", "nome": "Estudantes universitários", "eixo": -45, "eixoSocial": -55, "volatilidade": 0.75, "comparecimento": 0.8, "interesses": { "educacao": 1.0, "cultura": 0.8, "mobilidade": 0.7, "direitos": 0.9 } },
+    { "id": "religiosos_evangelicos", "nome": "Evangélicos praticantes", "eixo": 30, "eixoSocial": 65, "volatilidade": 0.45, "comparecimento": 0.86, "interesses": { "religiao": 1.0, "familia": 0.9, "assistencia": 0.7, "seguranca": 0.7 } },
+    { "id": "catolicos_praticantes", "nome": "Católicos praticantes", "eixo": 5, "eixoSocial": 30, "volatilidade": 0.4, "comparecimento": 0.84, "interesses": { "assistencia": 0.8, "familia": 0.7, "saude": 0.7, "cultura": 0.5 } },
+    { "id": "periferia", "nome": "Moradores de áreas periféricas", "eixo": -20, "eixoSocial": 10, "volatilidade": 0.65, "comparecimento": 0.7, "interesses": { "saneamento": 1.0, "saude": 0.9, "seguranca": 0.9, "assistencia": 0.8, "mobilidade": 0.7 } },
+    { "id": "classe_media", "nome": "Classe média", "eixo": 20, "eixoSocial": 15, "volatilidade": 0.55, "comparecimento": 0.87, "interesses": { "seguranca": 1.0, "mobilidade": 0.8, "educacao": 0.7, "impostos": 0.7, "gestao": 0.8 } },
+    { "id": "movimentos_sociais", "nome": "Militância de movimentos sociais", "eixo": -70, "eixoSocial": -50, "volatilidade": 0.3, "comparecimento": 0.9, "interesses": { "direitos": 1.0, "moradia": 0.9, "cultura": 0.7, "meio_ambiente": 0.7 } }
+  ]
+}

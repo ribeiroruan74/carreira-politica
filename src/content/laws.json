@@ -1,0 +1,38 @@
+{
+  "$comment": "Modelos de projeto de lei / proposição para vereador de Recife. impacto e popularidade são a mão-cheia base; a chance real de aprovação vem do modelo parlamentar em engine/mandate.js. 'eixo' indica a que campo ideológico a pauta agrada.",
+  "temas": [
+    { "id": "mobilidade", "nome": "Mobilidade urbana", "grupos": ["trabalhadores_formais", "classe_media", "jovens"], "eixo": -10 },
+    { "id": "saude", "nome": "Saúde", "grupos": ["idosos", "periferia", "trabalhadores_formais"], "eixo": -20 },
+    { "id": "educacao", "nome": "Educação", "grupos": ["estudantes_universitarios", "servidores", "periferia"], "eixo": -25 },
+    { "id": "seguranca", "nome": "Segurança pública", "grupos": ["classe_media", "empresarios", "idosos"], "eixo": 35 },
+    { "id": "saneamento", "nome": "Saneamento e drenagem", "grupos": ["periferia", "informais"], "eixo": -15 },
+    { "id": "cultura", "nome": "Cultura e economia criativa", "grupos": ["estudantes_universitarios", "jovens", "movimentos_sociais"], "eixo": -30 },
+    { "id": "meio_ambiente", "nome": "Meio ambiente", "grupos": ["movimentos_sociais", "classe_media"], "eixo": -20 },
+    { "id": "empreendedorismo", "nome": "Empreendedorismo e MEI", "grupos": ["informais", "empresarios"], "eixo": 25 },
+    { "id": "transparencia", "nome": "Transparência e controle", "grupos": ["classe_media", "servidores", "movimentos_sociais"], "eixo": 0 },
+    { "id": "assistencia", "nome": "Assistência social", "grupos": ["periferia", "idosos", "informais"], "eixo": -35 },
+    { "id": "esporte", "nome": "Esporte e lazer", "grupos": ["jovens", "periferia"], "eixo": -5 },
+    { "id": "habitacao", "nome": "Habitação e regularização", "grupos": ["periferia", "movimentos_sociais", "informais"], "eixo": -30 }
+  ],
+  "tipos": [
+    { "id": "projeto_lei", "nome": "Projeto de lei", "custoPolitico": 3, "impacto": [8, 20], "prazoMeses": 6, "precisaMaioria": true },
+    { "id": "indicacao", "nome": "Indicação ao Executivo", "custoPolitico": 1, "impacto": [2, 6], "prazoMeses": 2, "precisaMaioria": false },
+    { "id": "requerimento", "nome": "Requerimento de informação", "custoPolitico": 1, "impacto": [1, 4], "prazoMeses": 1, "precisaMaioria": false },
+    { "id": "audiencia", "nome": "Audiência pública", "custoPolitico": 2, "impacto": [3, 9], "prazoMeses": 2, "precisaMaioria": false },
+    { "id": "emenda_orcamento", "nome": "Emenda ao orçamento", "custoPolitico": 2, "impacto": [5, 14], "prazoMeses": 4, "precisaMaioria": true }
+  ],
+  "titulos": {
+    "mobilidade": ["Faixa exclusiva de ônibus na {bairro}", "Ciclovia ligando {bairro} ao Centro", "Requalificação de calçadas na {bairro}"],
+    "saude": ["Ampliação do horário da UPA da {bairro}", "Programa de saúde da mulher na {bairro}", "Mutirão de exames na {bairro}"],
+    "educacao": ["Creche em tempo integral na {bairro}", "Reforma de escolas municipais da {bairro}", "Programa de reforço escolar na {bairro}"],
+    "seguranca": ["Iluminação pública reforçada na {bairro}", "Base da Guarda Municipal na {bairro}", "Videomonitoramento na {bairro}"],
+    "saneamento": ["Drenagem contra alagamentos na {bairro}", "Saneamento básico integral na {bairro}", "Limpeza e desassoreamento de canais na {bairro}"],
+    "cultura": ["Ponto de cultura na {bairro}", "Festival de cultura popular da {bairro}", "Editais de fomento para artistas da {bairro}"],
+    "meio_ambiente": ["Arborização e praças na {bairro}", "Coleta seletiva porta a porta na {bairro}", "Parque linear na {bairro}"],
+    "empreendedorismo": ["Sala do empreendedor na {bairro}", "Feira de MEIs da {bairro}", "Isenção de taxas para pequenos negócios da {bairro}"],
+    "transparencia": ["Portal de obras em tempo real do município", "Lei de prestação de contas trimestral", "Conselho de fiscalização de contratos"],
+    "assistencia": ["CRAS ampliado na {bairro}", "Aluguel social para famílias da {bairro}", "Programa de renda básica local na {bairro}"],
+    "esporte": ["Reforma da quadra poliesportiva da {bairro}", "Escolinha de esportes na {bairro}", "Iluminação de campo na {bairro}"],
+    "habitacao": ["Regularização fundiária na {bairro}", "Mutirão de reforma habitacional na {bairro}", "Contenção de encostas na {bairro}"]
+  }
+}

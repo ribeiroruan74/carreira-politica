@@ -1,0 +1,55 @@
+{
+  "$comment": "Ações políticas — disponíveis da fase PARTIDO em diante (algumas na VIDA_PUBLICA). Pedem alvo do tipo 'politico'.",
+  "acoes": [
+    {
+      "id": "conversar_politico",
+      "categoria": "POLITICA",
+      "titulo": "Conversar com um político",
+      "desc": "Café, telefonema, visita ao gabinete. Confiança política se constrói devagar.",
+      "custo": { "tempo": 1, "energia": 7, "dinheiroPessoal": 150 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "cultivarPolitico": [4, 9], "alvoPolitico": true, "atributoPeso": "negociacao" },
+      "peso": 1.3
+    },
+    {
+      "id": "almoco_lideranca",
+      "categoria": "POLITICA",
+      "titulo": "Almoço com uma liderança partidária",
+      "desc": "Quem decide indicação, verba e espaço na chapa. Investir aqui pesa na disputa interna.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 400 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "cultivarPolitico": [6, 12], "alvoPolitico": true, "apoioPartido": [1, 3], "atributoPeso": "influencia" },
+      "peso": 1.2
+    },
+    {
+      "id": "negociar_apoio",
+      "categoria": "POLITICA",
+      "titulo": "Negociar apoio formal",
+      "desc": "Propor a alguém que já confia em você que entre para o seu grupo político.",
+      "custo": { "tempo": 2, "energia": 12, "dinheiroPessoal": 300 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "tentarAlianca": true, "alvoPolitico": true, "atributoPeso": "negociacao" },
+      "peso": 1.0
+    },
+    {
+      "id": "reforcar_indicacao",
+      "categoria": "POLITICA",
+      "titulo": "Reforçar sua indicação no partido",
+      "desc": "Reuniões de núcleo, mostrar serviço, pedir espaço. Segura os pré-candidatos rivais.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 200 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "apoioPartido": [2, 5], "atributoPeso": "lideranca" },
+      "peso": 1.1
+    },
+    {
+      "id": "conversar_prefeito",
+      "categoria": "POLITICA",
+      "titulo": "Buscar uma conversa com o prefeito",
+      "desc": "Difícil de conseguir, mas abre portas — ou marca você como oposição, dependendo de como sai.",
+      "custo": { "tempo": 2, "energia": 14, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "cultivarPoliticoFixo": "np_joao_campos", "cultivarPolitico": [3, 8], "reputacao": { "notoriedade": [1, 3] }, "atributoPeso": "carisma" },
+      "peso": 0.7
+    }
+  ]
+}

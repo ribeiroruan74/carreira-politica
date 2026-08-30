@@ -1,0 +1,44 @@
+{
+  "$comment": "Empregos. salario mensal em R$. 'horas' = pontos de tempo consumidos por mês (0-4). 'req' = pré-requisitos (skill:min, atributo:min, tags de profissão). 'nivel' ordena a escada de carreira dentro de um setor.",
+  "empregos": [
+    { "id": "bico_informal", "titulo": "Bicos e trabalhos informais", "setor": "informal", "salario": [1600, 2800], "horas": 2, "prestigio": 5, "nivel": 0, "req": {} },
+
+    { "id": "assistente_escritorio", "titulo": "Assistente administrativo", "setor": "privado", "salario": [2600, 4200], "horas": 3, "prestigio": 15, "nivel": 1, "req": {} },
+    { "id": "analista_junior", "titulo": "Analista júnior", "setor": "privado", "salario": [4200, 6500], "horas": 3, "prestigio": 25, "nivel": 2, "req": { "gestao": 20 } },
+    { "id": "coordenador", "titulo": "Coordenador(a)", "setor": "privado", "salario": [7000, 12000], "horas": 3, "prestigio": 40, "nivel": 3, "req": { "gestao": 40, "lideranca": 45 } },
+    { "id": "gerente", "titulo": "Gerente", "setor": "privado", "salario": [12000, 22000], "horas": 4, "prestigio": 55, "nivel": 4, "req": { "gestao": 55, "lideranca": 55 } },
+    { "id": "diretor_privado", "titulo": "Diretor(a) executivo", "setor": "privado", "salario": [22000, 45000], "horas": 4, "prestigio": 70, "nivel": 5, "req": { "gestao": 70, "estrategia": 60 } },
+
+    { "id": "servidor_medio", "titulo": "Servidor(a) público (nível médio)", "setor": "publico", "salario": [4500, 7500], "horas": 3, "prestigio": 35, "nivel": 2, "req": {} },
+    { "id": "servidor_superior", "titulo": "Servidor(a) público (nível superior)", "setor": "publico", "salario": [8000, 16000], "horas": 3, "prestigio": 50, "nivel": 3, "req": { "gestao_publica": 30 } },
+    { "id": "cargo_comissionado", "titulo": "Cargo comissionado / assessoria", "setor": "publico", "salario": [9000, 20000], "horas": 3, "prestigio": 45, "nivel": 3, "req": { "influencia": 50 } },
+
+    { "id": "professor_rede", "titulo": "Professor(a) da rede", "setor": "educacao", "salario": [3800, 8500], "horas": 3, "prestigio": 40, "nivel": 2, "req": { "educacao": 20 } },
+    { "id": "professor_universitario", "titulo": "Professor(a) universitário", "setor": "educacao", "salario": [9000, 18000], "horas": 3, "prestigio": 60, "nivel": 4, "req": { "educacao": 55, "inteligencia": 55 } },
+
+    { "id": "reporter", "titulo": "Repórter", "setor": "midia", "salario": [3500, 7000], "horas": 3, "prestigio": 35, "nivel": 2, "req": { "comunicacao": 25 } },
+    { "id": "editor", "titulo": "Editor(a) / apresentador(a)", "setor": "midia", "salario": [8000, 18000], "horas": 3, "prestigio": 55, "nivel": 3, "req": { "comunicacao": 50, "midia": 40 } },
+    { "id": "colunista", "titulo": "Colunista / comentarista", "setor": "midia", "salario": [12000, 30000], "horas": 2, "prestigio": 68, "nivel": 4, "req": { "comunicacao": 60, "midia": 55 } },
+
+    { "id": "advogado_autonomo", "titulo": "Advogado(a) autônomo", "setor": "juridico", "salario": [6000, 16000], "horas": 3, "prestigio": 50, "nivel": 2, "req": { "juridico": 20 } },
+    { "id": "socio_escritorio", "titulo": "Sócio(a) de escritório", "setor": "juridico", "salario": [18000, 45000], "horas": 4, "prestigio": 70, "nivel": 4, "req": { "juridico": 55, "negociacao": 55 } },
+
+    { "id": "microempreendedor", "titulo": "Microempreendedor(a)", "setor": "negocios", "salario": [3000, 9000], "horas": 4, "prestigio": 25, "nivel": 2, "req": {} },
+    { "id": "empresario_pequeno", "titulo": "Dono(a) de pequena empresa", "setor": "negocios", "salario": [10000, 28000], "horas": 4, "prestigio": 50, "nivel": 3, "req": { "gestao": 45, "captacao": 30 } },
+    { "id": "empresario_medio", "titulo": "Empresário(a) consolidado", "setor": "negocios", "salario": [28000, 80000], "horas": 4, "prestigio": 68, "nivel": 5, "req": { "gestao": 60, "estrategia": 55, "captacao": 45 } },
+
+    { "id": "criador_conteudo", "titulo": "Criador(a) de conteúdo", "setor": "digital", "salario": [2000, 12000], "horas": 3, "prestigio": 30, "nivel": 2, "req": { "midia": 30 } },
+    { "id": "influenciador_pro", "titulo": "Influenciador(a) profissional", "setor": "digital", "salario": [10000, 60000], "horas": 3, "prestigio": 45, "nivel": 4, "req": { "midia": 55 } }
+  ],
+  "$comment2": "Emprego inicial por profissão.",
+  "inicialPorProfissao": {
+    "advogado": "advogado_autonomo",
+    "jornalista": "reporter",
+    "empresario": "empresario_pequeno",
+    "professor": "professor_rede",
+    "servidor": "servidor_superior",
+    "influenciador": "criador_conteudo",
+    "lider_comunitario": "bico_informal",
+    "trabalhador": "assistente_escritorio"
+  }
+}

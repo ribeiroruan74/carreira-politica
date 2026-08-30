@@ -1,0 +1,31 @@
+{
+  "$comment": "Contatos iniciais concedidos por profissão. Nome é gerado; aqui ficam papel, influência e viés ideológico.",
+  "nomes": {
+    "primeiros": ["Ana", "Carlos", "Fernanda", "João", "Márcia", "Roberto", "Juliana", "Paulo", "Cláudia", "Rogério", "Patrícia", "Eduardo", "Simone", "Marcelo", "Vera", "Gustavo", "Luciana", "Fábio", "Renata", "André", "Tereza", "Bruno", "Sônia", "Ricardo", "Adriana", "Wagner", "Cristiane", "Sérgio", "Débora", "Nelson"],
+    "sobrenomes": ["Silva", "Santos", "Oliveira", "Souza", "Lima", "Pereira", "Carvalho", "Almeida", "Nascimento", "Barbosa", "Rocha", "Cavalcanti", "Melo", "Araújo", "Gomes", "Ferreira", "Bezerra", "Andrade", "Correia", "Vasconcelos", "Siqueira", "Tavares", "Maranhão", "Wanderley", "Coelho"]
+  },
+  "papeis": {
+    "juiz_local": { "papel": "Juiz", "profissao": "Magistrado", "influencia": [55, 75], "eixo": 10 },
+    "presidente_oab_secional": { "papel": "Presidente da OAB seccional", "profissao": "Advogado", "influencia": [50, 68], "eixo": -5 },
+    "jornalista_politico": { "papel": "Repórter de política", "profissao": "Jornalista", "influencia": [40, 60], "eixo": -10 },
+    "editor_chefe_portal": { "papel": "Editor-chefe de portal", "profissao": "Jornalista", "influencia": [55, 78], "eixo": 5 },
+    "colunista_influente": { "papel": "Colunista", "profissao": "Jornalista", "influencia": [58, 82], "eixo": 15 },
+    "radialista_am": { "papel": "Radialista AM", "profissao": "Comunicador", "influencia": [45, 70], "eixo": 20 },
+    "dono_construtora": { "papel": "Dono de construtora", "profissao": "Empresário", "influencia": [60, 85], "eixo": 40 },
+    "presidente_associacao_comercial": { "papel": "Presidente da associação comercial", "profissao": "Empresário", "influencia": [50, 72], "eixo": 30 },
+    "lobista": { "papel": "Articulador político", "profissao": "Consultor", "influencia": [55, 80], "eixo": 0 },
+    "diretora_escola_publica": { "papel": "Diretora de escola pública", "profissao": "Educadora", "influencia": [35, 55], "eixo": -20 },
+    "lider_sindicato_professores": { "papel": "Dirigente sindical (professores)", "profissao": "Sindicalista", "influencia": [45, 65], "eixo": -45 },
+    "mae_associacao_pais": { "papel": "Liderança de associação de pais", "profissao": "Comunitária", "influencia": [25, 45], "eixo": -10 },
+    "diretor_secretaria": { "papel": "Diretor de secretaria municipal", "profissao": "Servidor", "influencia": [55, 78], "eixo": 5 },
+    "presidente_sindserv": { "papel": "Presidente do sindicato dos servidores", "profissao": "Sindicalista", "influencia": [48, 68], "eixo": -35 },
+    "tecnico_orcamento": { "papel": "Técnico de orçamento", "profissao": "Servidor", "influencia": [35, 55], "eixo": 0 },
+    "outro_influenciador": { "papel": "Criador de conteúdo", "profissao": "Influenciador", "influencia": [40, 72], "eixo": -5 },
+    "agencia_publicidade": { "papel": "Dono de agência de publicidade", "profissao": "Publicitário", "influencia": [45, 68], "eixo": 15 },
+    "reporter_cultura": { "papel": "Repórter de cultura", "profissao": "Jornalista", "influencia": [30, 50], "eixo": -25 },
+    "presidente_associacao_bairro": { "papel": "Presidente de associação de moradores", "profissao": "Liderança comunitária", "influencia": [30, 52], "eixo": -15 },
+    "pastor_local": { "papel": "Pastor", "profissao": "Líder religioso", "influencia": [45, 70], "eixo": 45 },
+    "dona_do_bar_da_esquina": { "papel": "Comerciante local", "profissao": "Comerciante", "influencia": [15, 35], "eixo": 5 },
+    "colega_de_trabalho_sindicalizado": { "papel": "Colega de trabalho sindicalizado", "profissao": "Trabalhador", "influencia": [12, 30], "eixo": -35 }
+  }
+}

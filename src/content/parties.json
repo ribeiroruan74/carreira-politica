@@ -1,0 +1,164 @@
+{
+  "$comment": "Partidos. eixo: -100 (esquerda) a +100 (direita). forcaRecife: força territorial base 0-100. Entidades leves na Etapa 1; ganham bancada/caixa/disputa interna na Etapa 3.",
+  "partidos": [
+    {
+      "id": "PT",
+      "nome": "Partido dos Trabalhadores",
+      "eixo": -60,
+      "eixoSocial": -30,
+      "tamanho": 85,
+      "forcaRecife": 72,
+      "cor": "#c4122f",
+      "federacao": "fed_esperanca"
+    },
+    {
+      "id": "PSB",
+      "nome": "Partido Socialista Brasileiro",
+      "eixo": -25,
+      "eixoSocial": -10,
+      "tamanho": 70,
+      "forcaRecife": 88,
+      "cor": "#f2c200"
+    },
+    {
+      "id": "PSOL",
+      "nome": "Partido Socialismo e Liberdade",
+      "eixo": -80,
+      "eixoSocial": -60,
+      "tamanho": 35,
+      "forcaRecife": 40,
+      "cor": "#a3238e",
+      "federacao": "fed_psol_rede"
+    },
+    {
+      "id": "PCdoB",
+      "nome": "Partido Comunista do Brasil",
+      "eixo": -75,
+      "eixoSocial": -35,
+      "tamanho": 25,
+      "forcaRecife": 30,
+      "cor": "#b8231a",
+      "federacao": "fed_esperanca"
+    },
+    {
+      "id": "PDT",
+      "nome": "Partido Democrático Trabalhista",
+      "eixo": -35,
+      "eixoSocial": -15,
+      "tamanho": 45,
+      "forcaRecife": 44,
+      "cor": "#e2001a"
+    },
+    {
+      "id": "REDE",
+      "nome": "Rede Sustentabilidade",
+      "eixo": -20,
+      "eixoSocial": -20,
+      "tamanho": 18,
+      "forcaRecife": 20,
+      "cor": "#00a651",
+      "federacao": "fed_psol_rede"
+    },
+    {
+      "id": "MDB",
+      "nome": "Movimento Democrático Brasileiro",
+      "eixo": 15,
+      "eixoSocial": 10,
+      "tamanho": 75,
+      "forcaRecife": 50,
+      "cor": "#1a9c3e"
+    },
+    {
+      "id": "PSD",
+      "nome": "Partido Social Democrático",
+      "eixo": 20,
+      "eixoSocial": 15,
+      "tamanho": 72,
+      "forcaRecife": 46,
+      "cor": "#0a3c7d"
+    },
+    {
+      "id": "UNIÃO",
+      "nome": "União Brasil",
+      "eixo": 40,
+      "eixoSocial": 25,
+      "tamanho": 78,
+      "forcaRecife": 38,
+      "cor": "#1d4e9c"
+    },
+    {
+      "id": "PP",
+      "nome": "Progressistas",
+      "eixo": 45,
+      "eixoSocial": 35,
+      "tamanho": 74,
+      "forcaRecife": 42,
+      "cor": "#2a4d9b"
+    },
+    {
+      "id": "REPUBLICANOS",
+      "nome": "Republicanos",
+      "eixo": 50,
+      "eixoSocial": 55,
+      "tamanho": 60,
+      "forcaRecife": 34,
+      "cor": "#005ca9"
+    },
+    {
+      "id": "PL",
+      "nome": "Partido Liberal",
+      "eixo": 65,
+      "eixoSocial": 60,
+      "tamanho": 88,
+      "forcaRecife": 36,
+      "cor": "#00529b"
+    },
+    {
+      "id": "PODEMOS",
+      "nome": "Podemos",
+      "eixo": 35,
+      "eixoSocial": 20,
+      "tamanho": 32,
+      "forcaRecife": 24,
+      "cor": "#00b7c3"
+    },
+    {
+      "id": "AVANTE",
+      "nome": "Avante",
+      "eixo": 25,
+      "eixoSocial": 20,
+      "tamanho": 22,
+      "forcaRecife": 22,
+      "cor": "#f47920"
+    },
+    {
+      "id": "SOLIDARIEDADE",
+      "nome": "Solidariedade",
+      "eixo": 30,
+      "eixoSocial": 10,
+      "tamanho": 26,
+      "forcaRecife": 26,
+      "cor": "#ff6600"
+    },
+    {
+      "id": "NOVO",
+      "nome": "Partido Novo",
+      "eixo": 75,
+      "eixoSocial": 20,
+      "tamanho": 20,
+      "forcaRecife": 16,
+      "cor": "#ff6a13"
+    }
+  ],
+  "federacoes": [
+    {
+      "id": "fed_esperanca",
+      "nome": "Federação Brasil da Esperança"
+    },
+    {
+      "id": "fed_psol_rede",
+      "nome": "Federação PSOL REDE"
+    }
+  ],
+  "$comment_fed": "federacao: sigla obrigatoriamente unida em toda eleição. coligacoes ad-hoc são formadas por eleição em engine/election.js."
+}

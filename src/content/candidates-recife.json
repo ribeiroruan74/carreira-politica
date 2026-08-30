@@ -1,0 +1,146 @@
+{
+  "fonte": "TSE consulta_cand_2024 — amostra Recife",
+  "cargo": "VEREADOR",
+  "candidatos": [
+    {
+      "id": "170001898803",
+      "nome": "CAP SALAS",
+      "partido": "NOVO",
+      "situacao": "SUPLENTE",
+      "forcaBase": 51
+    },
+    {
+      "id": "170002103321",
+      "nome": "ALEF COLLINS",
+      "partido": "PP",
+      "situacao": "ELEITO POR QP",
+      "forcaBase": 86
+    },
+    {
+      "id": "170001915043",
+      "nome": "NINHO ARYPETER",
+      "partido": "MDB",
+      "situacao": "SUPLENTE",
+      "forcaBase": 48
+    },
+    {
+      "id": "170001883020",
+      "nome": "IRMÃO JOSUÉ",
+      "partido": "REPUBLICANOS",
+      "situacao": "SUPLENTE",
+      "forcaBase": 37
+    },
+    {
+      "id": "170001915052",
+      "nome": "ELSON ÓTICA",
+      "partido": "MDB",
+      "situacao": "SUPLENTE",
+      "forcaBase": 42
+    },
+    {
+      "id": "170002103309",
+      "nome": "JAME",
+      "partido": "PP",
+      "situacao": "SUPLENTE",
+      "forcaBase": 48
+    },
+    {
+      "id": "170002288858",
+      "nome": "TOINHO DA ÁGUA",
+      "partido": "PSDB",
+      "situacao": "NÃO ELEITO",
+      "forcaBase": 36
+    },
+    {
+      "id": "170002103267",
+      "nome": "CAROL VERGOLINO",
+      "partido": "PSOL",
+      "situacao": "SUPLENTE",
+      "forcaBase": 49
+    },
+    {
+      "id": "170002240866",
+      "nome": "MISSIONÁRIA ADRIANA",
+      "partido": "DC",
+      "situacao": "NÃO ELEITO",
+      "forcaBase": 26
+    },
+    {
+      "id": "170002103434",
+      "nome": "FLÁVIA DE NADEGI",
+      "partido": "PV",
+      "situacao": "ELEITO POR QP",
+      "forcaBase": 77
+    },
+    {
+      "id": "170002406194",
+      "nome": "CRISLAINY FABRICIO",
+      "partido": "AVANTE",
+      "situacao": "NÃO ELEITO",
+      "forcaBase": 35
+    },
+    {
+      "id": "170002103375",
+      "nome": "RUI CLAUDIO",
+      "partido": "PL",
+      "situacao": "SUPLENTE",
+      "forcaBase": 45
+    },
+    {
+      "id": "170002240869",
+      "nome": "FERNANDO LIMA",
+      "partido": "DC",
+      "situacao": "NÃO ELEITO",
+      "forcaBase": 34
+    },
+    {
+      "id": "170002154762",
+      "nome": "DR PENHA",
+      "partido": "PRD",
+      "situacao": "SUPLENTE",
+      "forcaBase": 42
+    },
+    {
+      "id": "170002004119",
+      "nome": "AGORA É RUBEM",
+      "partido": "PSB",
+      "situacao": "ELEITO POR QP",
+      "forcaBase": 76
+    },
+    {
+      "id": "170001959223",
+      "nome": "MESTRE NILTON SANTOS",
+      "partido": "AVANTE",
+      "situacao": null,
+      "forcaBase": 44
+    },
+    {
+      "id": "170002103266",
+      "nome": "RICARDO GADELHA",
+      "partido": "REDE",
+      "situacao": "SUPLENTE",
+      "forcaBase": 45
+    },
+    {
+      "id": "170002288871",
+      "nome": "AGENOR DA ÁGUA",
+      "partido": "CIDADANIA",
+      "situacao": "NÃO ELEITO",
+      "forcaBase": 30
+    },
+    {
+      "id": "170001915051",
+      "nome": "BRUNA KARINA",
+      "partido": "MDB",
+      "situacao": null,
+      "forcaBase": 29
+    },
+    {
+      "id": "170002103193",
+      "nome": "LUCAS JUNIOR",
+      "partido": "MOBILIZA",
+      "situacao": "NÃO ELEITO",
+      "forcaBase": 30
+    }
+  ]
+}

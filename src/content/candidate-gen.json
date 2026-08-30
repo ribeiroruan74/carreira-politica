@@ -1,0 +1,17 @@
+{
+  "$comment": "Insumos do gerador procedural de candidatos. Nomes de urna plausíveis (prefixos + núcleos) e arquétipos de campanha/IA.",
+  "prefixos": ["Dr.", "Dra.", "Professor", "Professora", "Sargento", "Cabo", "Delegado", "Pastor", "Pastora", "Irmão", "Irmã", "Tia", "Tio", "Capitão", "Vereador", "Doutor", "Comandante", "Enfermeira", "Coach", "Bispo", ""],
+  "primeiros": ["Alef", "Bruno", "Carla", "Diego", "Edilene", "Fábio", "Gilvan", "Heloísa", "Igor", "Jaqueline", "Kleber", "Lílian", "Marcos", "Nadja", "Otávio", "Priscila", "Quitéria", "Rafael", "Simone", "Tarcísio", "Uilma", "Vitória", "Wellington", "Ximenes", "Yuri", "Zé", "Anderson", "Beatriz", "Cristiano", "Denise", "Elias", "Fernanda", "Gustavo", "Isadora"],
+  "apelidos": ["do Povo", "da Saúde", "da Bola", "do Recife", "de Casa Amarela", "da Zona Sul", "Ambiental", "do Trabalhador", "da Comunidade", "Cidadão", "da Educação", "do Bairro", "da Periferia", "da Feira", "do Ibura", "da Torre", "Mulher", "do Sindicato", "da Rua", "Digital", "TV", "da Família", "do Esporte", "Popular"],
+  "sobrenomes": ["Silva", "Santos", "Barbosa", "Cavalcanti", "Melo", "Lira", "Siqueira", "Wanderley", "Bezerra", "Correia", "Nascimento", "Vasconcelos", "Arruda", "Maranhão", "Andrade", "Feitosa", "Tenório", "Pessoa", "Uchôa", "Coimbra"],
+  "arquétipos": [
+    { "id": "cabo_eleitoral", "nome": "Máquina de bairro", "forca": [55, 82], "estilo": "TERRITORIO", "rejeicaoBase": [8, 20], "descricao": "Base fiel concentrada, estrutura de rua, troca de favores." },
+    { "id": "digital", "nome": "Fenômeno digital", "forca": [40, 78], "estilo": "REDES", "rejeicaoBase": [15, 38], "descricao": "Viraliza, polariza, alcance amplo e voto volátil." },
+    { "id": "religioso", "nome": "Liderança religiosa", "forca": [50, 80], "estilo": "GRUPO", "grupoAlvo": ["religiosos_evangelicos", "catolicos_praticantes"], "rejeicaoBase": [10, 28], "descricao": "Voto de fé, indicação de púlpito, base disciplinada." },
+    { "id": "seguranca", "nome": "Candidato da segurança", "forca": [45, 75], "estilo": "GRUPO", "grupoAlvo": ["classe_media", "empresarios", "idosos"], "rejeicaoBase": [18, 40], "descricao": "Discurso de ordem, apoio de categorias de segurança." },
+    { "id": "tecnico", "nome": "Perfil técnico", "forca": [30, 60], "estilo": "MIDIA", "rejeicaoBase": [6, 16], "descricao": "Propostas, dados, imprensa. Cresce devagar, rejeição baixa." },
+    { "id": "movimento", "nome": "Candidatura de movimento", "forca": [28, 62], "estilo": "GRUPO", "grupoAlvo": ["movimentos_sociais", "estudantes_universitarios", "jovens"], "rejeicaoBase": [12, 30], "descricao": "Militância coletiva, pauta identitária, caixa pequena." },
+    { "id": "celebridade", "nome": "Celebridade local", "forca": [50, 88], "estilo": "REDES", "rejeicaoBase": [20, 45], "descricao": "Fama pronta de esporte/TV/música. Notoriedade altíssima." },
+    { "id": "desconhecido", "nome": "Nanico", "forca": [8, 30], "estilo": "TERRITORIO", "rejeicaoBase": [2, 10], "descricao": "Quase sem estrutura. Faz número na urna." }
+  ]
+}

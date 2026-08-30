@@ -1,0 +1,82 @@
+{
+  "$comment": "Perguntas de entrevista. 'contexto' define quando a pergunta é elegível. {X} = placeholder preenchido pelo engine. Cada tom: score (-2..2), rep = efeito de reputação [min,max].",
+  "aberturas": [
+    "Vamos direto ao ponto.",
+    "Obrigado por vir ao estúdio.",
+    "O tempo é curto, então vou ser objetiva."
+  ],
+  "perguntas": [
+    {
+      "id": "promessa_furada", "contexto": "promessa_furada", "peso": 2,
+      "texto": "Há {meses} meses o senhor prometeu resolver {tema} na {bairro}. Até agora, nada. Por quê?",
+      "tons": [
+        { "id": "dados", "texto": "Explicar o que travou e apresentar o novo prazo", "score": 1, "rep": { "confianca": [1, 3] } },
+        { "id": "esquiva", "texto": "Dizer que 'está em andamento' e mudar de assunto", "score": -1, "rep": { "confianca": [-3, 0], "rejeicao": [1, 3] } },
+        { "id": "culpa", "texto": "Jogar a responsabilidade na prefeitura", "score": 0, "rep": { "rejeicao": [0, 2] } }
+      ]
+    },
+    {
+      "id": "crise_recente", "contexto": "crise_recente", "peso": 1.8,
+      "texto": "Sobre {crise} — muita gente achou sua reação errada. O senhor se arrepende?",
+      "tons": [
+        { "id": "assume", "texto": "Reconhecer o que faria diferente", "score": 1, "rep": { "confianca": [1, 4], "rejeicao": [-2, 1] } },
+        { "id": "defende", "texto": "Defender a decisão com firmeza", "score": 0, "rep": { "notoriedade": [1, 3] } },
+        { "id": "ataca", "texto": "Dizer que foi campanha de difamação dos adversários", "score": -1, "rep": { "rejeicao": [2, 5], "ecoMidiatico": [2, 5] } }
+      ]
+    },
+    {
+      "id": "financiamento", "contexto": "caixa_alto", "peso": 1.5,
+      "texto": "Sua campanha/gabinete movimenta bastante dinheiro. De onde vem?",
+      "tons": [
+        { "id": "transparente", "texto": "Detalhar as fontes e oferecer as contas", "score": 2, "rep": { "confianca": [2, 5] } },
+        { "id": "generico", "texto": "Dizer que 'está tudo declarado' sem detalhar", "score": -1, "rep": { "rejeicao": [1, 4], "confianca": [-2, 0] } },
+        { "id": "irrita", "texto": "Se irritar com a insinuação", "score": -2, "rep": { "rejeicao": [3, 8], "ecoMidiatico": [3, 7] } }
+      ]
+    },
+    {
+      "id": "posicao", "contexto": "tem_posicao", "peso": 1.2,
+      "texto": "O senhor é {posicao} do prefeito. Isso não é conveniência política?",
+      "tons": [
+        { "id": "coerencia", "texto": "Explicar a coerência da posição com suas pautas", "score": 1, "rep": { "confianca": [1, 3] } },
+        { "id": "pragmatico", "texto": "Admitir que política também é pragmatismo", "score": 0, "rep": { "rejeicao": [0, 2], "notoriedade": [1, 2] } },
+        { "id": "esquiva", "texto": "Negar qualquer cálculo", "score": -1, "rep": { "confianca": [-2, 0] } }
+      ]
+    },
+    {
+      "id": "ataque_rival", "contexto": "ataque_rival", "peso": 1.4,
+      "texto": "{rival} disse que o senhor 'não entregou nada'. Qual sua resposta?",
+      "tons": [
+        { "id": "obra", "texto": "Listar entregas concretas com números", "score": 1, "rep": { "confianca": [1, 3], "notoriedade": [1, 3] } },
+        { "id": "eleva", "texto": "Dizer que não vai entrar na baixaria", "score": 1, "rep": { "confianca": [1, 3] } },
+        { "id": "revida", "texto": "Revidar com o histórico do rival", "score": -1, "rep": { "rejeicao": [2, 5], "notoriedade": [2, 5], "ecoMidiatico": [2, 5] } }
+      ]
+    },
+    {
+      "id": "prioridade", "contexto": "generico", "peso": 1,
+      "texto": "Se pudesse resolver um único problema da cidade, qual seria?",
+      "tons": [
+        { "id": "clara", "texto": "Dar uma resposta clara e defender o porquê", "score": 1, "rep": { "confianca": [1, 3], "notoriedade": [1, 2] } },
+        { "id": "tudo", "texto": "Dizer que 'tudo é prioridade'", "score": -1, "rep": { "confianca": [-2, 0] } },
+        { "id": "populista", "texto": "Prometer resolver vários de uma vez", "score": 0, "rep": { "notoriedade": [1, 3], "rejeicao": [0, 2] } }
+      ]
+    },
+    {
+      "id": "futuro", "contexto": "generico", "peso": 0.9,
+      "texto": "O senhor pensa em disputar a prefeitura um dia?",
+      "tons": [
+        { "id": "foco", "texto": "Dizer que o foco é o mandato atual", "score": 1, "rep": { "confianca": [1, 2] } },
+        { "id": "assume", "texto": "Assumir a ambição abertamente", "score": 0, "rep": { "notoriedade": [2, 4], "rejeicao": [0, 2] } },
+        { "id": "esquiva", "texto": "Rir e não responder", "score": -1, "rep": {} }
+      ]
+    },
+    {
+      "id": "redes", "contexto": "rejeicao_alta", "peso": 1.3,
+      "texto": "Sua rejeição vem subindo. Suas próprias polêmicas nas redes não têm parte nisso?",
+      "tons": [
+        { "id": "modera", "texto": "Reconhecer excessos e prometer moderar o tom", "score": 1, "rep": { "rejeicao": [-3, 0], "confianca": [1, 3] } },
+        { "id": "autentico", "texto": "Dizer que é autêntico e não vai mudar", "score": -1, "rep": { "rejeicao": [1, 4], "notoriedade": [1, 3] } },
+        { "id": "vitima", "texto": "Dizer que é perseguição da imprensa", "score": -2, "rep": { "rejeicao": [3, 7], "ecoMidiatico": [3, 6] } }
+      ]
+    }
+  ]
+}

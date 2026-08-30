@@ -1,0 +1,102 @@
+{
+  "$comment": "Profissões pré-políticas. Cada uma define ponto de partida de recursos, bônus de atributos, contatos iniciais e ganchos de gameplay.",
+  "profissoes": [
+    {
+      "id": "advogado",
+      "nome": "Advogado(a)",
+      "descricao": "Rede no meio jurídico e no fórum. Boa oratória, entende de processo legislativo.",
+      "dinheiro": [15000, 40000],
+      "rendaMensal": [8000, 22000],
+      "atributos": { "negociacao": 12, "oratoria": 10, "estrategia": 8, "empatia": -3 },
+      "skills": { "juridico": 25, "comunicacao": 12 },
+      "contatos": ["juiz_local", "presidente_oab_secional", "jornalista_politico"],
+      "tags": ["classe_media", "profissional_liberal"]
+    },
+    {
+      "id": "jornalista",
+      "nome": "Jornalista",
+      "descricao": "Contatos na imprensa e faro para pauta. Alta comunicação, começa mais conhecido.",
+      "dinheiro": [6000, 18000],
+      "rendaMensal": [4500, 11000],
+      "atributos": { "comunicacao": 15, "improviso": 8, "carisma": 5, "disciplina": -4 },
+      "skills": { "comunicacao": 28, "midia": 22 },
+      "contatos": ["editor_chefe_portal", "colunista_influente", "radialista_am"],
+      "notoriedadeBonus": 6,
+      "seguidoresBonus": [3000, 15000],
+      "tags": ["formador_opiniao"]
+    },
+    {
+      "id": "empresario",
+      "nome": "Empresário(a)",
+      "descricao": "Capital e rede empresarial. Financia a própria campanha, mas carrega rejeição de origem.",
+      "dinheiro": [40000, 120000],
+      "rendaMensal": [15000, 60000],
+      "atributos": { "negociacao": 14, "estrategia": 12, "ambicao": 10, "empatia": -8 },
+      "skills": { "gestao": 26, "captacao": 20 },
+      "contatos": ["dono_construtora", "presidente_associacao_comercial", "lobista"],
+      "rejeicaoBonus": 5,
+      "tags": ["elite_economica"]
+    },
+    {
+      "id": "professor",
+      "nome": "Professor(a)",
+      "descricao": "Respeito comunitário e milhares de ex-alunos. Baixo capital, alta confiança percebida.",
+      "dinheiro": [4000, 14000],
+      "rendaMensal": [3500, 8500],
+      "atributos": { "empatia": 14, "comunicacao": 10, "honestidadePercebida": 12, "ambicao": -6 },
+      "skills": { "educacao": 28, "mobilizacao": 14 },
+      "contatos": ["diretora_escola_publica", "lider_sindicato_professores", "mae_associacao_pais"],
+      "confiancaBonus": 8,
+      "tags": ["servico_publico", "base_comunitaria"]
+    },
+    {
+      "id": "servidor",
+      "nome": "Servidor(a) público",
+      "descricao": "Conhece a máquina por dentro. Estabilidade financeira, rede no funcionalismo.",
+      "dinheiro": [10000, 30000],
+      "rendaMensal": [6000, 16000],
+      "atributos": { "organizacao": 14, "disciplina": 12, "estrategia": 6, "carisma": -4 },
+      "skills": { "gestao_publica": 26, "fiscalizacao": 18 },
+      "contatos": ["diretor_secretaria", "presidente_sindserv", "tecnico_orcamento"],
+      "tags": ["funcionalismo"]
+    },
+    {
+      "id": "influenciador",
+      "nome": "Influenciador(a) digital",
+      "descricao": "Audiência pronta. Alcance imenso, mas volátil e com rejeição embutida.",
+      "dinheiro": [8000, 35000],
+      "rendaMensal": [3000, 30000],
+      "atributos": { "carisma": 16, "improviso": 12, "comunicacao": 10, "disciplina": -8, "organizacao": -6 },
+      "skills": { "midia": 30, "comunicacao": 18 },
+      "contatos": ["outro_influenciador", "agencia_publicidade", "reporter_cultura"],
+      "notoriedadeBonus": 12,
+      "rejeicaoBonus": 8,
+      "usaSeguidoresIniciaisInfluenciador": true,
+      "tags": ["digital", "jovem"]
+    },
+    {
+      "id": "lider_comunitario",
+      "nome": "Líder comunitário",
+      "descricao": "Anos de associação de moradores. Território forte num bairro, capital quase zero.",
+      "dinheiro": [1500, 8000],
+      "rendaMensal": [1800, 4500],
+      "atributos": { "lideranca": 16, "empatia": 12, "resiliencia": 10, "estrategia": -4 },
+      "skills": { "mobilizacao": 30, "organizacao_local": 24 },
+      "contatos": ["presidente_associacao_bairro", "pastor_local", "dona_do_bar_da_esquina"],
+      "territorioInicialBonus": 22,
+      "tags": ["base_comunitaria", "periferia"]
+    },
+    {
+      "id": "trabalhador",
+      "nome": "Trabalhador(a) comum",
+      "descricao": "Sem rede, sem capital, sem holofote. O caminho mais difícil — e o mais representativo.",
+      "dinheiro": [1000, 5000],
+      "rendaMensal": [1600, 3200],
+      "atributos": { "resiliencia": 14, "empatia": 8, "coragem": 8, "influencia": -8 },
+      "skills": { "mobilizacao": 10 },
+      "contatos": ["colega_de_trabalho_sindicalizado"],
+      "confiancaBonus": 4,
+      "tags": ["classe_trabalhadora", "periferia"]
+    }
+  ]
+}

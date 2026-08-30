@@ -1,0 +1,18 @@
+{
+  "$comment": "Veículos e jornalistas de Recife (fictícios). 'linha': -100 (crítico a você por padrão se você for de direita) a +100. 'alcance' 0-100. 'slant' vira viés na cobertura.",
+  "veiculos": [
+    { "id": "diario_pe", "nome": "Diário de Pernambuco Hoje", "tipo": "jornal", "alcance": 78, "linha": 10 },
+    { "id": "portal_recife", "nome": "Portal Recife 24h", "tipo": "portal", "alcance": 85, "linha": -5 },
+    { "id": "tv_capibaribe", "nome": "TV Capibaribe", "tipo": "tv", "alcance": 92, "linha": 5 },
+    { "id": "radio_frevo", "nome": "Rádio Frevo AM", "tipo": "radio", "alcance": 64, "linha": 20 },
+    { "id": "blog_politica_pe", "nome": "Blog Política PE", "tipo": "blog", "alcance": 55, "linha": -25 },
+    { "id": "revista_nordeste", "nome": "Revista Nordeste", "tipo": "revista", "alcance": 48, "linha": -10 }
+  ],
+  "jornalistas": [
+    { "id": "j_marcia", "nome": "Márcia Aragão", "veiculo": "portal_recife", "cargo": "repórter de política", "rigor": 80 },
+    { "id": "j_ronaldo", "nome": "Ronaldo Peixoto", "veiculo": "diario_pe", "cargo": "colunista", "rigor": 65 },
+    { "id": "j_luana", "nome": "Luana Sampaio", "veiculo": "tv_capibaribe", "cargo": "apresentadora", "rigor": 55 },
+    { "id": "j_gilberto", "nome": "Gilberto Rabelo", "veiculo": "radio_frevo", "cargo": "comentarista", "rigor": 45 },
+    { "id": "j_carol", "nome": "Carolina Lins", "veiculo": "blog_politica_pe", "cargo": "editora", "rigor": 88 }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$comment": "Fase 25/26 — circunscrição ESTADO (Pernambuco). Mesmo modelo de 'mix' de grupos e 'eixo' dos bairros, na escala de macrorregião. População aproxima o eleitorado apto real de cada região. Usado por deputado estadual/federal (e, no futuro, governador/senador).",
+  "uf": "PE",
+  "nome": "Pernambuco",
+  "cidadeCapital": "RECIFE",
+  "regioes": [
+    { "id": "rmr", "nome": "Região Metropolitana do Recife", "populacao": 2650000, "eixo": -5, "cidades": ["RECIFE", "OLINDA"], "problemas": ["seguranca", "mobilidade", "saneamento"], "mix": { "trabalhadores_formais": 4, "classe_media": 4, "periferia": 4, "informais": 3, "jovens": 3, "servidores": 2, "empresarios": 2 } },
+    { "id": "mata_norte", "nome": "Zona da Mata Norte", "populacao": 620000, "eixo": 5, "problemas": ["emprego", "saude", "saneamento"], "mix": { "informais": 4, "periferia": 4, "trabalhadores_formais": 3, "catolicos_praticantes": 3, "idosos": 2 } },
+    { "id": "mata_sul", "nome": "Zona da Mata Sul", "populacao": 560000, "eixo": 0, "problemas": ["emprego", "mobilidade", "saude"], "mix": { "informais": 4, "trabalhadores_formais": 3, "periferia": 3, "movimentos_sociais": 2, "catolicos_praticantes": 2 } },
+    { "id": "agreste_setentrional", "nome": "Agreste Setentrional", "populacao": 520000, "eixo": 20, "problemas": ["agua", "emprego", "saude"], "mix": { "religiosos_evangelicos": 4, "informais": 3, "periferia": 3, "idosos": 3, "empresarios": 2 } },
+    { "id": "agreste_central", "nome": "Agreste Central (Caruaru)", "populacao": 1050000, "eixo": 18, "problemas": ["agua", "comercio", "seguranca"], "mix": { "empresarios": 3, "informais": 4, "religiosos_evangelicos": 3, "classe_media": 2, "trabalhadores_formais": 3 } },
+    { "id": "agreste_meridional", "nome": "Agreste Meridional (Garanhuns)", "populacao": 640000, "eixo": 22, "problemas": ["agua", "emprego", "educacao"], "mix": { "religiosos_evangelicos": 4, "informais": 3, "periferia": 3, "idosos": 3, "catolicos_praticantes": 2 } },
+    { "id": "sertao_pajeu", "nome": "Sertão do Pajeú e Moxotó", "populacao": 480000, "eixo": 25, "problemas": ["agua", "emprego", "assistencia"], "mix": { "informais": 4, "periferia": 4, "religiosos_evangelicos": 3, "idosos": 3 } },
+    { "id": "sertao_sao_francisco", "nome": "Sertão do São Francisco (Petrolina)", "populacao": 730000, "eixo": 15, "problemas": ["agua", "agronegocio", "saude"], "mix": { "empresarios": 3, "trabalhadores_formais": 3, "informais": 3, "religiosos_evangelicos": 3, "classe_media": 2 } },
+    { "id": "sertao_central", "nome": "Sertão Central e Araripe", "populacao": 470000, "eixo": 24, "problemas": ["agua", "emprego", "saude"], "mix": { "informais": 4, "periferia": 4, "idosos": 3, "religiosos_evangelicos": 3 } }
+  ]
+}

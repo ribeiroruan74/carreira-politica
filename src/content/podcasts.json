@@ -1,0 +1,82 @@
+{
+  "$comment": "Fase 14 — podcasts/programas de longa duração (fictícios). Diferente da entrevista rápida: mais tempo, mais energia, alcance grande num nicho específico, e molda a imagem pública (personagem.imagem). 'publico' = grupos do electorate.json que assistem. 'eixoHost' = ideologia do apresentador (afinidade). 'rigor' 0-100 = quão duro ele pega. 'imagemGanho' = eixos de imagem que o programa mais movimenta, conforme a postura escolhida.",
+  "podcasts": [
+    {
+      "id": "papo_reto",
+      "nome": "Papo Reto",
+      "host": "Diego Nunes",
+      "nicho": "Política e atualidades",
+      "alcance": 70,
+      "eixoHost": -10,
+      "rigor": 78,
+      "publico": ["classe_media", "servidores", "trabalhadores_formais", "estudantes_universitarios"],
+      "custo": { "tempo": 3, "energia": 16 },
+      "imagemFoco": ["competencia", "combatividade"]
+    },
+    {
+      "id": "resenha_da_cidade",
+      "nome": "Resenha da Cidade",
+      "host": "Tati e Léo",
+      "nicho": "Cultura pop e humor",
+      "alcance": 82,
+      "eixoHost": -25,
+      "rigor": 30,
+      "publico": ["jovens", "estudantes_universitarios", "informais", "movimentos_sociais"],
+      "custo": { "tempo": 3, "energia": 14 },
+      "imagemFoco": ["proximidade", "renovacao"]
+    },
+    {
+      "id": "linha_de_frente",
+      "nome": "Linha de Frente",
+      "host": "Cel. Fontes (reserva)",
+      "nicho": "Segurança e ordem",
+      "alcance": 60,
+      "eixoHost": 55,
+      "rigor": 62,
+      "publico": ["empresarios", "classe_media", "idosos", "religiosos_evangelicos"],
+      "custo": { "tempo": 3, "energia": 15 },
+      "imagemFoco": ["combatividade", "competencia"]
+    },
+    {
+      "id": "fe_e_familia",
+      "nome": "Fé & Família",
+      "host": "Pra. Sônia Andrade",
+      "nicho": "Religião e valores",
+      "alcance": 66,
+      "eixoHost": 40,
+      "rigor": 40,
+      "publico": ["religiosos_evangelicos", "catolicos_praticantes", "idosos", "periferia"],
+      "custo": { "tempo": 3, "energia": 13 },
+      "imagemFoco": ["proximidade", "competencia"]
+    },
+    {
+      "id": "quebrada_cast",
+      "nome": "QuebradaCast",
+      "host": "MC Índia",
+      "nicho": "Periferia e território",
+      "alcance": 58,
+      "eixoHost": -35,
+      "rigor": 45,
+      "publico": ["periferia", "informais", "jovens", "movimentos_sociais"],
+      "custo": { "tempo": 3, "energia": 14 },
+      "imagemFoco": ["proximidade", "combatividade"]
+    },
+    {
+      "id": "mesa_de_negocios",
+      "nome": "Mesa de Negócios",
+      "host": "Beatriz Rangel",
+      "nicho": "Economia e gestão",
+      "alcance": 54,
+      "eixoHost": 30,
+      "rigor": 70,
+      "publico": ["empresarios", "classe_media", "trabalhadores_formais", "servidores"],
+      "custo": { "tempo": 3, "energia": 15 },
+      "imagemFoco": ["competencia", "renovacao"]
+    }
+  ],
+  "posturas": [
+    { "id": "tecnica", "nome": "Preparada e técnica", "desc": "Números, propostas, domínio de dado. Passa competência; pode soar distante.", "imagem": { "competencia": 8, "proximidade": -2, "combatividade": -1, "renovacao": 1 }, "preparoPeso": 1.3 },
+    { "id": "emocional", "nome": "Pessoal e emotiva", "desc": "História de vida, escuta, empatia. Aproxima; pode soar sem consistência.", "imagem": { "competencia": -2, "proximidade": 9, "combatividade": -2, "renovacao": 3 }, "preparoPeso": 0.7 },
+    { "id": "combativa", "nome": "Combativa e direta", "desc": "Bate de frente, aponta culpados, não recua. Firmeza; sobe rejeição.", "imagem": { "competencia": 1, "proximidade": 0, "combatividade": 9, "renovacao": 2 }, "preparoPeso": 0.9, "rejeicaoRisco": 1.6 }
+  ]
+}
