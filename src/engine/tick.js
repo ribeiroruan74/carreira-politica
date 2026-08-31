@@ -39,7 +39,12 @@ export function runTick(s) {
   s.tempo.energia = clamp(s.tempo.energia + recupEnergia, 0, s.tempo.energiaMax);
 
   // --- Finanças mensais ---
-  const saldoMes = s.financas.rendaMensal - s.financas.custoVidaMensal;
+  // Etapa 13 — custo de vida de político: cargo eletivo puxa despesa pessoal
+  // (deslocamento, eventos, contribuições ao partido, equipe informal).
+  const custoPolitico = s.personagem.cargoAtual && s.personagem.cargoAtual !== 'NENHUM'
+    ? { VEREADOR: 4500, DEPUTADO_ESTADUAL: 9000, DEPUTADO_FEDERAL: 12000, PREFEITO: 11000 }[s.personagem.cargoAtual] || 6000
+    : 0;
+  const saldoMes = s.financas.rendaMensal - s.financas.custoVidaMensal - custoPolitico;
   s.financas.pessoal += saldoMes;
   if (s.financas.pessoal < 0) {
     const rombo = -s.financas.pessoal;
@@ -94,7 +99,7 @@ export function runTick(s) {
   // notoriedade regride mais rápido quando você some do noticiário.
   const pisoNotoriedade = clamp(
     3 + Math.round(s.personagem.atributos.popularidade / 12)
-      + Math.min(18, Math.round(Math.log10(1 + s.redes.seguidores / 1000) * 7)),
+      + Math.min(24, Math.round(Math.log10(1 + s.redes.seguidores / 1000) * 8)),
     0, 100,
   );
   if (s.reputacao.notoriedade > pisoNotoriedade) {

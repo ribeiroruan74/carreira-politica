@@ -70,7 +70,7 @@ export default function Pessoas() {
             {politicos.slice(0, 24).map((p) => {
               const rel = Math.round(p.relacaoJogador || 0);
               return (
-                <button key={p.id} className="row" onClick={() => setFicha(p)}
+                <button key={p.id} className="row" onClick={() => setFicha(p.id)}
                   style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', padding: '4px 0', width: '100%' }}>
                   <span className="grow">
                     <span className="name">{p.nome}</span> <span className="small faint">{p.partidoId} · {(p.cargo || '').replace(/_/g, ' ').toLowerCase()}</span>
@@ -84,7 +84,7 @@ export default function Pessoas() {
         </Card>
       )}
 
-      {ficha && <FichaPolitico pol={ficha} estado={estado} onClose={() => setFicha(null)} />}
+      {ficha && <FichaPolitico polId={ficha} onClose={() => setFicha(null)} />}
     </div>
   );
 }

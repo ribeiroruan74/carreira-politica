@@ -24,12 +24,32 @@
     {
       "id": "curso_capacitacao",
       "categoria": "PESSOAL",
-      "titulo": "Fazer um curso de capacitação",
-      "desc": "Oratória, gestão pública, comunicação. Investe em si mesmo.",
+      "titulo": "Fazer um curso",
+      "desc": "Oratória, gestão pública, negociação. Ganho grande de XP no atributo que você escolher — mas caro e demorado.",
       "custo": { "tempo": 3, "energia": 15, "dinheiroPessoal": 700 },
       "requisitos": {},
-      "efeitos": { "skillsAleatoria": [4, 9] },
+      "efeitos": { "treinarAtributo": [40, 65], "alvoAtributo": true },
       "peso": 0.8
+    },
+    {
+      "id": "treino_pratico",
+      "categoria": "PESSOAL",
+      "titulo": "Treinar por conta própria",
+      "desc": "Livro, exercício de discurso no espelho, análise dos próprios erros. XP pequeno mas barato.",
+      "custo": { "tempo": 1, "energia": 6 },
+      "requisitos": {},
+      "efeitos": { "treinarAtributo": [12, 24], "alvoAtributo": true },
+      "peso": 0.7
+    },
+    {
+      "id": "mentoria",
+      "categoria": "PESSOAL",
+      "titulo": "Buscar mentoria com um político",
+      "desc": "Aprender com quem já fez o caminho. XP num atributo à sua escolha + relação com o mentor.",
+      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 200 },
+      "requisitos": {},
+      "efeitos": { "treinarAtributo": [22, 40], "alvoAtributo": true, "cultivarPolitico": [2, 5], "alvoPolitico": true },
+      "peso": 0.7
     },
     {
       "id": "cuidar_imagem",

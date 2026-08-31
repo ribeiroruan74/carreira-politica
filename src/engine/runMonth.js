@@ -11,7 +11,9 @@ import { tickEleitorado } from './electorate';
 import { tickDoadores } from './donors';
 import { tickMilitancia } from './militancy';
 import { tickVidaPessoal } from './personal';
+import { tickFamilia } from './family';
 import { tickInfluenciadores } from './influencers';
+import { tickConvitesMidia } from './press';
 import { tickMarcos } from './milestones';
 import { checarConquistas } from './achievements';
 import { checarFimDeJogo } from './endgame';
@@ -35,8 +37,10 @@ export function runMonth(s) {
   push(tickEleitorado(s));          // Fase 8 — satisfação dos grupos sociais
   push(tickDoadores(s));            // Fase 17 — financiamento rastreado
   push(tickMilitancia(s));          // Fase 23 — militância por bairro
-  push(tickVidaPessoal(s));         // Fase 22 — vida pessoal
+  push(tickFamilia(s));             // Etapa 11 — família (antes de personal, que lê bemEstar)
+  push(tickVidaPessoal(s));         // Fase 22 — saúde + energia máxima
   push(tickInfluenciadores(s));     // Fase 15/16 — mercado de influência
+  push(tickConvitesMidia(s));       // Etapa 9 — convites de entrevista/podcast
   push(mandateTick(s));
   push(tickEleicao(s));
 

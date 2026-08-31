@@ -4,13 +4,15 @@ import etapa1Def from '../content/actions/etapa1.json';
 import campanhaDef from '../content/actions/campanha.json';
 import politicaDef from '../content/actions/politica.json';
 import mandatoDef from '../content/actions/mandato.json';
+import prefeitoDef from '../content/actions/prefeito.json';
+import deputadoDef from '../content/actions/deputado.json';
 import midiaDef from '../content/actions/midia.json';
 import contactsDef from '../content/contacts.json';
 import neighborhoods from '../content/neighborhoods/recife.json';
 import professionsDef from '../content/professions.json';
 import { cultivarPolitico, tentarAlianca, limiarAlianca } from './world';
 import { assumirEmprego, pedirAumento, freela } from './jobs';
-import { fiscalizar, registrarPromessa } from './mandate';
+import { fiscalizar, registrarPromessa, cumprirPromessas, temaCanonico, multGabinete } from './mandate';
 import { cascatasAtivas, conterCascata } from './cascade';
 import { captarDoacao } from './donors';
 import { recrutarMilitancia } from './militancy';
@@ -18,9 +20,16 @@ import { cuidarDeSi } from './personal';
 import { impactoDeTema } from './electorate';
 import { gravarPodcast } from './podcasts';
 import { cultivarInfluenciador, colaborarInfluenciador } from './influencers';
+import { ganharXp } from './attributes';
 
 const FASES = ['VIDA', 'VIDA_PUBLICA', 'PARTIDO', 'CANDIDATO', 'MANDATO'];
-const TODAS = [...etapa1Def.acoes, ...campanhaDef.acoes, ...politicaDef.acoes, ...mandatoDef.acoes, ...midiaDef.acoes];
+const TODAS = [
+  ...etapa1Def.acoes, ...campanhaDef.acoes, ...politicaDef.acoes,
+  ...mandatoDef.acoes, ...prefeitoDef.acoes, ...deputadoDef.acoes, ...midiaDef.acoes,
+];
+// Etapa 6 — ações de mandato que valem para QUALQUER cargo eletivo
+const MANDATO_COMPARTILHADAS = ['discurso_plenario', 'buscar_financiador', 'militancia_mandato', 'conter_repercussao'];
+const AUTOCUIDADO = ['descansar', 'cuidar_de_si', 'treino_pratico'];
 
 export function acaoPorId(id) {
   return TODAS.find((a) => a.id === id);
@@ -47,22 +56,99 @@ export function acoesDisponiveis(state) {
   let base;
   if (fase === 'CANDIDATO') base = campanhaDef.acoes;
   else if (fase === 'MANDATO') {
+    // Etapa 6 — cada cargo tem seu pool próprio + as ações de mandato compartilhadas
+    const cargo = state.mandato?.cargo || 'VEREADOR';
+    let cargoPool;
+    if (cargo === 'PREFEITO') cargoPool = prefeitoDef.acoes;
+    else if (cargo.startsWith('DEPUTADO')) cargoPool = deputadoDef.acoes;
+    else cargoPool = mandatoDef.acoes; // VEREADOR
     // projetos e negociação de votos vivem na aba Mandato, não no leque
-    base = mandatoDef.acoes.filter((a) => !a.efeitos?.alvoProjeto && !a.efeitos?.alvoProjetoTramitando);
+    cargoPool = cargoPool.filter((a) => !a.efeitos?.alvoProjeto && !a.efeitos?.alvoProjetoTramitando);
+    const compart = mandatoDef.acoes.filter((a) => MANDATO_COMPARTILHADAS.includes(a.id)
+      && !cargoPool.some((c) => c.id === a.id));
+    base = [...cargoPool, ...compart];
   } else base = [...etapa1Def.acoes, ...politicaDef.acoes];
-  // Fase 14/15 — ações de mídia/influência entram em qualquer fase
+  // Fase 14/15 — mídia/influência entra em qualquer fase; Etapa 10/11 — autocuidado também
   base = [...base, ...midiaDef.acoes];
+  if (fase === 'CANDIDATO' || fase === 'MANDATO') {
+    base = [...base, ...etapa1Def.acoes.filter((a) => AUTOCUIDADO.includes(a.id) && !base.some((b) => b.id === a.id))];
+  }
   const pool = base.filter((a) => elegivel(a, state));
   const rng = streamRng(state.meta.seed, "menu", state.tempo.mes, fase);
   const escolhidas = [];
   const restante = [...pool];
   const alvo = Math.min(restante.length, 5 + (rng.chance(0.4) ? 1 : 0));
   while (escolhidas.length < alvo && restante.length) {
-    const a = rng.weighted(restante, (x) => x.peso ?? 1);
+    // Etapa 7 — o peso base é modulado pelo contexto (crise, promessa, eleição…)
+    const a = rng.weighted(restante, (x) => (x.peso ?? 1) * pesoContextual(x, state));
     escolhidas.push(a);
     restante.splice(restante.indexOf(a), 1);
   }
   return escolhidas;
+}
+
+// Etapa 7 — multiplicador de peso conforme a situação atual. Faz o leque
+// "responder" ao momento sem criar dezenas de ações redundantes.
+const DELIVERY_IDS = ['atender_demanda', 'obra_estruturante', 'emenda_parlamentar', 'trabalhar_base', 'agenda_regional', 'organizar_mutirao', 'visitar_bairro'];
+const MIDIA_IDS = ['post_redes', 'carta_jornal', 'gravar_podcast', 'cuidar_imagem', 'reels_campanha', 'propaganda_digital', 'audiencia_publica', 'discurso_plenario'];
+const NETWORK_IDS = ['networking_evento', 'cultivar_contato', 'reuniao_liderancas', 'conversar_politico', 'almoco_lideranca'];
+
+export function pesoContextual(a, state) {
+  const ef = a.efeitos || {};
+  const rep = state.reputacao;
+  let m = 1;
+
+  // notoriedade baixa → aparecer vale mais
+  if (rep.notoriedade < 15 && MIDIA_IDS.includes(a.id)) m *= 2.2;
+  else if (rep.notoriedade < 30 && MIDIA_IDS.includes(a.id)) m *= 1.4;
+
+  // cascata em curso → conter repercussão sobe muito
+  if ((ef.conterCascata || a.id === 'gerir_crise_cidade') && cascatasAtivas(state).length) m *= 3.2;
+  else if (ef.conterCascata) m *= 0.3; // sem cascata, quase não aparece
+
+  // promessa aberta perto do prazo → entregas sobem
+  const prom = state.mandato?.promessas || [];
+  const vencendo = prom.some((p) => !p.cumprida && state.tempo.mes > p.prazo - 6);
+  if (vencendo && (DELIVERY_IDS.includes(a.id) || ef.entregaLocal || ef.registrarPromessa)) m *= 1.9;
+
+  // campanha com caixa curto → captação sobe
+  if (state.personagem.fase === 'CANDIDATO') {
+    if ((ef.captarDoacao || (a.custo?.campanhaGasto || 0) < 0) && state.financas.campanha < 10000) m *= 3;
+  }
+
+  // fim de mandato / eleição na área → rodar a base
+  if ((state.mandato?.encerrando || state.eleicao) && (DELIVERY_IDS.includes(a.id) || ef.territorioBairroAlvo)) m *= 1.5;
+
+  // rede rala → networking
+  if (Object.keys(state.relacionamentos.pessoas).length < 3 && NETWORK_IDS.includes(a.id)) m *= 1.8;
+
+  // energia/saúde no chão → descanso e autocuidado
+  if ((state.tempo.energia < 35 || (state.personagem.vida?.saude ?? 100) < 40)
+    && (a.id === 'descansar' || a.id === 'cuidar_de_si')) m *= 2.5;
+
+  return m;
+}
+
+// Etapa 7 — dica curta do porquê da ação aparecer agora (UI).
+export function contextoAgenda(a, state) {
+  const ef = a.efeitos || {};
+  if ((ef.conterCascata || a.id === 'gerir_crise_cidade') && cascatasAtivas(state).length) {
+    return 'uma repercussão negativa está crescendo agora';
+  }
+  if (state.reputacao.notoriedade < 15 && MIDIA_IDS.includes(a.id)) {
+    return 'você ainda é pouco conhecido — hora de aparecer';
+  }
+  const prom = (state.mandato?.promessas || []).find((p) => !p.cumprida && state.tempo.mes > p.prazo - 6);
+  if (prom && (DELIVERY_IDS.includes(a.id) || ef.entregaLocal)) {
+    return 'há promessa perto de vencer';
+  }
+  if (state.personagem.fase === 'CANDIDATO' && (ef.captarDoacao || (a.custo?.campanhaGasto || 0) < 0) && state.financas.campanha < 10000) {
+    return 'o caixa de campanha está no limite';
+  }
+  if ((state.tempo.energia < 35) && (a.id === 'descansar' || a.id === 'cuidar_de_si')) {
+    return 'sua energia está baixa';
+  }
+  return null;
 }
 
 function bonusAtributo(state, chave) {
@@ -108,6 +194,14 @@ const EFEITOS = {
     resumo.push(`seguidores ${d >= 0 ? '+' : ''}${d}`);
   },
 
+  // Etapa 10 — treino de atributo (XP, não +10 direto)
+  treinarAtributo({ state, ef, opts, rng, resumo }) {
+    const attr = opts.atributoId || ef.atributoAlvo || 'comunicacao';
+    const faixa = Array.isArray(ef.treinarAtributo) ? ef.treinarAtributo : [20, 40];
+    const r = ganharXp(state, attr, rng.rangeInt(faixa));
+    resumo.push(r.subiu ? `${attr} +${r.subiu} (agora ${r.valor})` : `${attr}: progresso rumo ao próximo ponto`);
+  },
+
   skillsAleatoria({ state, ef, rng, resumo }) {
     const profSkills = Object.keys(professionsDef.profissoes.find((p) => p.id === state.personagem.profissaoId)?.skills || {});
     const cands = profSkills.length ? profSkills : ['comunicacao', 'mobilizacao', 'gestao'];
@@ -147,8 +241,9 @@ const EFEITOS = {
   territorioBairroAlvo({ state, ef, opts, rng, mult, resumo }) {
     const bid = opts.bairroId || neighborhoods.bairros[0].id;
     const t = state.territorio.porBairro[bid] || { presenca: 0, penetracao: 0 };
+    const gTer = multGabinete(state, 'territorio'); // Etapa 8 — assessor territorial
     for (const [k, faixa] of Object.entries(ef.territorioBairroAlvo)) {
-      t[k] = clamp((t[k] ?? 0) + rng.range(faixa) * mult, 0, 100);
+      t[k] = clamp((t[k] ?? 0) + rng.range(faixa) * mult * gTer, 0, 100);
     }
     state.territorio.porBairro[bid] = t;
     const bnome = neighborhoods.bairros.find((b) => b.id === bid)?.nome || bid;
@@ -213,6 +308,9 @@ const EFEITOS = {
   recrutarMilitancia({ state, opts, rng, resumo }) {
     const { bid, ganho } = recrutarMilitancia(state, rng, opts.bairroId);
     if (!bid) { resumo.push('sem base para organizar militância ainda'); return; }
+    // Etapa 8 — assessor territorial turbina a mobilização
+    const extra = ganho * (multGabinete(state, 'territorio') - 1);
+    if (extra > 0) state.personagem.militancia[bid] = (state.personagem.militancia[bid] || 0) + extra;
     const bnome = neighborhoods.bairros.find((b) => b.id === bid)?.nome || bid;
     resumo.push(`+${ganho} voluntários na ${bnome}`);
   },
@@ -220,10 +318,35 @@ const EFEITOS = {
   // Fase 22 — cuidar da saúde / vida pessoal
   cuidarDeSi({ state, rng, resumo }) { resumo.push(cuidarDeSi(state, rng)); },
 
+  // Etapa 6 — recurso conquistado entra no caixa do gabinete
+  gabineteBonus({ state, ef, rng, mult, resumo }) {
+    const v = Math.round(rng.range(ef.gabineteBonus) * mult);
+    state.financas.gabinete += v;
+    resumo.push(`+${brl(v)} no orçamento do gabinete`);
+  },
+
   // Fase 8 — um gesto público sobre um tema mexe com os grupos daquele tema
   satisfacaoTema({ state, ef, rng, resumo }) {
     impactoDeTema(state, ef.satisfacaoTema, rng.range([2, 5]));
     resumo.push('repercutiu com o público da pauta');
+  },
+
+  // Etapa 6 — entrega concreta num bairro (obra do prefeito, emenda do deputado).
+  // Território + aprovação + satisfação da pauta local + PROGRIDE PROMESSAS.
+  entregaLocal({ state, ef, opts, rng, mult, resumo }) {
+    const bid = opts.bairroId || neighborhoods.bairros[0].id;
+    const bairro = neighborhoods.bairros.find((b) => b.id === bid);
+    const bnome = bairro?.nome || bid;
+    const tema = temaCanonico((bairro?.problemas || ['assistencia'])[0]);
+    const t = (state.territorio.porBairro[bid] ||= { presenca: 0, penetracao: 0 });
+    const dP = rng.range(ef.entregaLocal?.presenca || [3, 7]) * mult * multGabinete(state, 'territorio');
+    t.presenca = clamp(t.presenca + dP, 0, 100);
+    t.penetracao = clamp(t.penetracao + dP * 0.6, 0, 100);
+    state.reputacao.aprovacao = clamp(state.reputacao.aprovacao + rng.range(ef.entregaLocal?.aprovacao || [0.5, 2]) * mult, 0, 100);
+    impactoDeTema(state, tema, rng.range([3, 7]) * mult);
+    cumprirPromessas(state, { tema, bairroId: bid });
+    if (state.mandato) state.mandato.indicadores.obrasEntregues = (state.mandato.indicadores.obrasEntregues || 0) + 1;
+    resumo.push(`entrega em ${bnome} (${tema}) — presença +${Math.round(dP)}`);
   },
 
   // Fase 14 — gravar um podcast (o custo de tempo/energia já foi debitado;
@@ -265,7 +388,9 @@ const EFEITOS = {
     const ativas = cascatasAtivas(state).sort((a, b) => b.estagio - a.estagio);
     if (!ativas.length) { resumo.push('não havia repercussão ativa para conter'); return; }
     const alvo = ativas[0];
-    const forca = 1 + (rng.chance(0.4 + (mult - 1) + (state.personagem.atributos.comunicacao - 50) / 200) ? 1 : 0);
+    // Etapa 8 — assessoria jurídica/comunicação ajuda a cortar a bola de neve
+    const bonusGab = (multGabinete(state, 'fiscalizacao') + multGabinete(state, 'redes')) / 2 - 1;
+    const forca = 1 + (rng.chance(0.4 + (mult - 1) + bonusGab + (state.personagem.atributos.comunicacao - 50) / 200) ? 1 : 0);
     conterCascata(state, alvo.id, forca);
     state.reputacao.confianca = clamp(state.reputacao.confianca + rng.range([0, 2]) * mult, 0, 100);
     resumo.push(`você respondeu à repercussão "${alvo.rótulo}" e reduziu o estrago`);
@@ -275,12 +400,12 @@ const EFEITOS = {
 // ordem de aplicação (algumas chaves não são efeitos — ignoradas)
 const ORDEM_EFEITOS = [
   'energia', 'reputacao', 'ecoMidiatico', 'viral', 'debate', 'seguidores',
-  'skillsAleatoria', 'relacionamentosNovos', 'relacionamentosContato',
+  'skillsAleatoria', 'treinarAtributo', 'relacionamentosNovos', 'relacionamentosContato',
   'territorioBairroAlvo', 'cultivarPolitico', 'tentarAlianca', 'fiscalizar',
   'registrarPromessa', 'impulsoTemaProjetos', 'cobrarSecretaria', 'freela',
   'pedirAumento', 'trocarEmprego', 'apoioPartido', 'conterCascata',
   'captarDoacao', 'recrutarMilitancia', 'cuidarDeSi', 'satisfacaoTema',
-  'gravarPodcast', 'cultivarInfluenciador', 'colaborarInfluenciador',
+  'gravarPodcast', 'cultivarInfluenciador', 'colaborarInfluenciador', 'entregaLocal', 'gabineteBonus',
 ];
 
 // permite a outros módulos (Bloco B) registrarem novos efeitos sem editar este arquivo
@@ -331,6 +456,11 @@ export function aplicarAcao(state, acaoId, opts = {}) {
   for (const chave of ORDEM_EFEITOS) {
     if (ef[chave] === undefined) continue;
     EFEITOS[chave](ctx);
+  }
+
+  // Etapa 10 — "prática": toda ação que depende de um atributo o treina de leve
+  if (ef.atributoPeso && !ef.treinarAtributo && (acao.custo.tempo || 0) >= 2) {
+    ganharXp(state, ef.atributoPeso, rng.int(2, 6));
   }
 
   state.meta.rngState = rng.state;
@@ -391,7 +521,7 @@ function brl(v) { return `R$ ${Math.round(v).toLocaleString('pt-BR')}`; }
 
 export function precisaBairro(acaoId) {
   const ef = acaoPorId(acaoId)?.efeitos || {};
-  return !!(ef.territorioBairroAlvo || ef.recrutarMilitancia);
+  return !!(ef.territorioBairroAlvo || ef.recrutarMilitancia || ef.entregaLocal);
 }
 export function precisaPessoa(acaoId) {
   const a = acaoPorId(acaoId);
@@ -403,6 +533,9 @@ export function precisaPolitico(acaoId) {
 }
 export function precisaEmprego(acaoId) {
   return !!acaoPorId(acaoId)?.efeitos?.alvoEmprego;
+}
+export function precisaAtributo(acaoId) {
+  return !!acaoPorId(acaoId)?.efeitos?.alvoAtributo;
 }
 export function precisaPodcast(acaoId) {
   return !!acaoPorId(acaoId)?.efeitos?.gravarPodcast;

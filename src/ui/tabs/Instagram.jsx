@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { Card, Stat, Meter, Pill, PageHead, Sparkline } from '../components/primitives';
-import { FORMATOS, PAUTAS, postar, estimarAlcance } from '../../engine/social';
+import { FORMATOS, PAUTAS, postar, estimarAlcance, relevanciaMidiatica } from '../../engine/social';
 import { imagemResumo, IMAGEM_EIXOS } from '../../engine/image';
 import { influenciadoresDisponiveis, contratarInfluenciador } from '../../engine/influencers';
 import { formatBRL } from '../../engine/tick';
@@ -49,6 +49,14 @@ export default function Instagram() {
         <Card><Stat k="Alcance médio" v={r.alcanceMedio.toLocaleString('pt-BR')} /></Card>
         <Card><Stat k="Engajamento" v={`${(r.engajamento * 100).toFixed(1)}%`} /></Card>
       </div>
+
+      <Card title="Relevância midiática" aside={`${relevanciaMidiatica(s)}/100`}>
+        <Meter label="Presença pública (notoriedade + audiência + repercussão + cargo)" value={relevanciaMidiatica(s)} tone="info" />
+        <p className="small faint" style={{ marginTop: 8 }}>
+          É o quanto você "existe" na mídia — alimenta convites de entrevista e o peso do seu nome no partido.
+          Não é aprovação nem voto: seguidor grande dá alcance e notoriedade, não urna.
+        </p>
+      </Card>
 
       {serie.length > 1 && (
         <Card title="Crescimento de seguidores">
@@ -98,9 +106,10 @@ export default function Instagram() {
         </div>
       </Card>
 
-      <Card title="Influenciadores locais" aside="mercado de influência">
+      <Card title="Influenciadores" aside="mercado de influência">
         <p className="small dim" style={{ marginBottom: 10 }}>
           Cultive relação e faça collabs pela Agenda. Contratar tranca o creator com sua campanha (pago da caixa de campanha) e nega ele a rivais.
+          Nomes <strong>nacionais</strong> são apolíticos, caríssimos e só topam collab com relação alta — mas o alcance é gigante.
         </p>
         <div className="row" style={{ marginBottom: 8 }}>
           <span className="grow small">Duração do contrato</span>
@@ -113,7 +122,7 @@ export default function Instagram() {
           {influs.map((i) => (
             <div key={i.id} className="row" style={{ alignItems: 'baseline' }}>
               <span className="grow">
-                <strong>{i.nome}</strong> <span className="small dim">· {i.nicho} · alcance {i.alcance}</span>
+                <strong>{i.nome}</strong>{i.real && <Pill tone="blue">nacional</Pill>} <span className="small dim">· {i.nicho} · alcance {i.alcance}</span>
                 <br />
                 <span className="small dim">
                   relação {Math.round(i.relacao)} · afinidade {i.afinidade}

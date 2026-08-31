@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
-import { acoesDisponiveis, aplicarAcao, precisaBairro, precisaPessoa, precisaPolitico, precisaEmprego, precisaPodcast, precisaInfluenciador } from '../../engine/actions';
+import { acoesDisponiveis, aplicarAcao, precisaBairro, precisaPessoa, precisaPolitico, precisaEmprego, precisaPodcast, precisaInfluenciador, precisaAtributo, contextoAgenda } from '../../engine/actions';
 import { empregosDisponiveis } from '../../engine/jobs';
 import { objetivoDaFase, aplicarObjetivo, podeEncerrarCarreira } from '../../engine/career';
+import { TREINAVEIS } from '../../engine/attributes';
 import { podcastsDisponiveis, POSTURAS } from '../../engine/podcasts';
 import { influenciadoresDisponiveis } from '../../engine/influencers';
 import { Card, Pill, PageHead } from '../components/primitives';
@@ -132,11 +133,12 @@ export default function Agenda({ irPara }) {
 
   function executar(acao) {
     const precisa = precisaBairro(acao.id) || precisaPessoa(acao.id) || precisaPolitico(acao.id)
-      || precisaEmprego(acao.id) || precisaPodcast(acao.id) || precisaInfluenciador(acao.id);
+      || precisaEmprego(acao.id) || precisaPodcast(acao.id) || precisaInfluenciador(acao.id) || precisaAtributo(acao.id);
     if (precisa && (!sel || sel.acao.id !== acao.id)) {
       setSel({
         acao, bairroId: bairros[0].id, pessoaId: pessoas[0]?.id, politicoId: politicos[0]?.id,
         empregoId: vagas[0]?.id, podcastId: podcasts[0]?.id, posturaId: POSTURAS[0].id,
+        atributoId: TREINAVEIS[0].id,
         influenciadorId: (precisaInfluenciador(acao.id) && acao.efeitos?.colaborarInfluenciador
           ? influs.find((i) => i.relacao >= 15) : influs[0])?.id || influs[0]?.id,
       });
@@ -146,7 +148,7 @@ export default function Agenda({ irPara }) {
     if (sel && sel.acao.id === acao.id) {
       opts.bairroId = sel.bairroId; opts.pessoaId = sel.pessoaId; opts.politicoId = sel.politicoId;
       opts.empregoId = sel.empregoId; opts.podcastId = sel.podcastId; opts.posturaId = sel.posturaId;
-      opts.influenciadorId = sel.influenciadorId;
+      opts.influenciadorId = sel.influenciadorId; opts.atributoId = sel.atributoId;
     }
     try {
       aplicar((st) => aplicarAcao(st, acao.id, opts));
@@ -184,6 +186,9 @@ export default function Agenda({ irPara }) {
                 <Pill>{CAT_LABEL[a.categoria] || a.categoria}</Pill>
               </div>
               <p className="small dim">{a.desc}</p>
+              {contextoAgenda(a, s) && (
+                <p className="small" style={{ color: 'var(--amber)', margin: '4px 0 0' }}>▸ {contextoAgenda(a, s)}</p>
+              )}
               <div className="chips" style={{ margin: '10px 0' }}>
                 <Pill tone={semTempo ? 'red' : undefined}>{a.custo.tempo} tempo</Pill>
                 {a.custo.energia > 0 && <Pill>{a.custo.energia} energia</Pill>}
@@ -258,6 +263,17 @@ export default function Agenda({ irPara }) {
                         {i.nome} — {i.nicho} · alcance {i.alcance} · relação {Math.round(i.relacao)}{i.capturado ? ' · com rival' : ''}
                       </option>
                     ))}
+                  </select>
+                </>
+              )}
+              {ativoSel && precisaAtributo(a.id) && (
+                <>
+                  <label>Qual atributo treinar?</label>
+                  <select value={sel.atributoId || ''} onChange={(e) => setSel({ ...sel, atributoId: e.target.value })}>
+                    {TREINAVEIS.map((t) => {
+                      const v = Math.round(s.personagem.atributos[t.id] ?? 45);
+                      return <option key={t.id} value={t.id}>{t.nome} ({v}) — {t.metodo}</option>;
+                    })}
                   </select>
                 </>
               )}

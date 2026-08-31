@@ -96,13 +96,12 @@ function propensao(cand, grupo, unidade, ruido) {
 
   // 2) presença territorial — forte retorno até ~0.5, saturando depois
   const w = cand.bairrosBase[unidade.id] || 0;
-  const terr = w <= 0 ? 0 : Math.min(w, 0.5) * 2.5 + Math.max(0, w - 0.5) * 0.7;
+  const terr = w <= 0 ? 0 : Math.min(w, 0.5) * 2.15 + Math.max(0, w - 0.5) * 0.6;
 
   // 3) notoriedade — não se vota em quem não se conhece.
-  // Fase 33 — curva um pouco menos generosa: ser muito conhecido ajuda, mas não
-  // substitui base e voto firme.
+  // Etapa 13 — curva menos generosa: ser conhecido ajuda, não substitui base.
   const nf = cand.notoriedade / 100;
-  const noto = (nf ** 1.5) * 2.15 - 0.35;
+  const noto = (nf ** 1.5) * 1.85 - 0.35;
 
   // 4) rejeição, amplificada em grupos menos voláteis
   const rej = -(cand.rejeicao / 100) * (1.4 + (1 - grupo.volatilidade));
@@ -111,7 +110,7 @@ function propensao(cand, grupo, unidade, ruido) {
   const forcaPart = (pa.forcaRecife / 100) * 0.9;
 
   // 6) eco midiático recente
-  const eco = clamp(cand.ecoMidiatico / 100, -0.6, 1.2) * 1.1;
+  const eco = clamp(cand.ecoMidiatico / 100, -0.6, 1.2) * 0.9;
 
   // 7) afinidade de arquétipo com o grupo
   const alvo = cand.grupoAlvo?.includes(grupo.id) ? 1.6 : 0;
@@ -120,11 +119,11 @@ function propensao(cand, grupo, unidade, ruido) {
   const incumbente = /ELEITO/.test(cand.situacao2024 || '') ? 1.05 : 0;
 
   // 8) caixa de campanha (retornos decrescentes)
-  const caixa = Math.log10(1 + Math.max(0, cand.caixaCampanha) / 20000) * 0.5;
+  const caixa = Math.log10(1 + Math.max(0, cand.caixaCampanha) / 20000) * 0.4;
 
   // 9) satisfação acumulada do grupo com o jogador (Fase 8) — só o jogador tem
   const sat = cand.satisfacaoGrupos
-    ? clamp((cand.satisfacaoGrupos[grupo.id] || 0) / 100, -1, 1) * 1.5
+    ? clamp((cand.satisfacaoGrupos[grupo.id] || 0) / 100, -1, 1) * 1.15
     : 0;
 
   // 10) casamento da imagem pública com o que o grupo valoriza (Fase 14) — só jogador
@@ -138,7 +137,7 @@ export function estimarVotos(candidatos, state, cargoId = 'VEREADOR') {
   const ctx = contextoEleicao(state, cargoId);
   const eleicaoId = state.eleicao?.id || `sim_${cargoId}`;
   const validosPorCand = Object.fromEntries(candidatos.map((c) => [c.id, 0]));
-  const T = 1.35; // temperatura do softmax
+  const T = 2.2; // temperatura do softmax (maior = disputa menos concentrada — Etapa 13)
 
   for (const unidade of ctx.unidades) {
     const somaMix = Object.values(unidade.mix).reduce((s, w) => s + w, 0) || 1;

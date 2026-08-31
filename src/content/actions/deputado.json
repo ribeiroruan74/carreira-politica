@@ -1,0 +1,69 @@
+{
+  "$comment": "Etapa 6 — ações próprias de DEPUTADO (estadual e federal). Pool usado na fase MANDATO quando mandato.cargo começa com DEPUTADO. Textos servem para os dois; a diferença é de escala (verba, alcance).",
+  "acoes": [
+    {
+      "id": "emenda_parlamentar",
+      "categoria": "MANDATO",
+      "titulo": "Destinar emenda para um município/bairro",
+      "desc": "O instrumento clássico do deputado: recurso carimbado para uma obra local. Entrega concreta, cumpre promessa.",
+      "custo": { "tempo": 2, "energia": 10, "gabineteGasto": 6000 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "entregaLocal": { "presenca": [4, 8], "aprovacao": [0, 2] }, "atributoPeso": "influencia" },
+      "peso": 1.5
+    },
+    {
+      "id": "projeto_de_impacto",
+      "categoria": "MANDATO",
+      "titulo": "Protocolar um projeto de impacto",
+      "desc": "Um PL que mexe com uma pauta grande. Repercussão e posicionamento — o voto no plenário vem depois.",
+      "custo": { "tempo": 3, "energia": 12 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": {
+        "reputacao": { "notoriedade": [2, 5], "confianca": [0, 2] },
+        "ecoMidiatico": [2, 6],
+        "satisfacaoTema": "educacao",
+        "atributoPeso": "inteligencia"
+      },
+      "peso": 1.2
+    },
+    {
+      "id": "articular_bancada",
+      "categoria": "MANDATO",
+      "titulo": "Articular a bancada",
+      "desc": "Costurar apoio entre colegas de plenário para as suas pautas — e ficar devendo favores.",
+      "custo": { "tempo": 2, "energia": 10 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": {
+        "cultivarPolitico": [4, 9],
+        "alvoPolitico": true,
+        "apoioPartido": [1, 3],
+        "atributoPeso": "negociacao"
+      },
+      "peso": 1
+    },
+    {
+      "id": "agenda_regional",
+      "categoria": "MANDATO",
+      "titulo": "Rodar a base regional",
+      "desc": "Agenda em cidades e bairros onde você foi votado: inaugurações, reuniões com prefeitos e vereadores.",
+      "custo": { "tempo": 2, "energia": 12 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": {
+        "territorioBairroAlvo": { "presenca": [3, 7], "penetracao": [2, 4] },
+        "reputacao": { "confianca": [0, 2] },
+        "atributoPeso": "carisma"
+      },
+      "peso": 1.2
+    },
+    {
+      "id": "cobrar_governo",
+      "categoria": "MANDATO",
+      "titulo": "Cobrar o governo da tribuna",
+      "desc": "Pedido de informação, discurso duro, requerimento. Holofote — e atrito com o Executivo.",
+      "custo": { "tempo": 1, "energia": 8 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "fiscalizar": true, "atributoPeso": "coragem" },
+      "peso": 1.1
+    }
+  ]
+}

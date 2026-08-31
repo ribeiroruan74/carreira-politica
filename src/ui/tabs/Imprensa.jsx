@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { Card, Pill, PageHead, Meter } from '../components/primitives';
 import { nomeMes } from '../../engine/tick';
-import { tomCobertura, JORNALISTAS, veiculo } from '../../engine/press';
+import { tomCobertura, JORNALISTAS, veiculo, convitesMidiaAtivos } from '../../engine/press';
+import { relevanciaMidiatica } from '../../engine/social';
 import { montarEdicao } from '../../engine/newspaper';
 
 const TIPO_LABEL = { jornal: 'Jornal', portal: 'Portal', tv: 'TV', radio: 'Rádio', blog: 'Blog', revista: 'Revista' };
@@ -22,9 +23,13 @@ export default function Imprensa() {
   const edicao = montarEdicao(s);
   const noticiasMidia = (s.mundo.noticias || []).filter((n) => n.tipo === 'MIDIA' || (n.destaque && n.tipo === 'CIDADE')).slice(0, 12);
   const bloq = !!s.eventoPendente || s.tempo.pontosRestantes < 2;
+  const convites = convitesMidiaAtivos(s);
 
   function entrevistar() {
     iniciarEntrevista(jornalista);
+  }
+  function aceitar(c) {
+    if (c.tipo === 'entrevista') iniciarEntrevista(c.refId, c.id);
   }
 
   return (
@@ -32,6 +37,31 @@ export default function Imprensa() {
       <PageHead eyebrow="Imprensa" title="Como a mídia cobre você">
         A cobertura muda com sua aprovação, sua rejeição e a linha de cada veículo. Entrevista bem dada rende — mal dada vira corte ruim.
       </PageHead>
+
+      <Card title="Convites da mídia" aside={`relevância ${relevanciaMidiatica(s)}`}>
+        {convites.length === 0 && (
+          <p className="small dim">
+            Nenhum convite agora. Quanto maior sua relevância midiática (notoriedade, audiência, repercussão, cargo)
+            e melhor sua assessoria de comunicação, mais programas vêm te procurar.
+          </p>
+        )}
+        {convites.map((c) => (
+          <div key={c.id} className="row" style={{ padding: '6px 0' }}>
+            <span className="grow">
+              <strong>{c.veiculoNome}</strong>{' '}
+              <span className="small dim">
+                {c.tipo === 'entrevista' ? `· entrevista com ${c.jornalista}` : `· podcast (${c.nicho})`}
+                {' '}· expira em {c.expiraMes - s.tempo.mes} mês(es)
+              </span>
+            </span>
+            {c.tipo === 'entrevista' ? (
+              <button className="btn sm" disabled={bloq} onClick={() => aceitar(c)}>Aceitar (2t)</button>
+            ) : (
+              <Pill tone="accent">disponível na Agenda</Pill>
+            )}
+          </div>
+        ))}
+      </Card>
 
       {edicao && (
         <Card>

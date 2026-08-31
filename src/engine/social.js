@@ -1,5 +1,6 @@
 import { createRng, clamp } from './rng';
 import { semear } from './cascade';
+import { multGabinete } from './mandate';
 
 export const FORMATOS = [
   { id: 'post', nome: 'Post no feed', tempo: 1, energia: 3, base: [200, 3000], viralMax: 0.06, rejeicaoRisco: 0.15 },
@@ -16,6 +17,22 @@ export const PAUTAS = [
   { id: 'territorio', nome: 'Vídeo territorial (um bairro)', empatiaPeso: 1.2, aprovacao: [1, 3], confianca: [1, 2], rejeicao: 0.7 },
   { id: 'humor', nome: 'Humor / meme', improvisoPeso: 1.3, aprovacao: [-1, 2], rejeicao: 1.2, ecoBonus: 1.3 },
 ];
+
+// Etapa 3 — relevância midiática (0-100): o quanto o jogador "existe" na mídia.
+// Combina notoriedade + tamanho de audiência (log) + repercussão + peso do cargo.
+// NÃO é aprovação nem intenção de voto — é presença/alcance público.
+const PESO_CARGO_MIDIA = {
+  PREFEITO: 12, DEPUTADO_FEDERAL: 10, DEPUTADO_ESTADUAL: 7, VEREADOR: 4,
+};
+export function relevanciaMidiatica(state) {
+  const r = state.reputacao;
+  const seg = state.redes?.seguidores || 0;
+  const audiencia = clamp((Math.log10(1 + seg) - 3) * 11, 0, 30); // 10k≈11 · 100k≈22 · 1M≈33→30
+  const eco = Math.max(0, r.ecoMidiatico) * 0.22;
+  const cargo = PESO_CARGO_MIDIA[state.personagem.cargoAtual] || 0;
+  const gCom = multGabinete(state, 'midia'); // assessoria de comunicação
+  return Math.round(clamp((r.notoriedade * 0.5 + audiencia + eco + cargo) * gCom, 0, 100));
+}
 
 export function estimarAlcance(state) {
   const seg = state.redes.seguidores;
@@ -47,10 +64,12 @@ export function postar(state, formatoId, pautaId) {
     + ((a.improviso - 50) / 200) * (pauta.improvisoPeso || 0)
     + skillMidia / 300;
 
+  // Etapa 8 — assessoria de comunicação amplia alcance e chance viral
+  const gCom = multGabinete(state, 'redes');
   // alcance base + cauda longa de viralização
-  let views = rng.rangeInt(f.base) * (0.6 + q);
+  let views = rng.rangeInt(f.base) * (0.6 + q) * gCom;
   const rollViral = rng.float();
-  const chanceViral = clamp(f.viralMax * (0.5 + q) + (pauta.ecoBonus ? 0.03 : 0), 0, 0.4);
+  const chanceViral = clamp((f.viralMax * (0.5 + q) + (pauta.ecoBonus ? 0.03 : 0)) * gCom, 0, 0.45);
   let viralizou = false;
   if (rollViral < chanceViral) {
     viralizou = true;

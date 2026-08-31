@@ -97,6 +97,7 @@ export default function Mandato() {
       </Card>
       )}
 
+      {!m.executivo && (
       <Card title="Protocolar novo projeto" aside="custa 3 tempo · 12 energia">
         <div className="field-row two">
           <div>
@@ -121,7 +122,18 @@ export default function Mandato() {
           Protocolar
         </button>
       </Card>
+      )}
 
+      {m.executivo && (
+        <Card title="Como prefeito(a), você governa pela Agenda">
+          <p className="small dim">
+            Obras, pacotes de serviço, negociação com a Câmara, recursos do estado/União e gestão de crises
+            estão nas ações da <strong>Agenda</strong> — não se protocola projeto de lei do Executivo.
+          </p>
+        </Card>
+      )}
+
+      {!m.executivo && (
       <Card title={`Em tramitação (${tramitando.length})`}>
         {tramitando.length === 0 && <p className="small dim">Nenhum projeto seu tramitando. Protocole um acima.</p>}
         {tramitando.map((pj) => (
@@ -142,6 +154,7 @@ export default function Mandato() {
           </div>
         ))}
       </Card>
+      )}
 
       {encerrados.length > 0 && (
         <Card title="Histórico de proposições">
@@ -159,12 +172,18 @@ export default function Mandato() {
         <Card title="Promessas" aside={`${m.promessas.filter((p) => p.cumprida).length}/${m.promessas.length} cumpridas`}>
           {m.promessas.map((pr) => (
             <div key={pr.id} className="row">
-              <span className="grow">{lawsDef.temas.find((t) => t.id === pr.tema)?.nome || pr.tema} — {bairros.find((b) => b.id === pr.bairroId)?.nome}</span>
+              <span className="grow">
+                {lawsDef.temas.find((t) => t.id === pr.tema)?.nome || pr.tema} — {bairros.find((b) => b.id === pr.bairroId)?.nome}
+                {!pr.cumprida && (pr.progresso || 0) > 0 && <span className="small faint"> · {Math.round(pr.progresso)}%</span>}
+              </span>
               <Pill tone={pr.cumprida ? 'accent' : s.tempo.mes > pr.prazo ? 'red' : 'amber'}>
                 {pr.cumprida ? 'cumprida' : s.tempo.mes > pr.prazo ? 'vencida' : `prazo mês ${pr.prazo - m.mesInicio + 1}`}
               </Pill>
             </div>
           ))}
+          <p className="small faint" style={{ marginTop: 8 }}>
+            Um projeto de lei/indicação no mesmo tema e bairro cumpre a promessa; o mesmo tema em outro lugar adianta o progresso.
+          </p>
         </Card>
       )}
 

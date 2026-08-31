@@ -1,6 +1,12 @@
 {
-  "$comment": "Fase 15/16 — influenciadores locais (fictícios). O roster é a semente; o runtime fica em mundo.influenciadores com alcance/cache/relação/humor dinâmicos. 'publico' = grupos do electorate.json. 'eixo' -100..100. 'plataforma' só sabor.",
+  "$comment": "Fase 15/16 + Etapa 12 — influenciadores. Locais/fictícios têm 'eixo' -100..100. Os marcados 'real: true' são personalidades públicas brasileiras descritas SÓ pelo trabalho público (nicho, plataforma, tamanho de audiência) — 'eixo' 0, sem posicionamento político, sem fatos pessoais, sem acusações. Efeito é alcance/notoriedade/repercussão/reconhecimento; nunca voto direto. Contratá-las é caro e raro.",
   "influenciadores": [
+    { "id": "inf_casimiro", "nome": "Casimiro", "real": true, "nicho": "Futebol, lives e humor", "plataforma": "Twitch/YouTube", "alcanceBase": 94, "eixo": 0, "publico": ["jovens", "trabalhadores_formais", "informais", "periferia"] },
+    { "id": "inf_virginia", "nome": "Virginia", "real": true, "nicho": "Beleza, família e negócios", "plataforma": "Instagram", "alcanceBase": 95, "eixo": 0, "publico": ["classe_media", "informais", "jovens", "catolicos_praticantes"] },
+    { "id": "inf_rezende", "nome": "Rezende", "real": true, "nicho": "Games e entretenimento", "plataforma": "YouTube", "alcanceBase": 84, "eixo": 0, "publico": ["jovens", "estudantes_universitarios"] },
+    { "id": "inf_bocarosa", "nome": "Boca Rosa", "real": true, "nicho": "Beleza e empreendedorismo", "plataforma": "Instagram", "alcanceBase": 86, "eixo": 0, "publico": ["jovens", "informais", "classe_media"] },
+    { "id": "inf_gkay", "nome": "GKay", "real": true, "nicho": "Humor e cultura pop", "plataforma": "Instagram/TikTok", "alcanceBase": 82, "eixo": 0, "publico": ["jovens", "informais"] },
+    { "id": "inf_castanhari", "nome": "Felipe Castanhari", "real": true, "nicho": "Ciência e curiosidades", "plataforma": "YouTube", "alcanceBase": 78, "eixo": 0, "publico": ["estudantes_universitarios", "jovens", "servidores"] },
     { "id": "inf_bia", "nome": "Bia do Recife", "nicho": "Cidade e cotidiano", "plataforma": "Instagram", "alcanceBase": 62, "eixo": -10, "publico": ["classe_media", "trabalhadores_formais", "jovens"] },
     { "id": "inf_gordao", "nome": "Gordão da Quebrada", "nicho": "Humor de periferia", "plataforma": "TikTok", "alcanceBase": 74, "eixo": -20, "publico": ["periferia", "informais", "jovens"] },
     { "id": "inf_marcelo", "nome": "Marcelo Investe", "nicho": "Finanças pessoais", "plataforma": "YouTube", "alcanceBase": 48, "eixo": 35, "publico": ["empresarios", "classe_media", "trabalhadores_formais"] },

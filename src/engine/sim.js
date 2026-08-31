@@ -2,7 +2,7 @@
 // para medir e calibrar a dificuldade. NÃO usa React/store: replica o pipeline
 // de store.avancarMes e store.aplicar em funções puras.
 
-import { novoJogo } from '../state/newGame';
+import { novoJogo } from '../state/newGame.js';
 import { runMonth } from './runMonth';
 import { resolverEvento } from './events';
 import { aplicarAcao, acoesDisponiveis } from './actions';
@@ -114,13 +114,16 @@ function agirMes(state, perfil) {
     if (s.tempo.pontosRestantes === antes) break; // ação falhou, evita loop
   }
 
-  // contrata chefe de gabinete no início do mandato
-  if (fase === 'MANDATO' && s.mandato && Object.keys(s.mandato.gabinete.contratados).length < 2) {
-    for (const cargo of ['chefe_gabinete', 'assessor_parlamentar']) {
+  // monta o gabinete ao longo do mandato (respeita a verba)
+  if (fase === 'MANDATO' && s.mandato) {
+    for (const cargo of ['chefe_gabinete', 'assessor_parlamentar', 'assessor_comunicacao', 'assessor_territorial', 'assessor_politico']) {
       if (s.mandato.gabinete.contratados[cargo]) continue;
-      const r = streamRng(s.meta.seed, "hire", cargo, s.tempo.mes);
+      const r = streamRng(s.meta.seed, 'hire', cargo, s.tempo.mes);
       const c = candidatosAssessor(s, cargo, r).sort((a, b) => b.competencia - a.competencia)[0];
+      if (!c) continue;
+      const antes = Object.keys(s.mandato.gabinete.contratados).length;
       s = aplicar(s, (x) => contratarAssessor(x, c));
+      if (Object.keys(s.mandato.gabinete.contratados).length === antes) break; // verba estourou
     }
   }
 

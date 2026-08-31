@@ -186,11 +186,15 @@ export function aplicarObjetivo(state, objetivoId, opts = {}) {
         // fraco vira lastro, não trampolim.
         const proms = state.mandato.promessas || [];
         const taxaProm = proms.length ? proms.filter((x) => x.cumprida).length / proms.length : 0.5;
-        const desempenho = clamp((state.reputacao.aprovacao - 42) / 30 + (taxaProm - 0.4) * 0.8, -1, 1.4);
-        state.reputacao.notoriedade = Math.min(100, state.reputacao.notoriedade + 4 + 6 * Math.max(0, desempenho));
-        state.reputacao.rejeicao = clamp(state.reputacao.rejeicao - 3 * desempenho, 0, 100);
+        // Etapa 13 — referendo mais duro: centro em ~50 de aprovação e desgaste
+        // de incumbência fixo (máquina cansada, oposição unida). Só mandato
+        // claramente bom rende saldo positivo; o mediano vira lastro.
+        const desempenho = clamp((state.reputacao.aprovacao - 50) / 32 + (taxaProm - 0.45) * 0.9, -1.2, 1.2);
+        const desgaste = 0.4;
+        state.reputacao.notoriedade = Math.min(100, state.reputacao.notoriedade + 2 + 5 * Math.max(0, desempenho));
+        state.reputacao.rejeicao = clamp(state.reputacao.rejeicao + 3 - 4 * desempenho, 0, 100);
         const pr = state.mundo.partidosRuntime?.[state.personagem.partidoId];
-        if (pr) pr.apoioAoJogador = clamp(pr.apoioAoJogador + 6 + 12 * desempenho, 0, 100);
+        if (pr) pr.apoioAoJogador = clamp(pr.apoioAoJogador + (desempenho - desgaste) * 13, 0, 100);
       }
       state.personagem.historicoPolitico.push({
         mes: state.tempo.mes,

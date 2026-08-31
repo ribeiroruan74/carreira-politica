@@ -1,4 +1,5 @@
 import { streamRng, clamp } from './rng';
+import { multGabinete } from './mandate';
 
 // ============================================================
 // FASE 2 — World Memory como MOTOR
@@ -143,6 +144,8 @@ export function tickInvestigacaoProativa(s) {
     chance = 0.25;
   }
 
+  // Etapa 8 — assessoria jurídica/orçamento reduz a exposição a investigação
+  chance /= multGabinete(s, 'fiscalizacao');
   if (!motivo || !rng.chance(chance)) return { state: s, eventos: [] };
 
   s.flags.ultimaInvestigacaoProativa = mes;

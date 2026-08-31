@@ -3,6 +3,8 @@ import polDef from '../content/politicians.json';
 import partiesDef from '../content/parties.json';
 import recife from '../content/neighborhoods/recife.json';
 import { bairrosDaCidade } from './offices';
+import { relevanciaMidiatica } from './social';
+import { multGabinete } from './mandate';
 
 const BAIRROS = recife.bairros;
 const PARTIDO_IDS = partiesDef.partidos.map((p) => p.id);
@@ -245,9 +247,20 @@ export function worldTick(s) {
   // partidos: popularidade e caixa
   for (const [pid, pr] of Object.entries(s.mundo.partidosRuntime)) {
     const membros = lista.filter((p) => p.partidoId === pid);
-    if (membros.length) {
-      const alvo = membros.reduce((acc, m) => acc + (m.notoriedade - m.rejeicao * 0.5), 0) / membros.length;
-      pr.popularidade = clamp(pr.popularidade + (alvo / 2 - pr.popularidade) * 0.05 + rng.range([-1.5, 1.5]), 3, 95);
+    // Etapa 3 — no partido do jogador, ELE é a cara: entra na média com peso alto,
+    // ponderado pela relevância midiática (senão o partido fica preso perto de 3).
+    const ehDoJogador = pid === s.personagem.partidoId && s.personagem.fase !== 'VIDA';
+    if (membros.length || ehDoJogador) {
+      let soma = membros.reduce((acc, m) => acc + (m.notoriedade - m.rejeicao * 0.5), 0);
+      let peso = membros.length;
+      if (ehDoJogador) {
+        const rel = relevanciaMidiatica(s);
+        const pesoJog = 2 + rel / 25; // 2..6
+        soma += (rel - s.reputacao.rejeicao * 0.5) * pesoJog;
+        peso += pesoJog;
+      }
+      const alvo = peso ? soma / peso : pr.popularidade;
+      pr.popularidade = clamp(pr.popularidade + (alvo * 0.75 - pr.popularidade) * 0.06 + rng.range([-1.5, 1.5]), 3, 95);
     }
     pr.bancada = membros.filter((m) => m.cargo === 'VEREADOR').length;
     pr.caixa = Math.max(0, pr.caixa + rng.int(-30000, 45000));
@@ -293,38 +306,146 @@ export function worldTick(s) {
   }
   s.log = s.log.slice(0, 220);
 
+  tickAliancas(s); // Etapa 5 — efeito mensal do grupo político
+
   return { state: s, eventos };
 }
 
 // --- interação do jogador com o mundo (usado por actions/politica.json) ---
-export function cultivarPolitico(state, politicoId, ganho) {
+
+// Etapa 4 — o quanto uma aproximação rende, de fato. 0.25..1.6.
+// Depende de: relação atual (mais duro no topo), alinhamento ideológico/partido,
+// influência do alvo (peixe grande é mais difícil), estilo, e histórico recente.
+export function fatorRelacao(state, p, tipo = 'conversar') {
+  const eixoJ = (partiesDef.partidos.find((x) => x.id === state.personagem.partidoId)?.eixo) ?? 0;
+  const dIdeo = Math.abs(eixoJ - (p.ideologiaEixo ?? 0)) / 100; // 0..2
+  const mesmoPartido = p.partidoId === state.personagem.partidoId;
+
+  let f = 1;
+  f *= 1 - Math.max(0, (p.relacaoJogador || 0) - 25) / 150;      // topo rende menos
+  f *= 1 - dIdeo * 0.35 + (mesmoPartido ? 0.15 : 0);             // alinhamento
+  f *= 1 - Math.max(0, (p.influencia || 50) - 50) / 125;         // peixe grande
+  const est = polDefEstilo(p.estilo);
+  f *= 0.8 + (est?.alia ?? 0.25) * 0.9;                          // estilo aberto a alianças
+  const desdeContato = state.tempo.mes - (p.ultimoContatoMes ?? -99);
+  if (desdeContato <= 0) f *= 0.35;                              // já falou este mês
+  else if (desdeContato === 1) f *= 0.7;
+  else if (desdeContato > 6) f *= 1.15;                          // reata contato antigo
+  const habil = (state.personagem.atributos.negociacao + state.personagem.atributos.carisma) / 2;
+  f *= 0.85 + (habil - 50) / 200;
+  if (tipo === 'apoiar' && dIdeo > 0.6) f *= 0.55;               // apoiar oposto pega mal
+  f *= multGabinete(state, 'aliancas');                          // Etapa 8 — assessor político
+  return clamp(f, 0.25, 1.7);
+}
+function polDefEstilo(id) {
+  return polDef.estilos.find((e) => e.id === id) || null;
+}
+
+export function cultivarPolitico(state, politicoId, ganho, tipo) {
   const p = state.mundo.politicos[politicoId];
   if (!p) throw new Error('Político não encontrado.');
-  p.relacaoJogador = clamp(p.relacaoJogador + ganho, -100, 100);
+  const g = ganho * fatorRelacao(state, p, tipo);
+  p.relacaoJogador = clamp(p.relacaoJogador + g, -100, 100);
   p.ultimoContatoMes = state.tempo.mes;
-  // apoio interno se for do mesmo partido
   if (p.partidoId === state.personagem.partidoId) {
     const pr = state.mundo.partidosRuntime[p.partidoId];
-    if (pr) pr.apoioAoJogador = clamp(pr.apoioAoJogador + ganho * 0.35, 0, 100);
+    if (pr) pr.apoioAoJogador = clamp(pr.apoioAoJogador + g * 0.35, 0, 100);
   }
   return p;
 }
 
-// quanto mais influente o político, mais difícil trazê-lo para o seu lado
-export function limiarAlianca(p) {
-  return Math.round(35 + Math.max(0, p.influencia - 45) * 0.95);
+// Etapa 4 — ações de relação sob demanda, direto da ficha (não dependem do leque).
+const ACOES_RELACAO = {
+  conversar: { nome: 'Conversar', tempo: 1, energia: 4, dinheiro: 0, base: 6 },
+  reuniao: { nome: 'Reunião de trabalho', tempo: 2, energia: 9, dinheiro: 0, base: 11 },
+  evento: { nome: 'Convidar para um evento', tempo: 2, energia: 7, dinheiro: 500, base: 9, noto: [1, 3] },
+  apoiar: { nome: 'Declarar apoio público', tempo: 1, energia: 5, dinheiro: 0, base: 10, apoiar: true },
+  manter_contato: { nome: 'Manter contato', tempo: 1, energia: 2, dinheiro: 0, base: 4, exigeContato: true },
+};
+export function acoesRelacaoInfo() { return ACOES_RELACAO; }
+
+export function acaoRelacao(state, politicoId, tipo) {
+  const cfg = ACOES_RELACAO[tipo];
+  const p = state.mundo.politicos[politicoId];
+  if (!cfg || !p) throw new Error('Ação inválida.');
+  if (cfg.exigeContato && (p.ultimoContatoMes ?? -99) < 0) throw new Error('Você ainda não teve contato com essa pessoa.');
+  if (state.tempo.pontosRestantes < cfg.tempo) throw new Error(`Sem tempo (custa ${cfg.tempo}).`);
+  if (cfg.dinheiro > state.financas.pessoal) throw new Error('Dinheiro pessoal insuficiente.');
+
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  state.tempo.pontosRestantes -= cfg.tempo;
+  state.tempo.energia = clamp(state.tempo.energia - cfg.energia, 0, state.tempo.energiaMax);
+  state.financas.pessoal -= cfg.dinheiro;
+
+  const ganho = cfg.base * (0.75 + rng.float() * 0.5);
+  cultivarPolitico(state, politicoId, ganho, tipo);
+  if (cfg.noto) state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + rng.range(cfg.noto), 0, 100);
+  if (cfg.apoiar) {
+    // declarar apoio público: mais relação, mas custa se o eleitor não gosta do alvo
+    if (p.rejeicao > 45) state.reputacao.rejeicao = clamp(state.reputacao.rejeicao + rng.range([0.5, 2]), 0, 100);
+    state.mundo.noticias.unshift({
+      id: `nt_apoio_${politicoId}_${state.tempo.mes}`, mes: state.tempo.mes, tipo: 'POLITICA', destaque: false,
+      atores: [politicoId], texto: `${state.personagem.nome} declarou apoio a ${p.nome} (${p.partidoId}).`,
+    });
+  }
+  state.meta.rngState = rng.state;
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'ACAO', texto: `${cfg.nome}: ${p.nome} — relação ${Math.round(p.relacaoJogador)}.` });
+  return { ok: true, msg: `${p.nome}: relação ${p.relacaoJogador >= 0 ? '+' : ''}${Math.round(p.relacaoJogador)}` };
 }
 
-export function tentarAlianca(state, politicoId) {
+// Etapa 5 — limiar de relação a partir do qual dá para sequer TENTAR a aliança.
+export function limiarAlianca(p) {
+  return Math.round(30 + Math.max(0, (p.influencia || 50) - 50) * 0.7);
+}
+
+// Chance de fechar a aliança (rolagem, não binário). 0.03..0.9.
+export function chanceAlianca(state, p) {
+  const eixoJ = (partiesDef.partidos.find((x) => x.id === state.personagem.partidoId)?.eixo) ?? 0;
+  const afinIdeo = 1 - Math.abs(eixoJ - (p.ideologiaEixo ?? 0)) / 100; // -1..1
+  const mesmoPartido = p.partidoId === state.personagem.partidoId ? 1 : 0;
+  const limiar = limiarAlianca(p);
+  const bonusInflJog = (state.reputacao.notoriedade - 40) / 200 + ((state.personagem.cargoAtual || 'NENHUM') !== 'NENHUM' ? 0.12 : 0);
+  const custoOportunidade = Math.max(0, (p.influencia || 50) - 55) / 180; // peixe grande pesa mais
+  const est = polDefEstilo(p.estilo);
+  const bonusEstilo = ((est?.alia ?? 0.25) - 0.25) * 0.6;
+  const chance = 0.15
+    + (p.relacaoJogador - limiar) / 55
+    + afinIdeo * 0.18
+    + mesmoPartido * 0.18
+    + bonusInflJog
+    + bonusEstilo
+    - custoOportunidade
+    + (multGabinete(state, 'aliancas') - 1) * 0.4; // Etapa 8 — assessor político
+  return clamp(chance, 0.03, 0.92);
+}
+
+export function tentarAlianca(state, politicoId, { cobrarCusto = false } = {}) {
   const p = state.mundo.politicos[politicoId];
   if (!p) throw new Error('Político não encontrado.');
-  const limiar = limiarAlianca(p);
-  if (p.relacaoJogador < limiar) {
-    return { ok: false, msg: `${p.nome} ainda não confia o suficiente em você (relação ${Math.round(p.relacaoJogador)}/${limiar}).` };
-  }
   if (state.personagem.grupoPolitico.includes(politicoId)) {
     return { ok: false, msg: `${p.nome} já faz parte do seu grupo.` };
   }
+  const limiar = limiarAlianca(p);
+  if (p.relacaoJogador < limiar) {
+    return { ok: false, msg: `${p.nome} nem cogita — relação ${Math.round(p.relacaoJogador)}/${limiar}. Aproxime-se primeiro.` };
+  }
+  if (cobrarCusto) {
+    if (state.tempo.pontosRestantes < 2) return { ok: false, msg: 'Sem tempo (custa 2).' };
+    state.tempo.pontosRestantes -= 2;
+    state.tempo.energia = clamp(state.tempo.energia - 10, 0, state.tempo.energiaMax);
+  }
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  const chance = chanceAlianca(state, p);
+  const sucesso = rng.float() < chance;
+  state.meta.rngState = rng.state;
+
+  if (!sucesso) {
+    // tentativa fracassada esfria um pouco e queima a vez
+    p.relacaoJogador = clamp(p.relacaoJogador - rng.range([2, 6]), -100, 100);
+    state.log.unshift({ mes: state.tempo.mes, tipo: 'POLITICA', texto: `${p.nome} recusou fechar aliança agora (${Math.round(chance * 100)}% de chance). Continue cultivando.` });
+    return { ok: false, msg: `${p.nome} recusou por ora. Chance era ~${Math.round(chance * 100)}%.` };
+  }
+
   state.personagem.grupoPolitico.push(politicoId);
   p.relacaoJogador = clamp(p.relacaoJogador + 8, -100, 100);
   state.mundo.noticias.unshift({
@@ -333,6 +454,47 @@ export function tentarAlianca(state, politicoId) {
   });
   state.log.unshift({ mes: state.tempo.mes, tipo: 'MARCO', texto: `${p.nome} entrou para o seu grupo político.` });
   return { ok: true, msg: `${p.nome} agora apoia você.` };
+}
+
+// Etapa 5 — romper com um aliado.
+export function romperAlianca(state, politicoId) {
+  const i = state.personagem.grupoPolitico.indexOf(politicoId);
+  if (i < 0) return { ok: false, msg: 'Essa pessoa não está no seu grupo.' };
+  state.personagem.grupoPolitico.splice(i, 1);
+  const p = state.mundo.politicos[politicoId];
+  if (p) {
+    p.relacaoJogador = clamp(p.relacaoJogador - 25, -100, 100);
+    state.log.unshift({ mes: state.tempo.mes, tipo: 'POLITICA', texto: `Você rompeu com ${p.nome}. A relação azedou.` });
+  }
+  return { ok: true, msg: `Aliança com ${p?.nome || 'o aliado'} rompida.` };
+}
+
+// Etapa 5 — efeito mensal de manter um grupo político (chamado no worldTick).
+export function tickAliancas(s) {
+  const grupo = s.personagem.grupoPolitico || [];
+  if (!grupo.length) return { eventos: [] };
+  const rng = streamRng(s.meta.seed, 'aliancas', s.tempo.mes);
+  let forca = 0;
+  for (const id of grupo) {
+    const p = s.mundo.politicos[id];
+    if (!p || !p.ativo) continue;
+    const f = p.influencia / 100;
+    forca += f;
+    // apoio interno se do mesmo partido — um aliado de peso segura a sua indicação
+    if (p.partidoId === s.personagem.partidoId) {
+      const pr = s.mundo.partidosRuntime[p.partidoId];
+      if (pr) pr.apoioAoJogador = clamp(pr.apoioAoJogador + (0.6 + f) * rng.range([1.2, 2.6]), 0, 100);
+    }
+    // aliado influente sustenta a sua presença nos redutos dele
+    for (const [bid, w] of Object.entries(p.baseBairros || {})) {
+      const t = (s.territorio.porBairro[bid] ||= { presenca: 0, penetracao: 0 });
+      t.presenca = clamp(t.presenca + w * f * rng.range([0.3, 0.9]), 0, 100);
+    }
+  }
+  // um grupo forte também mantém algum eco/notoriedade
+  s.reputacao.ecoMidiatico = clamp(s.reputacao.ecoMidiatico + forca * rng.range([0.4, 1]), -50, 100);
+  s.reputacao.notoriedade = clamp(s.reputacao.notoriedade + forca * rng.range([0.05, 0.2]), 0, 100);
+  return { eventos: [] };
 }
 
 // bônus concedidos ao jogador no início da campanha pelo grupo político + alianças

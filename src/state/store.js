@@ -54,13 +54,16 @@ export const useGame = create(
         set({ estado: novo });
       },
 
-      iniciarEntrevista(jornalistaId) {
+      iniciarEntrevista(jornalistaId, conviteId) {
         const estado = get().estado;
         if (!estado || estado.entrevistaAtiva) return;
         if (estado.tempo.pontosRestantes < 2) return;
         const novo = structuredClone(estado);
         novo.tempo.pontosRestantes -= 2;
         novo.tempo.energia = Math.max(0, novo.tempo.energia - 10);
+        if (conviteId) {
+          novo.mundo.convitesMidia = (novo.mundo.convitesMidia || []).filter((c) => c.id !== conviteId);
+        }
         novo.entrevistaAtiva = montarEntrevista(novo, jornalistaId);
         set({ estado: novo, ultimoTick: null });
       },

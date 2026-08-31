@@ -1,5 +1,6 @@
 import { createRng, streamRng, clamp } from './rng';
 import { JORNALISTAS, veiculo } from './press';
+import { ganharXp } from './attributes';
 import intDef from '../content/interviews.json';
 import lawsDef from '../content/laws.json';
 import neighborhoods from '../content/neighborhoods/recife.json';
@@ -119,6 +120,10 @@ function finalizarEntrevista(state) {
   const v = veiculo(JORNALISTAS.find((j) => j.id === e.jornalistaId)?.veiculo);
   const alcance = (v?.alcance ?? 50) / 100;
   const scoreMedio = e.score / Math.max(1, e.perguntas.length);
+  // Etapa 10 — entrevista treina comunicação e oratória (mais se foi bem)
+  const xp = scoreMedio > 0.2 ? rng.int(14, 24) : rng.int(6, 12);
+  ganharXp(state, 'comunicacao', xp);
+  ganharXp(state, 'oratoria', Math.round(xp * 0.7));
   let manchete; let resumo;
 
   if (scoreMedio > 0.55) {

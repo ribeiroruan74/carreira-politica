@@ -8,6 +8,7 @@ import partiesDef from '../content/parties.json';
 import { createRng, clamp } from './rng';
 import { registrarMarco } from './milestones';
 import { ajustarImagem } from './image';
+import { ganharXp } from './attributes';
 
 export const PODCASTS = podcastsDef.podcasts;
 export const POSTURAS = podcastsDef.posturas;
@@ -29,8 +30,11 @@ function partido(id) {
 
 export function podcastsDisponiveis(state) {
   const noto = state.reputacao.notoriedade;
+  const convidados = new Set((state.mundo?.convitesMidia || [])
+    .filter((c) => c.tipo === 'podcast' && state.tempo.mes < c.expiraMes)
+    .map((c) => c.refId));
   return PODCASTS
-    .map((p) => ({ ...p, convida: noto >= p.alcance * 0.35 }))
+    .map((p) => ({ ...p, convidou: convidados.has(p.id), convida: convidados.has(p.id) || noto >= p.alcance * 0.35 }))
     .filter((p) => p.convida || noto >= 12);
 }
 
@@ -44,6 +48,10 @@ export function gravarPodcast(state, podcastId, posturaId, { cobrarCusto = true 
     if (state.tempo.pontosRestantes < pod.custo.tempo) throw new Error(`Sem tempo (custa ${pod.custo.tempo}).`);
     state.tempo.pontosRestantes -= pod.custo.tempo;
     state.tempo.energia = clamp(state.tempo.energia - pod.custo.energia, 0, state.tempo.energiaMax);
+  }
+  // Etapa 9 — consome o convite se havia um
+  if (state.mundo?.convitesMidia) {
+    state.mundo.convitesMidia = state.mundo.convitesMidia.filter((c) => c.refId !== podcastId);
   }
 
   const a = state.personagem.atributos;
@@ -106,6 +114,10 @@ export function gravarPodcast(state, podcastId, posturaId, { cobrarCusto = true 
   });
   state.log.unshift({ mes: state.tempo.mes, tipo: bom ? 'MARCO' : 'ACAO', texto: `Podcast ${pod.nome} — ${resumo.join(', ')}.` });
   if (bom && alcance > 0.6) registrarMarco(state, 'MIDIA', `Boa aparição no ${pod.nome} (${pod.nicho}).`);
+
+  // Etapa 10 — horas de conversa treinam oratória e comunicação
+  ganharXp(state, 'oratoria', bom ? rng.int(16, 26) : rng.int(8, 14));
+  ganharXp(state, 'comunicacao', rng.int(6, 12));
 
   state.meta.rngState = rng.state;
   return { manchete, resumo, bom, ruim };

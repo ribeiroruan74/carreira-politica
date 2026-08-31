@@ -1,7 +1,7 @@
 // Forma do save + versão + migrações. Salvar nunca pode quebrar entre updates:
 // toda mudança estrutural ganha um número de versão e uma função de migração.
 
-export const SAVE_VERSION = 12;
+export const SAVE_VERSION = 15;
 
 // Estado "vazio" de referência — documenta a forma completa do save.
 export function emptyState() {
@@ -34,6 +34,7 @@ export function emptyState() {
       mandatosExercidos: [], // Fase 25 — cargoIds já exercidos (elegibilidade p/ cargos superiores)
       partidoId: null,
       atributos: {},
+      xpAtributos: {}, // Etapa 10 — { attrId: xp acumulado rumo ao próximo ponto }
       skills: {},
       patrimonio: 0,
       historicoProfissional: [],
@@ -49,7 +50,18 @@ export function emptyState() {
       emprego: null, // { id, titulo, setor, salario, horas, mesInicio }
       licenciado: false, // afastado do emprego (campanha/mandato) — meio salário, zero horas
       // Fase 22 — vida pessoal
-      vida: { estadoCivil: 'solteiro', conjuge: null, filhos: 0, hobby: null, saude: 100 },
+      // Fase 22 + Etapa 11 (Família)
+      vida: {
+        estadoCivil: 'solteiro', // solteiro | namorando | casado
+        conjuge: null, // { nome, relacao 0-100 }
+        filhos: 0,
+        filhosDetalhe: [], // [{ nome, nascidoMes }]
+        hobby: null,
+        saude: 100,
+        bemEstar: 60, // 0-100 — satisfação de vida
+        paisRelacao: 55,
+        paisVivos: true,
+      },
       // Fase 23 — militância por bairro { bairroId: nVoluntarios }
       militancia: {},
       // Fase 14 — imagem pública: como o eleitor te enxerga (0-100 por eixo)
@@ -98,6 +110,7 @@ export function emptyState() {
       // memoria[]: { id, mes, tipo, texto, dados, gatilho:{aposMeses,chance,condicao,disparo,maturaEm}, disparado, resolvido }
       cascatas: [], // Fase 31 — { id, tipo, dados, estagio, proximoMes, encerrada }
       investigacoes: [], // Fase 10 — { id, jornalistaId, tema, estagio, proximoMes, encerrada, dados }
+      convitesMidia: [], // Etapa 9 — { id, tipo:'entrevista'|'podcast', refId, veiculoNome, mes, expiraMes }
       satisfacaoGrupos: {}, // Fase 8 — grupoId -> -100..100, persiste, alimenta o modelo de votos
       nacional: { evento: null, clima: 0, historico: [] }, // Fase 24 — cenário macro
       influenciadores: [], // Fase 15/16 — { id, nome, nicho, plataforma, alcance, eixo, cache, relacao, humor, aliadoDe, contratadoAte }
@@ -243,6 +256,28 @@ const migracoes = {
       eleicoesVencidas: (s.personagem.mandatosExercidos || []).length, eleicoesPerdidas: 0, melhorVotacao: 0,
     };
     s.fimDeJogo = s.fimDeJogo || null;
+    return s;
+  },
+  // v12 -> v13: Etapa 9 — convites de mídia
+  12: (s) => {
+    s.mundo.convitesMidia = s.mundo.convitesMidia || [];
+    return s;
+  },
+  // v13 -> v14: Etapa 10 — XP de atributos
+  13: (s) => {
+    s.personagem.xpAtributos = s.personagem.xpAtributos || {};
+    return s;
+  },
+  // v14 -> v15: Etapa 11 — Família
+  14: (s) => {
+    const v = (s.personagem.vida ||= {});
+    v.estadoCivil = v.estadoCivil || 'solteiro';
+    if (v.filhosDetalhe == null) v.filhosDetalhe = [];
+    if (v.bemEstar == null) v.bemEstar = 60;
+    if (v.paisRelacao == null) v.paisRelacao = 55;
+    if (v.paisVivos == null) v.paisVivos = true;
+    // conjuge do formato antigo ({nome, apoio}) → {nome, relacao}
+    if (v.conjuge && v.conjuge.relacao == null) v.conjuge.relacao = v.conjuge.apoio ?? 65;
     return s;
   },
 };

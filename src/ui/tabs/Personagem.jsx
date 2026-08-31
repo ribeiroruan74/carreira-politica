@@ -1,8 +1,11 @@
 import { useGame } from '../../state/store';
 import { Card, Meter, Pill, PageHead } from '../components/primitives';
 import { formatBRL } from '../../engine/tick';
+import { progressoAtributo, TREINAVEIS } from '../../engine/attributes';
 import attributesDef from '../../content/attributes.json';
 import professionsDef from '../../content/professions.json';
+
+const TREINAVEL_IDS = new Set(TREINAVEIS.map((t) => t.id));
 
 export default function Personagem() {
   const s = useGame((g) => g.estado);
@@ -20,11 +23,23 @@ export default function Personagem() {
       <div className="grid cols-2">
         <Card title="Atributos de personalidade" aside="0–100">
           <div className="grid cols-2" style={{ gap: 8 }}>
-            {atributos.map((a) => (
-              <Meter key={a.id} label={a.nome} value={p.atributos[a.id] ?? 0}
-                tone={(p.atributos[a.id] ?? 0) >= 60 ? 'ok' : (p.atributos[a.id] ?? 0) <= 35 ? 'bad' : 'warn'} />
-            ))}
+            {atributos.map((a) => {
+              const v = p.atributos[a.id] ?? 0;
+              const treinavel = TREINAVEL_IDS.has(a.id);
+              const prog = treinavel ? progressoAtributo(s, a.id) : null;
+              return (
+                <div key={a.id}>
+                  <Meter label={a.nome} value={v} tone={v >= 60 ? 'ok' : v <= 35 ? 'bad' : 'warn'} />
+                  {prog && !prog.noTeto && prog.xp > 0 && (
+                    <div className="small faint" style={{ marginTop: 2 }}>XP {Math.round(prog.xp)}/{prog.custo} p/ próximo</div>
+                  )}
+                </div>
+              );
+            })}
           </div>
+          <p className="small faint" style={{ marginTop: 10 }}>
+            Atributos evoluem por XP: curso, treino, mentoria (Agenda) e prática (discursos, entrevistas, debates, podcasts). Fica mais caro no topo.
+          </p>
         </Card>
 
         <div className="stack">

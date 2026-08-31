@@ -53,8 +53,8 @@ export function checarFimDeJogo(s) {
     motivo = `Aos ${p.idade} anos, você anuncia que não disputará mais nada e se afasta.`;
   }
 
-  // 2) saúde: problema grave afasta da política (mais provável com idade)
-  if (!tipo && saude <= 12 && p.idade >= 52) {
+  // 2) saúde: problema grave afasta da política (só quando realmente crítico e mais velho)
+  if (!tipo && saude <= 8 && p.idade >= 60) {
     tipo = 'SAUDE';
     motivo = 'Um problema sério de saúde te obriga a deixar a vida pública para se cuidar.';
   }

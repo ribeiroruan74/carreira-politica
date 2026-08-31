@@ -19,30 +19,44 @@ function partido(id) {
 
 export function custoInfluenciador(inf) {
   // cache mensal: alcance é o grosso; humor quente encarece; já contratado por
-  // outro encarece pra "roubar".
+  // outro encarece pra "roubar". Etapa 12 — nome nacional custa muito mais.
   const base = 1200 + inf.alcance * 260;
   const heat = 1 + Math.max(0, inf.humor || 0) / 60;
   const disputado = inf.aliadoDe && inf.aliadoDe !== 'JOGADOR' ? 1.6 : 1;
-  return Math.round(base * heat * disputado / 100) * 100;
+  const nacional = inf.real ? 5.5 : 1;
+  return Math.round(base * heat * disputado * nacional / 100) * 100;
 }
 
-export function inicializarInfluenciadores(state) {
-  const rng = streamRng(state.meta.seed, 'influinit');
-  state.mundo.influenciadores = ROSTER.map((r) => ({
+function novoInfluenciador(r, rng) {
+  const inf = {
     ...r,
-    alcance: clamp(r.alcanceBase + rng.int(-8, 8), 15, 98),
+    alcance: clamp(r.alcanceBase + rng.int(-8, 8), 15, 99),
     relacao: 0,
     humor: rng.int(-10, 15),
     aliadoDe: null,
     contratadoAte: 0,
-  }));
-  for (const inf of state.mundo.influenciadores) inf.cache = custoInfluenciador(inf);
+  };
+  inf.cache = custoInfluenciador(inf);
+  return inf;
+}
+
+export function inicializarInfluenciadores(state) {
+  const rng = streamRng(state.meta.seed, 'influinit');
+  state.mundo.influenciadores = ROSTER.map((r) => novoInfluenciador(r, rng));
   state.mundo.influInicializado = true;
 }
 
 export function garantirInfluenciadores(state) {
   if (!state.mundo.influInicializado || !(state.mundo.influenciadores || []).length) {
     inicializarInfluenciadores(state);
+    return;
+  }
+  // Etapa 12 — adiciona ao runtime quem faltar no roster (saves antigos)
+  const tem = new Set(state.mundo.influenciadores.map((i) => i.id));
+  const faltando = ROSTER.filter((r) => !tem.has(r.id));
+  if (faltando.length) {
+    const rng = streamRng(state.meta.seed, 'influadd', state.tempo.mes);
+    state.mundo.influenciadores.push(...faltando.map((r) => novoInfluenciador(r, rng)));
   }
 }
 
@@ -64,6 +78,8 @@ export function influenciadoresDisponiveis(state) {
 function afinidadeJogador(state, inf) {
   const pa = partido(state.personagem.partidoId);
   const eixoJ = pa?.eixo ?? 0;
+  // nome nacional é apolítico: afinidade depende só da relação construída
+  if (inf.real) return Math.round(clamp(55 + inf.relacao * 0.45, -100, 100));
   return Math.round(clamp(100 - Math.abs(eixoJ - inf.eixo) * 0.9 + inf.relacao * 0.4, -100, 100));
 }
 
@@ -93,13 +109,15 @@ export function colaborarInfluenciador(state, id, rng) {
   garantirInfluenciadores(state);
   const inf = influenciadorPorId(state, id);
   if (!inf) throw new Error('Influenciador não encontrado.');
-  if (inf.relacao < 15) throw new Error(`${inf.nome} ainda não topa uma collab — cultive a relação primeiro.`);
+  // nome nacional só topa collab de graça com relação já bem construída
+  const limiar = inf.real ? 35 : 15;
+  if (inf.relacao < limiar) throw new Error(`${inf.nome} ainda não topa uma collab — cultive a relação primeiro (${Math.round(inf.relacao)}/${limiar}).`);
   if (inf.aliadoDe && inf.aliadoDe !== 'JOGADOR') throw new Error(`${inf.nome} está fechado com outra campanha.`);
 
   const alcance = inf.alcance / 100;
   const q = 0.5 + (state.personagem.atributos.comunicacao - 50) / 160 + inf.relacao / 260;
   const viral = rng.chance(0.12 + Math.max(0, inf.humor) / 200);
-  const views = Math.round(rng.rangeInt([8000, 90000]) * (0.5 + alcance) * (0.6 + q) * (viral ? rng.range([4, 14]) : 1));
+  const views = Math.round(rng.rangeInt([8000, 90000]) * (0.5 + alcance) * (0.6 + q) * (inf.real ? 1.8 : 1) * (viral ? rng.range([4, 14]) : 1));
 
   const dNoto = clamp((Math.log10(Math.max(10, views)) - 3.2) * rng.range([1.6, 3]), 0.5, 12);
   state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + dNoto, 0, 100);
@@ -162,8 +180,8 @@ export function tickInfluenciadores(s) {
       s.reputacao.notoriedade = clamp(s.reputacao.notoriedade + rng.range([0.2, 0.8]) * (inf.alcance / 100), 0, 100);
     }
 
-    // rival captura um influenciador alinhado a ele (não o seu contratado)
-    if (emDisputa && !inf.aliadoDe && rng.chance(0.04)
+    // rival captura um influenciador LOCAL alinhado a ele (nunca um nome nacional apolítico)
+    if (!inf.real && emDisputa && !inf.aliadoDe && rng.chance(0.04)
         && Math.abs(inf.eixo - eixoJ) > 45 && inf.relacao < 20) {
       inf.aliadoDe = 'RIVAL';
       inf.contratadoAte = s.tempo.mes + rng.int(3, 8);
@@ -172,15 +190,17 @@ export function tickInfluenciadores(s) {
       inf.aliadoDe = null;
     }
 
-    // aliado espontâneo: relação alta + ideologia próxima → empurrão de graça
-    if (inf.relacao > 45 && Math.abs(inf.eixo - eixoJ) < 35 && rng.chance(0.12)) {
+    // aliado espontâneo: relação alta → empurrão de graça (nacionais precisam de relação maior)
+    const limiarEspontaneo = inf.real ? 58 : 45;
+    const ideoOk = inf.real || Math.abs(inf.eixo - eixoJ) < 35;
+    if (inf.relacao > limiarEspontaneo && ideoOk && rng.chance(inf.real ? 0.08 : 0.12)) {
       mexerGrupos(s, inf, rng.range([2, 5]));
-      s.reputacao.notoriedade = clamp(s.reputacao.notoriedade + rng.range([0.5, 2]), 0, 100);
-      eventos.push({ tipo: 'MIDIA', texto: `${inf.nome} te citou espontaneamente e o vídeo rendeu.` });
+      s.reputacao.notoriedade = clamp(s.reputacao.notoriedade + rng.range([0.5, 2]) * (inf.real ? 1.6 : 1), 0, 100);
+      eventos.push({ tipo: 'MIDIA', texto: `${inf.nome} te citou e o vídeo rendeu.` });
     }
 
-    // hostil: relação ruim + ideologia oposta → ataque (pode virar cascata)
-    if (inf.relacao < -25 && Math.abs(inf.eixo - eixoJ) > 50 && rng.chance(0.06)) {
+    // hostil: só influenciador LOCAL de ideologia oposta ataca (nome nacional apolítico não)
+    if (!inf.real && inf.relacao < -25 && Math.abs(inf.eixo - eixoJ) > 50 && rng.chance(0.06)) {
       s.reputacao.rejeicao = clamp(s.reputacao.rejeicao + rng.range([1, 4]) * (inf.alcance / 90), 0, 100);
       mexerGrupos(s, inf, -rng.range([2, 5]));
       if (inf.alcance > 60 && rng.chance(0.4)) {

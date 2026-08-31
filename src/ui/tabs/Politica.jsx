@@ -59,7 +59,7 @@ export default function Politica({ irPara }) {
       <div className="grid cols-3">
         <Card><Stat k="Força no Recife" v={`${p.forcaRecife}/100`} /></Card>
         <Card><Stat k="Bancada na Câmara" v={pr ? `${pr.bancada}` : '—'} /></Card>
-        <Card><Stat k="Popularidade" v={pr ? `${Math.round(pr.popularidade)}` : '—'} /></Card>
+        <Card><Stat k="Popularidade do partido" v={pr ? `${Math.round(pr.popularidade)}` : '—'} sub="peso do seu nome + dos filiados" /></Card>
       </div>
 
       {['PARTIDO', 'CANDIDATO'].includes(s.personagem.fase) && pr && (

@@ -3,6 +3,7 @@
 
 import Dashboard from './Dashboard';
 import Personagem from '../tabs/Personagem';
+import Familia from '../tabs/Familia';
 import Agenda from '../tabs/Agenda';
 import Pessoas from '../tabs/Pessoas';
 import Mapa from '../tabs/Mapa';
@@ -22,6 +23,7 @@ import Config from '../tabs/Config';
 export const TABS = [
   { id: 'dashboard', nome: 'Dashboard', ico: '▤', comp: Dashboard },
   { id: 'personagem', nome: 'Personagem', ico: '☺', comp: Personagem },
+  { id: 'familia', nome: 'Família', ico: '👪', comp: Familia },
   { id: 'agenda', nome: 'Agenda', ico: '❒', comp: Agenda },
   { id: 'eleicao', nome: 'Eleição', ico: '🗳', comp: Eleicao, visivel: (s) => !!s.eleicao },
   { id: 'mandato', nome: 'Mandato', ico: '🏛', comp: Mandato, visivel: (s) => !!s.mandato },

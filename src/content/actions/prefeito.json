@@ -1,0 +1,69 @@
+{
+  "$comment": "Etapa 6 — ações próprias de PREFEITO (executivo). Reaproveitam efeitos existentes. Pool usado na fase MANDATO quando mandato.cargo == PREFEITO.",
+  "acoes": [
+    {
+      "id": "obra_estruturante",
+      "categoria": "MANDATO",
+      "titulo": "Tocar uma obra num bairro",
+      "desc": "Ordem de serviço, canteiro, placa. Entrega concreta — cumpre promessa e fixa voto no território.",
+      "custo": { "tempo": 3, "energia": 14, "gabineteGasto": 12000 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "entregaLocal": { "presenca": [5, 10], "aprovacao": [1, 3] }, "atributoPeso": "gestao" },
+      "peso": 1.5
+    },
+    {
+      "id": "pacote_servicos",
+      "categoria": "MANDATO",
+      "titulo": "Pacote de melhoria de serviços",
+      "desc": "Mutirão de saúde, reforço na coleta, mais ônibus na linha. Efeito difuso na cidade.",
+      "custo": { "tempo": 2, "energia": 12, "gabineteGasto": 9000 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": {
+        "reputacao": { "aprovacao": [1, 4], "confianca": [1, 3] },
+        "satisfacaoTema": "saude",
+        "ecoMidiatico": [1, 3],
+        "atributoPeso": "gestao"
+      },
+      "peso": 1.2
+    },
+    {
+      "id": "articular_camara",
+      "categoria": "MANDATO",
+      "titulo": "Negociar com a Câmara",
+      "desc": "Prefeito não governa sozinho: costurar maioria com os vereadores para aprovar o que interessa.",
+      "custo": { "tempo": 2, "energia": 10 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": {
+        "apoioPartido": [1, 3],
+        "reputacao": { "notoriedade": [0, 2] },
+        "atributoPeso": "negociacao"
+      },
+      "peso": 1
+    },
+    {
+      "id": "buscar_recurso_uniao",
+      "categoria": "MANDATO",
+      "titulo": "Buscar recurso no estado/União",
+      "desc": "Viagem, audiência com ministério, convênio assinado. Reforça o caixa do governo e a imagem de gestor.",
+      "custo": { "tempo": 2, "energia": 11 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": {
+        "reputacao": { "aprovacao": [0, 2], "notoriedade": [1, 3] },
+        "ecoMidiatico": [1, 4],
+        "gabineteBonus": [8000, 20000],
+        "atributoPeso": "influencia"
+      },
+      "peso": 1
+    },
+    {
+      "id": "gerir_crise_cidade",
+      "categoria": "MANDATO",
+      "titulo": "Assumir a linha de frente de uma crise",
+      "desc": "Chuva, apagão, epidemia: aparecer, coordenar, prestar contas. Corta a bola de neve.",
+      "custo": { "tempo": 2, "energia": 12 },
+      "requisitos": { "temCascata": true },
+      "efeitos": { "conterCascata": true, "reputacao": { "confianca": [0, 3] }, "atributoPeso": "gestao" },
+      "peso": 1.7
+    }
+  ]
+}

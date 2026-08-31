@@ -13,6 +13,17 @@ const BAIRROS = neighborhoods.bairros;
 const MANDATO_MESES = 48;
 export const COMISSOES = committeesDef.comissoes;
 
+// Etapa 2 — vocabulário de `bairro.problemas` != vocabulário de `laws.json`.
+// Normaliza para o id canônico de tema usado nos projetos.
+const TEMA_CANONICO = {
+  agua: 'saneamento', alagamento: 'saneamento', comercio: 'empreendedorismo',
+  emprego: 'empreendedorismo', gestao: 'transparencia', moradia: 'habitacao',
+  turismo: 'cultura',
+};
+export function temaCanonico(tema) {
+  return TEMA_CANONICO[tema] || tema;
+}
+
 export function comissaoDoTema(tema) {
   return COMISSOES.find((c) => c.temas.includes(tema)) || null;
 }
@@ -98,6 +109,13 @@ export function forcaGabinete(state, area) {
     }
   }
   return n ? 0.5 + (soma / n / 100) : 0.45;
+}
+
+// Etapa 8 — multiplicador prático do gabinete numa área (0.9..1.6). Fora de
+// mandato não há gabinete → 1. Assessor bom na área compensa; nenhum, penaliza de leve.
+export function multGabinete(state, area) {
+  if (!state.mandato) return 1;
+  return clamp(1 + (forcaGabinete(state, area) - 0.6) * 0.95, 0.85, 1.75);
 }
 
 export function contratarAssessor(state, assessor) {
@@ -268,20 +286,45 @@ function aplicarAprovacao(state, pj, rng) {
   }
   // Fase 8 — a entrega agrada os grupos sociais mobilizados pela pauta
   impactoDeTema(state, pj.tema, pj.impacto * rng.range([0.35, 0.7]));
-  // cumpre promessa relacionada
+  // Etapa 2 — progride/cumpre promessas relacionadas (match estrutural, não string)
+  cumprirPromessas(state, { tema: pj.tema, bairroId: pj.bairroFoco });
+}
+
+// Match por tema canônico + bairro. Projeto no par exato cumpre; mesmo tema em
+// bairro diferente (ou vice-versa) rende progresso parcial.
+export function cumprirPromessas(state, { tema, bairroId }) {
+  if (!state.mandato) return;
+  const t = temaCanonico(tema);
   for (const pr of state.mandato.promessas) {
-    if (!pr.cumprida && pr.tema === pj.tema && pr.bairroId === pj.bairroFoco) {
+    if (pr.cumprida) continue;
+    const casaTema = pr.tema === t;
+    const casaBairro = pr.bairroId === bairroId;
+    if (!casaTema && !casaBairro) continue;
+    // projeto entregue no par exato = promessa cumprida; senão, progresso parcial
+    pr.progresso = casaTema && casaBairro
+      ? 100
+      : Math.min(95, (pr.progresso || 0) + (casaTema ? 22 : 12));
+    if (pr.progresso >= 100) {
       pr.cumprida = true;
+      pr.mesCumprida = state.tempo.mes;
       state.reputacao.confianca = clamp(state.reputacao.confianca + 4, 0, 100);
-      state.mundo.noticias.unshift({ id: `nt_pr_${state.tempo.mes}`, mes: state.tempo.mes, tipo: 'CIDADE', destaque: true, atores: [], texto: `Você cumpriu a promessa sobre ${pr.tema} na ${BAIRROS.find((b) => b.id === pr.bairroId)?.nome || 'cidade'}.` });
+      impactoDeTema(state, pr.tema, 6);
+      state.mundo.noticias.unshift({
+        id: `nt_pr_${pr.id}`, mes: state.tempo.mes, tipo: 'CIDADE', destaque: true, atores: [],
+        texto: `Você cumpriu a promessa sobre ${pr.tema} na ${BAIRROS.find((b) => b.id === pr.bairroId)?.nome || 'cidade'}.`,
+      });
     }
   }
 }
 
 export function registrarPromessa(state, { tema, bairroId }) {
+  const t = temaCanonico(tema);
+  // não duplica: se já há promessa aberta no mesmo par, não cria outra
+  if (state.mandato.promessas.some((p) => !p.cumprida && p.tema === t && p.bairroId === bairroId)) return;
   state.mandato.promessas.push({
-    id: `prom_${state.tempo.mes}_${bairroId}_${tema}`,
-    tema, bairroId, mesFeita: state.tempo.mes, prazo: state.tempo.mes + 18, cumprida: false,
+    id: `prom_${state.tempo.mes}_${bairroId}_${t}_${state.mandato.promessas.length}`,
+    tema: t, bairroId, mesFeita: state.tempo.mes, prazo: state.tempo.mes + 18,
+    progresso: 0, cumprida: false,
   });
 }
 
@@ -456,13 +499,14 @@ export function mandateTick(s) {
 
   // aprovação: regressão à média + desgaste de mandato (cresce ao longo do termo)
   const mesAtual = m - s.mandato.mesInicio;
-  const desgaste = 0.2 + (mesAtual / 48) * 0.5;
+  const desgaste = 0.35 + (mesAtual / 48) * 0.7;
   s.reputacao.aprovacao = clamp(
-    s.reputacao.aprovacao + (50 - s.reputacao.aprovacao) * 0.05 - desgaste,
+    s.reputacao.aprovacao + (46 - s.reputacao.aprovacao) * 0.08 - desgaste,
     0, 100,
   );
   for (const pr of s.mandato.promessas) {
-    if (!pr.cumprida && m === pr.prazo) {
+    if (!pr.cumprida && !pr.cobrada && m >= pr.prazo) {
+      pr.cobrada = true;
       s.reputacao.confianca = clamp(s.reputacao.confianca - rng.range([3, 7]), 0, 100);
       s.reputacao.rejeicao = clamp(s.reputacao.rejeicao + rng.range([1, 4]), 0, 100);
       eventos.push({ tipo: 'ALERTA', texto: `Cobrança: a promessa sobre ${pr.tema} na ${BAIRROS.find((b) => b.id === pr.bairroId)?.nome || 'cidade'} não saiu do papel.` });
