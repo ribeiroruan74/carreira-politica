@@ -14,12 +14,16 @@ import { tickVidaPessoal } from './personal';
 import { tickInfluenciadores } from './influencers';
 import { tickMarcos } from './milestones';
 import { checarConquistas } from './achievements';
+import { checarFimDeJogo } from './endgame';
 
 // Roda 1 mês sobre `s` (MUTA o objeto). É a única definição do pipeline mensal —
 // usada tanto pelo store (com clone antes) quanto pelo harness de simulação.
 export function runMonth(s) {
   const eventos = [];
   const push = (r) => { if (r?.eventos?.length) eventos.push(...r.eventos); };
+
+  // Fase 30 — carreira encerrada: o tempo para de correr
+  if (s.fimDeJogo) return { state: s, eventos: [], crise: null };
 
   push(runTick(s));
   push(worldTick(s));
@@ -45,6 +49,7 @@ export function runMonth(s) {
 
   push(tickMarcos(s));              // Fase 28 — anota marcos derivados do log
   push(checarConquistas(s));        // Fase 27 — desbloqueia conquistas
+  push(checarFimDeJogo(s));         // Fase 30 — a carreira pode ter chegado ao fim
 
   return { state: s, eventos, crise };
 }

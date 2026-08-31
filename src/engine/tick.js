@@ -89,15 +89,18 @@ export function runTick(s) {
   ).toFixed(2);
   if (Math.abs(s.reputacao.ecoMidiatico) < 0.3) s.reputacao.ecoMidiatico = 0;
 
+  // Fase 33 — o piso de notoriedade que os seguidores sustentam tem retorno
+  // decrescente (500 mil seguidores não te deixam eternamente famoso), e a
+  // notoriedade regride mais rápido quando você some do noticiário.
   const pisoNotoriedade = clamp(
     3 + Math.round(s.personagem.atributos.popularidade / 12)
-      + Math.round(s.redes.seguidores / 20000),
+      + Math.min(18, Math.round(Math.log10(1 + s.redes.seguidores / 1000) * 7)),
     0, 100,
   );
   if (s.reputacao.notoriedade > pisoNotoriedade) {
     s.reputacao.notoriedade = Math.max(
       pisoNotoriedade,
-      s.reputacao.notoriedade - 1.5,
+      s.reputacao.notoriedade - 2.2,
     );
   }
 

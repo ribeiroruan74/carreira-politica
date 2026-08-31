@@ -3,6 +3,15 @@ import partiesDef from '../content/parties.json';
 import { iniciarEleicao } from './election';
 import { janelaCandidatura } from './calendar';
 import { todosOsCargos, cargoPorId } from './offices';
+import { arquivarMandato, encerrarCarreira } from './endgame';
+
+// Fase 30 — o jogador pode encerrar a carreira quando já é alguém na política.
+export function podeEncerrarCarreira(state) {
+  const p = state.personagem;
+  if (state.fimDeJogo) return false;
+  if (!['PARTIDO', 'MANDATO'].includes(p.fase)) return false;
+  return (p.mandatosExercidos || []).length >= 1 || p.idade >= 50;
+}
 
 function nomeCargoCurto(id) {
   return (cargoPorId(id)?.nomeCurto || id.toLowerCase().replace(/_/g, ' '));
@@ -172,9 +181,16 @@ export function aplicarObjetivo(state, objetivoId, opts = {}) {
     if (state.mandato) {
       const eraReeleicao = state.mandato.cargo === cargoId;
       if (eraReeleicao) {
-        state.reputacao.notoriedade = Math.min(100, state.reputacao.notoriedade + 9);
+        // Fase 33 — a reeleição é um referendo: o impulso de quem está no cargo
+        // escala com o desempenho (aprovação + promessas cumpridas). Mandato
+        // fraco vira lastro, não trampolim.
+        const proms = state.mandato.promessas || [];
+        const taxaProm = proms.length ? proms.filter((x) => x.cumprida).length / proms.length : 0.5;
+        const desempenho = clamp((state.reputacao.aprovacao - 42) / 30 + (taxaProm - 0.4) * 0.8, -1, 1.4);
+        state.reputacao.notoriedade = Math.min(100, state.reputacao.notoriedade + 4 + 6 * Math.max(0, desempenho));
+        state.reputacao.rejeicao = clamp(state.reputacao.rejeicao - 3 * desempenho, 0, 100);
         const pr = state.mundo.partidosRuntime?.[state.personagem.partidoId];
-        if (pr) pr.apoioAoJogador = Math.min(100, pr.apoioAoJogador + 18);
+        if (pr) pr.apoioAoJogador = clamp(pr.apoioAoJogador + 6 + 12 * desempenho, 0, 100);
       }
       state.personagem.historicoPolitico.push({
         mes: state.tempo.mes,
@@ -182,9 +198,16 @@ export function aplicarObjetivo(state, objetivoId, opts = {}) {
           ? `Encerrou o mandato e partiu para a reeleição a ${alvo.nome}.`
           : `Deixou o mandato de ${(state.mandato.cargoNome || 'vereador')} para disputar ${alvo.nome}.`,
       });
+      arquivarMandato(state); // Fase 30 — soma o mandato ao legado
       state.mandato = null;
     }
     iniciarEleicao(state, cargoId);
+    return;
+  }
+
+  if (objetivoId === 'encerrar_carreira') {
+    if (!podeEncerrarCarreira(state)) throw new Error('Ainda não há carreira para encerrar.');
+    encerrarCarreira(state);
     return;
   }
 

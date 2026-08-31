@@ -48,6 +48,13 @@ function agirMes(state, perfil) {
   const b1 = perfil.bairro1;
   const b2 = perfil.bairro2;
 
+  // jogador casual: fora de campanha, ~40% dos meses ele mal age
+  if (perfil.esforco === 'casual' && fase !== 'CANDIDATO') {
+    const r = streamRng(s.meta.seed, 'casual', s.tempo.mes);
+    if (r.chance(0.4)) return s;
+    if (r.chance(0.5)) s.tempo.pontosRestantes = Math.min(s.tempo.pontosRestantes, 4);
+  }
+
   // objetivo de fase
   const obj = objetivoDaFase(s);
   if (obj?.disponivel) {
@@ -59,7 +66,8 @@ function agirMes(state, perfil) {
       const jan = janelaCandidatura(s);
       const ultimaChance = s.tempo.mes >= jan.fecha - 1;
       const temMandato = !!s.mandato;
-      if (temMandato || s.reputacao.notoriedade >= 20 || ultimaChance) {
+      const limiar = perfil.esforco === 'casual' ? 14 : 20;
+      if (temMandato || s.reputacao.notoriedade >= limiar || ultimaChance) {
         s = aplicar(s, (x) => aplicarObjetivo(x, 'lancar_candidatura', { cargoId: obj.cargoPadrao || 'VEREADOR' }));
       }
     }
@@ -128,6 +136,8 @@ export function simularPartida(seed, perfil = {}) {
     bairro1: perfil.bairro1 || 'ibura',
     bairro2: perfil.bairro2 || 'casa_amarela',
     maxMeses: perfil.maxMeses || 90,
+    // 'otimo' (default): aproveita cada mês. 'casual': pula meses, age menos.
+    esforco: perfil.esforco || 'otimo',
   };
   let s = novoJogo({ nome: 'Sim', profissaoId: p.profissaoId, traçoId: p.traçoId, dificuldade: p.dificuldade, seed });
 
@@ -159,6 +169,7 @@ export function simularPartida(seed, perfil = {}) {
     }
     s = avancarMes(s);
     if (s.personagem.fase === 'MANDATO' && s.mandato) r.projetosAprovados = s.mandato.indicadores.projetosAprovados;
+    if (s.fimDeJogo) { r.fimDeJogo = s.fimDeJogo.tipo; break; } // Fase 30
   }
 
   r.aprovacaoFinal = Math.round(s.reputacao.aprovacao);

@@ -55,9 +55,11 @@ export function jogadorComoCandidato(state, cargoId = 'VEREADOR') {
   } else {
     for (const [bid, t] of Object.entries(state.territorio.porBairro)) {
       if (t.presenca <= 0) continue;
-      // presença sem penetração (voto firme) rende pouco — aparecer não é ser votado
-      const efetiva = Math.min(t.presenca, 25 + t.penetracao * 1.6);
-      bairrosBase[bid] = clamp(efetiva / 155 + t.penetracao / 220, 0, 0.62);
+      // presença sem penetração (voto firme) rende pouco — aparecer não é ser votado.
+      // Fase 33 — teto e divisores mais duros: mesmo um reduto forte não "entrega"
+      // o bairro sozinho; penetração (voto firme) é o que realmente conta.
+      const efetiva = Math.min(t.presenca, 22 + t.penetracao * 1.45);
+      bairrosBase[bid] = clamp(efetiva / 185 + t.penetracao / 270, 0, 0.52);
     }
   }
 
@@ -96,9 +98,11 @@ function propensao(cand, grupo, unidade, ruido) {
   const w = cand.bairrosBase[unidade.id] || 0;
   const terr = w <= 0 ? 0 : Math.min(w, 0.5) * 2.5 + Math.max(0, w - 0.5) * 0.7;
 
-  // 3) notoriedade — não se vota em quem não se conhece
+  // 3) notoriedade — não se vota em quem não se conhece.
+  // Fase 33 — curva um pouco menos generosa: ser muito conhecido ajuda, mas não
+  // substitui base e voto firme.
   const nf = cand.notoriedade / 100;
-  const noto = (nf ** 1.4) * 2.6 - 0.55;
+  const noto = (nf ** 1.5) * 2.15 - 0.35;
 
   // 4) rejeição, amplificada em grupos menos voláteis
   const rej = -(cand.rejeicao / 100) * (1.4 + (1 - grupo.volatilidade));
@@ -113,7 +117,7 @@ function propensao(cand, grupo, unidade, ruido) {
   const alvo = cand.grupoAlvo?.includes(grupo.id) ? 1.6 : 0;
 
   // 7b) bônus de mandato/reconhecimento
-  const incumbente = /ELEITO/.test(cand.situacao2024 || '') ? 0.8 : 0;
+  const incumbente = /ELEITO/.test(cand.situacao2024 || '') ? 1.05 : 0;
 
   // 8) caixa de campanha (retornos decrescentes)
   const caixa = Math.log10(1 + Math.max(0, cand.caixaCampanha) / 20000) * 0.5;

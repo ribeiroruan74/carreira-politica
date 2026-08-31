@@ -31,6 +31,7 @@ export const useGame = create(
       avancarMes() {
         const estado = get().estado;
         if (!estado) return;
+        if (estado.fimDeJogo) return; // Fase 30 — carreira encerrada
         if (estado.eventoPendente) return; // resolva a crise antes de avançar
         const work = structuredClone(estado);
         const { eventos } = runMonth(work);

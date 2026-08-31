@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
 import { acoesDisponiveis, aplicarAcao, precisaBairro, precisaPessoa, precisaPolitico, precisaEmprego, precisaPodcast, precisaInfluenciador } from '../../engine/actions';
 import { empregosDisponiveis } from '../../engine/jobs';
-import { objetivoDaFase, aplicarObjetivo } from '../../engine/career';
+import { objetivoDaFase, aplicarObjetivo, podeEncerrarCarreira } from '../../engine/career';
 import { podcastsDisponiveis, POSTURAS } from '../../engine/podcasts';
 import { influenciadoresDisponiveis } from '../../engine/influencers';
 import { Card, Pill, PageHead } from '../components/primitives';
@@ -85,6 +85,30 @@ function ObjetivoCard({ obj, aplicar, irPara }) {
   );
 }
 
+function EncerrarCarreiraCard({ aplicar }) {
+  const [confirmar, setConfirmar] = useState(false);
+  return (
+    <Card title="Encerrar a carreira" aside={<Pill>quando você quiser</Pill>}>
+      <p className="small dim">
+        Sair da vida pública nos seus próprios termos. Fecha o jogo com a biografia da sua trajetória — o veredito da história.
+      </p>
+      {!confirmar ? (
+        <button className="btn ghost sm" style={{ marginTop: 8 }} onClick={() => setConfirmar(true)}>
+          Pensar em me aposentar…
+        </button>
+      ) : (
+        <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+          <button className="btn sm" style={{ background: 'var(--red)' }}
+            onClick={() => aplicar((st) => aplicarObjetivo(st, 'encerrar_carreira'))}>
+            Confirmar — encerrar a carreira
+          </button>
+          <button className="btn ghost sm" onClick={() => setConfirmar(false)}>Ainda não</button>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export default function Agenda({ irPara }) {
   const s = useGame((g) => g.estado);
   const aplicar = useGame((g) => g.aplicar);
@@ -140,6 +164,8 @@ export default function Agenda({ irPara }) {
       </PageHead>
 
       {obj && <ObjetivoCard obj={obj} aplicar={aplicar} irPara={irPara} />}
+
+      {podeEncerrarCarreira(s) && <EncerrarCarreiraCard aplicar={aplicar} />}
 
       {erro && <Card><p style={{ color: 'var(--red)', margin: 0 }} className="small">{erro}</p></Card>}
 

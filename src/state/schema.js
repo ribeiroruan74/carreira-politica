@@ -1,7 +1,7 @@
 // Forma do save + versão + migrações. Salvar nunca pode quebrar entre updates:
 // toda mudança estrutural ganha um número de versão e uma função de migração.
 
-export const SAVE_VERSION = 11;
+export const SAVE_VERSION = 12;
 
 // Estado "vazio" de referência — documenta a forma completa do save.
 export function emptyState() {
@@ -39,6 +39,13 @@ export function emptyState() {
       historicoProfissional: [],
       historicoPolitico: [],
       grupoPolitico: [], // ids de mundo.politicos alinhados ao jogador
+      derrotasSeguidas: 0, // Fase 30 — derrotas eleitorais consecutivas (reseta ao vencer)
+      // Fase 30 — tally acumulado da carreira (mandatos passados somados aqui ao encerrar cada um)
+      legado: {
+        mesesEmMandato: 0, projetosAprovados: 0, projetosRejeitados: 0, fiscalizacoes: 0,
+        promessasFeitas: 0, promessasCumpridas: 0, obrasEntregues: 0,
+        eleicoesVencidas: 0, eleicoesPerdidas: 0, melhorVotacao: 0,
+      },
       emprego: null, // { id, titulo, setor, salario, horas, mesInicio }
       licenciado: false, // afastado do emprego (campanha/mandato) — meio salário, zero horas
       // Fase 22 — vida pessoal
@@ -114,6 +121,7 @@ export function emptyState() {
     series: [], // { mes, aprovacao, rejeicao, notoriedade, seguidores, intencaoVoto } — histórico p/ Pesquisas
     marcos: [], // Fase 28 — { mes, tipo, texto } marcos anotados na linha do tempo
     conquistas: { desbloqueadas: {} }, // Fase 27 — { achievementId: mes }
+    fimDeJogo: null, // Fase 30 — { tipo, motivo, mes, biografia } quando a carreira termina
     log: [], // { mes, tipo, texto }
     flags: {
       tutorialPasso: 0,
@@ -224,6 +232,17 @@ const migracoes = {
     s.mundo.influInicializado = s.mundo.influInicializado || false;
     s.marcos = s.marcos || [];
     s.conquistas = s.conquistas || { desbloqueadas: {} };
+    return s;
+  },
+  // v11 -> v12: Bloco G — fim de jogo / legado
+  11: (s) => {
+    s.personagem.derrotasSeguidas = s.personagem.derrotasSeguidas || 0;
+    s.personagem.legado = s.personagem.legado || {
+      mesesEmMandato: 0, projetosAprovados: 0, projetosRejeitados: 0, fiscalizacoes: 0,
+      promessasFeitas: 0, promessasCumpridas: 0, obrasEntregues: 0,
+      eleicoesVencidas: (s.personagem.mandatosExercidos || []).length, eleicoesPerdidas: 0, melhorVotacao: 0,
+    };
+    s.fimDeJogo = s.fimDeJogo || null;
     return s;
   },
 };

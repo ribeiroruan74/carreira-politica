@@ -1,5 +1,6 @@
 import balance from '../content/balance.json';
 import { clamp } from './rng';
+import { arquivarMandato } from './endgame';
 
 // ============================================================
 // FASE 6 — Calendário eleitoral
@@ -100,6 +101,7 @@ export function tickCalendario(s) {
         s.personagem.cargoAtual = 'NENHUM';
         s.personagem.licenciado = false;
         s.personagem.historicoPolitico.push({ mes: m, texto: `Não disputou a reeleição de ${ano}. Fim do mandato de ${nomeCargo}.` });
+        arquivarMandato(s); // Fase 30
         s.mandato = null;
         s.log.unshift({ mes: m, tipo: 'MARCO', texto: `Seu mandato terminou — você não disputou a reeleição de ${ano}.` });
         eventos.push({ tipo: 'CALENDARIO', texto: `Fim do mandato: você não disputou a reeleição de ${ano}.` });

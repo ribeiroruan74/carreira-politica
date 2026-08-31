@@ -309,6 +309,10 @@ function aplicarDesfecho(s, eleito) {
     s.personagem.fase = 'MANDATO';
     s.personagem.cargoAtual = cargoId;
     s.personagem.licenciado = true;
+    s.personagem.derrotasSeguidas = 0; // Fase 30
+    const leg = (s.personagem.legado ||= {});
+    leg.eleicoesVencidas = (leg.eleicoesVencidas || 0) + 1;
+    leg.melhorVotacao = Math.max(leg.melhorVotacao || 0, el.resultado.votosJogador || 0);
     s.personagem.mandatosExercidos = Array.from(
       new Set([...(s.personagem.mandatosExercidos || []), cargoId]),
     );
@@ -318,6 +322,9 @@ function aplicarDesfecho(s, eleito) {
     s.personagem.fase = 'PARTIDO';
     s.personagem.cargoAtual = 'NENHUM';
     s.personagem.licenciado = false;
+    s.personagem.derrotasSeguidas = (s.personagem.derrotasSeguidas || 0) + 1; // Fase 30
+    const leg = (s.personagem.legado ||= {});
+    leg.eleicoesPerdidas = (leg.eleicoesPerdidas || 0) + 1;
     s.reputacao.aprovacao = clamp(s.reputacao.aprovacao - 3, 0, 100);
     s.reputacao.rejeicao = clamp(s.reputacao.rejeicao + 2, 0, 100);
   }
