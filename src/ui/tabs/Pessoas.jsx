@@ -19,9 +19,24 @@ export default function Pessoas() {
   const [ordem, setOrdem] = useState('confianca');
   const [ficha, setFicha] = useState(null);
 
+  const [grupo, setGrupo] = useState('TODOS');
+  const noGrupo = (id) => (estado.personagem.grupoPolitico || []).includes(id);
+  // Ajuste final — só figuras reais + quem você já tocou + lideranças (o resto é bancada de fundo)
   const politicos = Object.values(estado.mundo.politicos || {})
-    .filter((p) => p.ativo)
+    .filter((p) => p.ativo && (p.real || p.lider || Math.round(p.relacaoJogador || 0) !== 0 || noGrupo(p.id)))
+    .filter((p) => {
+      if (grupo === 'TODOS') return true;
+      const c = (p.cargo || '').toUpperCase();
+      if (grupo === 'PRESIDENTE') return c.includes('PRESIDENTE');
+      if (grupo === 'GOVERNADOR') return c.includes('GOVERNADOR');
+      if (grupo === 'SENADOR') return c.includes('SENADOR');
+      if (grupo === 'DEPUTADO') return c.includes('DEPUTADO');
+      if (grupo === 'PREFEITO') return c.includes('PREFEITO');
+      if (grupo === 'VEREADOR') return c.includes('VEREADOR');
+      return true;
+    })
     .sort((a, b) => (b.relacaoJogador - a.relacaoJogador) || (b.influencia - a.influencia));
+  const GRUPOS = [['TODOS', 'Todos'], ['PRESIDENTE', 'Presidente'], ['GOVERNADOR', 'Governadores'], ['SENADOR', 'Senadores'], ['DEPUTADO', 'Deputados'], ['PREFEITO', 'Prefeitos'], ['VEREADOR', 'Vereadores']];
 
   const ordenadas = [...pessoas].sort((a, b) => {
     if (ordem === 'influencia') return b.influencia - a.influencia;
@@ -64,10 +79,14 @@ export default function Pessoas() {
       {pessoas.length === 0 && <Card><p className="dim small">Sua rede está vazia. Use a Agenda para fazer networking.</p></Card>}
 
       {politicos.length > 0 && (
-        <Card title="Cenário político" aside={`${politicos.length} atores`}>
-          <p className="small dim" style={{ marginBottom: 10 }}>Vereadores, lideranças e o Executivo. Clique para ver a ficha.</p>
+        <Card title="Cenário político" aside={`${politicos.length}`}>
+          <div className="chips" style={{ marginBottom: 10 }}>
+            {GRUPOS.map(([id, nm]) => (
+              <button key={id} className={`btn sm ${grupo === id ? '' : 'ghost'}`} onClick={() => setGrupo(id)}>{nm}</button>
+            ))}
+          </div>
           <div className="stack" style={{ gap: 4 }}>
-            {politicos.slice(0, 24).map((p) => {
+            {politicos.slice(0, 40).map((p) => {
               const rel = Math.round(p.relacaoJogador || 0);
               return (
                 <button key={p.id} className="row" onClick={() => setFicha(p.id)}

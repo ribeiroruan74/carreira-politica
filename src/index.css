@@ -121,11 +121,11 @@ button { font-family: inherit; }
   background: var(--paper);
 }
 .app-main {
-  padding: 14px 14px calc(84px + env(safe-area-inset-bottom));
+  padding: 14px 14px calc(100px + env(safe-area-inset-bottom));
 }
 @media (min-width: 800px) {
   .app { max-width: 720px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
-  .app-main { padding: 20px 22px calc(92px + env(safe-area-inset-bottom)); }
+  .app-main { padding: 20px 22px calc(108px + env(safe-area-inset-bottom)); }
 }
 
 .page-fade { animation: pageIn 0.22s ease; }
@@ -163,30 +163,30 @@ button { font-family: inherit; }
 .bottomnav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
   display: flex; justify-content: space-between; gap: 1px;
-  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  padding: 12px 6px calc(14px + env(safe-area-inset-bottom));
   background: color-mix(in srgb, var(--surface) 97%, transparent);
   backdrop-filter: saturate(1.5) blur(12px);
   border-top: 1px solid var(--line);
-  box-shadow: 0 -6px 24px -14px rgba(0,0,0,0.35);
+  box-shadow: 0 -8px 28px -12px rgba(0,0,0,0.4);
 }
 @media (min-width: 800px) {
   .bottomnav { max-width: 720px; margin: 0 auto; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
 }
 .bn-item {
   flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center;
-  background: none; border: none; cursor: pointer; padding: 10px 0;
-  border-radius: 14px;
+  background: none; border: none; cursor: pointer; padding: 12px 0;
+  border-radius: 16px;
   transition: background 0.15s ease;
 }
 .bn-item .bn-ico {
-  font-size: 27px; line-height: 1; position: relative;
-  filter: grayscale(0.6) opacity(0.6);
+  font-size: 29px; line-height: 1; position: relative;
+  filter: grayscale(0.6) opacity(0.55);
   transition: filter 0.15s ease, transform 0.14s ease;
 }
 .bn-item.on { background: var(--accent-soft); }
-.bn-item.on .bn-ico { filter: none; transform: scale(1.18); }
+.bn-item.on .bn-ico { filter: none; transform: scale(1.2); }
 .bn-item:active .bn-ico { transform: scale(0.85); }
-@media (max-width: 400px) { .bn-item .bn-ico { font-size: 23px; } }
+@media (max-width: 400px) { .bn-item .bn-ico { font-size: 25px; } }
 .bn-dot {
   position: absolute; top: -5px; right: -10px;
   min-width: 16px; height: 16px; padding: 0 3px;

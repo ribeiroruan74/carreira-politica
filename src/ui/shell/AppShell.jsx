@@ -26,11 +26,12 @@ export default function AppShell() {
   const daSecao = abasDaSecao(estado, secaoAtiva);
   const info = secaoInfo(secaoAtiva);
 
-  // Início → dashboard direto. Seção com 1 sub-página → ela direto. Senão → hub/sub-página.
+  // Início → dashboard direto (Agenda/Campanha abrem como sub-tela). Seção com 1
+  // sub-página → ela direto. Senão → hub / sub-página.
   let conteudoAba = aba && daSecao.some((t) => t.id === aba) ? aba : null;
   const mostraHub = secaoAtiva !== 'inicio' && daSecao.length > 1 && !conteudoAba;
-  if (secaoAtiva === 'inicio') conteudoAba = 'dashboard';
-  else if (daSecao.length === 1) conteudoAba = daSecao[0].id;
+  if (secaoAtiva === 'inicio' && !conteudoAba) conteudoAba = 'dashboard';
+  else if (secaoAtiva !== 'inicio' && daSecao.length === 1) conteudoAba = daSecao[0].id;
 
   const abaMeta = abas.find((t) => t.id === conteudoAba);
   const Ativa = abaMeta?.comp;

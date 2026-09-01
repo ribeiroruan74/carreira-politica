@@ -1,7 +1,7 @@
 // Item 1 — sem barra de XP. Treino/prática/discurso/entrevista sobem o atributo
 // direto, com retorno decrescente perto do teto (fica mais lento no topo).
 
-import { clamp, createRng } from './rng';
+import { clamp } from './rng';
 
 export const TREINAVEIS = [
   { id: 'carisma', nome: 'Carisma', metodo: 'eventos, contato, exposição' },
@@ -16,13 +16,10 @@ export const TREINAVEIS_IDS = new Set([...TREINAVEIS.map((t) => t.id), 'intelige
 
 const TETO = 92;
 
-// Item 6 — treino pago: dinheiro + energia compram ponto de atributo direto (sem XP),
-// com retorno decrescente e custo que sobe com o nível.
-export function custoTreinoAtributo(state, attrId) {
-  const v = state.personagem.atributos[attrId] ?? 45;
-  const emCargo = state.personagem.cargoAtual && state.personagem.cargoAtual !== 'NENHUM';
-  const base = 1800 + Math.round((v ** 3) / 220);
-  return { dinheiro: Math.round((base * (emCargo ? 1.35 : 1)) / 100) * 100, energia: 2 };
+// Ajuste final — treino pago: R$ 2.000 + 1 energia = +1 ponto de atributo. Sem XP.
+export const CUSTO_TREINO = { dinheiro: 2000, energia: 1 };
+export function custoTreinoAtributo() {
+  return CUSTO_TREINO;
 }
 
 export function treinarAtributoPago(state, attrId) {
@@ -30,18 +27,13 @@ export function treinarAtributoPago(state, attrId) {
   const atr = state.personagem.atributos;
   if (atr[attrId] == null) atr[attrId] = 45;
   if (atr[attrId] >= TETO) throw new Error('Esse atributo já está no teto.');
-  const c = custoTreinoAtributo(state, attrId);
-  if (state.tempo.energia < c.energia) throw new Error(`Sem energia (custa ${c.energia}).`);
-  if (state.financas.pessoal < c.dinheiro) throw new Error('Dinheiro pessoal insuficiente.');
-  const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.energia -= c.energia;
-  state.financas.pessoal -= c.dinheiro;
-  const headroom = clamp((TETO - atr[attrId]) / 47, 0.12, 1);
-  const ganho = rng.range([0.9, 1.7]) * headroom;
-  atr[attrId] = Math.round(clamp(atr[attrId] + ganho, 5, TETO) * 10) / 10;
-  state.meta.rngState = rng.state;
-  state.log.unshift({ mes: state.tempo.mes, tipo: 'PESSOAL', texto: `Treino particular — ${attrId}: +${ganho.toFixed(1)} (agora ${Math.round(atr[attrId])}).` });
-  return { ganho: +ganho.toFixed(1), valor: atr[attrId] };
+  if (state.tempo.energia < CUSTO_TREINO.energia) throw new Error('Sem energia (custa 1).');
+  if (state.financas.pessoal < CUSTO_TREINO.dinheiro) throw new Error('Dinheiro pessoal insuficiente (R$ 2.000).');
+  state.tempo.energia -= CUSTO_TREINO.energia;
+  state.financas.pessoal -= CUSTO_TREINO.dinheiro;
+  atr[attrId] = Math.min(TETO, Math.floor(atr[attrId]) + 1);
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'PESSOAL', texto: `Treino particular — ${attrId}: +1 (agora ${atr[attrId]}).` });
+  return { ganho: 1, valor: atr[attrId] };
 }
 
 // Sobe o atributo direto. `xp` é a antiga "quantidade de treino" (~2..40);

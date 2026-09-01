@@ -56,6 +56,30 @@
         { "nome": "Equipe de segurança fixa", "custoMes": 9000, "efeitos": { "riscoCriseReduz": 0.11, "bemEstarMes": 0.3 } },
         { "nome": "Esquema completo de proteção", "custoMes": 20000, "efeitos": { "riscoCriseReduz": 0.18, "bemEstarMes": 0.5 } }
       ]
+    },
+    {
+      "id": "assistente", "nome": "Assistente pessoal", "ico": "🗂️", "categoria": "Rotina",
+      "niveis": [
+        { "nome": "Assistente meio período", "custoMes": 2200, "efeitos": { "energiaMax": 1 } },
+        { "nome": "Assistente + secretária", "custoMes": 5500, "efeitos": { "energiaMax": 2, "bemEstarMes": 0.3 } },
+        { "nome": "Equipe de apoio pessoal", "custoMes": 11000, "efeitos": { "energiaMax": 3, "bemEstarMes": 0.5 } }
+      ]
+    },
+    {
+      "id": "planejamento", "nome": "Planejamento pessoal", "ico": "📈", "categoria": "Bem-estar",
+      "niveis": [
+        { "nome": "Consultoria de produtividade", "custoMes": 1400, "efeitos": { "energiaMax": 1 } },
+        { "nome": "Planejador + agenda gerida", "custoMes": 3800, "efeitos": { "energiaMax": 1, "bemEstarMes": 0.4 } },
+        { "nome": "Escritório de gestão da rotina", "custoMes": 9000, "efeitos": { "energiaMax": 2, "bemEstarMes": 0.6 } }
+      ]
+    },
+    {
+      "id": "concierge", "nome": "Concierge", "ico": "🎩", "categoria": "Exposição",
+      "niveis": [
+        { "nome": "Concierge sob demanda", "custoMes": 2000, "efeitos": { "bemEstarMes": 0.4 } },
+        { "nome": "Concierge dedicado", "custoMes": 5000, "efeitos": { "bemEstarMes": 0.6, "notoriedadeMes": 0.2 } },
+        { "nome": "Concierge + relações públicas", "custoMes": 12000, "efeitos": { "bemEstarMes": 0.8, "notoriedadeMes": 0.5 } }
+      ]
     }
   ]
 }
