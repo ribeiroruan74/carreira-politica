@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
-import { acoesDisponiveis, aplicarAcao, precisaBairro, precisaPessoa, precisaPolitico, precisaEmprego, precisaPodcast, precisaInfluenciador, precisaAtributo, contextoAgenda } from '../../engine/actions';
+import { acoesDisponiveis, aplicarAcao, precisaBairro, precisaPessoa, precisaPolitico, precisaEmprego, precisaPodcast, precisaInfluenciador, precisaAtributo, precisaGrupo, contextoAgenda } from '../../engine/actions';
+import { GRUPOS_LISTA } from '../../engine/electorate';
 import { empregosDisponiveis } from '../../engine/jobs';
 import { objetivoDaFase, aplicarObjetivo, podeEncerrarCarreira } from '../../engine/career';
 import { TREINAVEIS } from '../../engine/attributes';
@@ -11,7 +12,7 @@ import { formatBRL } from '../../engine/tick';
 import { bairrosDaCidade } from '../../engine/offices';
 import partiesDef from '../../content/parties.json';
 
-const CAT_LABEL = { PESSOAL: 'Pessoal', COMUNIDADE: 'Comunidade', VIDA_PUBLICA: 'Vida pública', CAMPANHA: 'Campanha', MIDIA: 'Mídia', MANDATO: 'Mandato', POLITICA: 'Política' };
+const CAT_LABEL = { PESSOAL: 'Pessoal', COMUNIDADE: 'Comunidade', VIDA_PUBLICA: 'Vida pública', CAMPANHA: 'Campanha', MIDIA: 'Mídia', MANDATO: 'Mandato', POLITICA: 'Política', DESENVOLVIMENTO: 'Desenvolvimento' };
 
 function ObjetivoCard({ obj, aplicar, irPara }) {
   const [partidoId, setPartidoId] = useState(partiesDef.partidos[0].id);
@@ -133,12 +134,13 @@ export default function Agenda({ irPara }) {
 
   function executar(acao) {
     const precisa = precisaBairro(acao.id) || precisaPessoa(acao.id) || precisaPolitico(acao.id)
-      || precisaEmprego(acao.id) || precisaPodcast(acao.id) || precisaInfluenciador(acao.id) || precisaAtributo(acao.id);
+      || precisaEmprego(acao.id) || precisaPodcast(acao.id) || precisaInfluenciador(acao.id) || precisaAtributo(acao.id)
+      || precisaGrupo(acao.id);
     if (precisa && (!sel || sel.acao.id !== acao.id)) {
       setSel({
         acao, bairroId: bairros[0].id, pessoaId: pessoas[0]?.id, politicoId: politicos[0]?.id,
         empregoId: vagas[0]?.id, podcastId: podcasts[0]?.id, posturaId: POSTURAS[0].id,
-        atributoId: TREINAVEIS[0].id,
+        atributoId: TREINAVEIS[0].id, grupoId: GRUPOS_LISTA[0].id,
         influenciadorId: (precisaInfluenciador(acao.id) && acao.efeitos?.colaborarInfluenciador
           ? influs.find((i) => i.relacao >= 15) : influs[0])?.id || influs[0]?.id,
       });
@@ -149,6 +151,7 @@ export default function Agenda({ irPara }) {
       opts.bairroId = sel.bairroId; opts.pessoaId = sel.pessoaId; opts.politicoId = sel.politicoId;
       opts.empregoId = sel.empregoId; opts.podcastId = sel.podcastId; opts.posturaId = sel.posturaId;
       opts.influenciadorId = sel.influenciadorId; opts.atributoId = sel.atributoId;
+      opts.grupoId = sel.grupoId;
     }
     try {
       aplicar((st) => aplicarAcao(st, acao.id, opts));
@@ -263,6 +266,14 @@ export default function Agenda({ irPara }) {
                         {i.nome} — {i.nicho} · alcance {i.alcance} · relação {Math.round(i.relacao)}{i.capturado ? ' · com rival' : ''}
                       </option>
                     ))}
+                  </select>
+                </>
+              )}
+              {ativoSel && precisaGrupo(a.id) && (
+                <>
+                  <label>Qual segmento?</label>
+                  <select value={sel.grupoId} onChange={(e) => setSel({ ...sel, grupoId: e.target.value })}>
+                    {GRUPOS_LISTA.map((g) => <option key={g.id} value={g.id}>{g.nome}</option>)}
                   </select>
                 </>
               )}

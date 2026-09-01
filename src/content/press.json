@@ -1,18 +1,35 @@
 {
-  "$comment": "Veículos e jornalistas de Recife (fictícios). 'linha': -100 (crítico a você por padrão se você for de direita) a +100. 'alcance' 0-100. 'slant' vira viés na cobertura.",
+  "$comment": "Veículos de imprensa FICTÍCIOS (evocam o cenário real sem serem marcas reais, para poder ter linha editorial própria sem atribuir falas a empresas reais). 'linha' -100..100 = viés editorial. 'alcance' 0-100. 'escopo': local (Recife/PE) | regional (Nordeste) | nacional. Só veículos de alto alcance convidam quem tem relevância midiática alta.",
   "veiculos": [
-    { "id": "diario_pe", "nome": "Diário de Pernambuco Hoje", "tipo": "jornal", "alcance": 78, "linha": 10 },
-    { "id": "portal_recife", "nome": "Portal Recife 24h", "tipo": "portal", "alcance": 85, "linha": -5 },
-    { "id": "tv_capibaribe", "nome": "TV Capibaribe", "tipo": "tv", "alcance": 92, "linha": 5 },
-    { "id": "radio_frevo", "nome": "Rádio Frevo AM", "tipo": "radio", "alcance": 64, "linha": 20 },
-    { "id": "blog_politica_pe", "nome": "Blog Política PE", "tipo": "blog", "alcance": 55, "linha": -25 },
-    { "id": "revista_nordeste", "nome": "Revista Nordeste", "tipo": "revista", "alcance": 48, "linha": -10 }
+    { "id": "diario_pe", "nome": "Diário de Pernambuco Hoje", "tipo": "jornal", "alcance": 78, "linha": 10, "escopo": "local" },
+    { "id": "portal_recife", "nome": "Portal Recife 24h", "tipo": "portal", "alcance": 85, "linha": -5, "escopo": "local" },
+    { "id": "tv_capibaribe", "nome": "TV Capibaribe", "tipo": "tv", "alcance": 92, "linha": 5, "escopo": "local" },
+    { "id": "radio_frevo", "nome": "Rádio Frevo AM", "tipo": "radio", "alcance": 64, "linha": 20, "escopo": "local" },
+    { "id": "blog_politica_pe", "nome": "Blog Política PE", "tipo": "blog", "alcance": 55, "linha": -25, "escopo": "local" },
+    { "id": "revista_nordeste", "nome": "Revista Nordeste", "tipo": "revista", "alcance": 48, "linha": -10, "escopo": "regional" },
+    { "id": "tv_nordeste", "nome": "TV Nordeste", "tipo": "tv", "alcance": 76, "linha": 0, "escopo": "regional" },
+    { "id": "jornal_agreste", "nome": "Jornal do Agreste", "tipo": "jornal", "alcance": 38, "linha": 18, "escopo": "regional" },
+    { "id": "rede_brasil", "nome": "Rede Brasil TV", "tipo": "tv", "alcance": 99, "linha": 5, "escopo": "nacional" },
+    { "id": "tv_massa", "nome": "TV Massa", "tipo": "tv", "alcance": 90, "linha": 12, "escopo": "nacional" },
+    { "id": "portal_central", "nome": "Portal Central", "tipo": "portal", "alcance": 94, "linha": -8, "escopo": "nacional" },
+    { "id": "radio_noticia", "nome": "Rádio Notícia FM", "tipo": "radio", "alcance": 80, "linha": 0, "escopo": "nacional" },
+    { "id": "valor_brasil", "nome": "Valor do Brasil", "tipo": "jornal", "alcance": 70, "linha": 28, "escopo": "nacional" },
+    { "id": "pod_politica_br", "nome": "Papo de Política (podcast)", "tipo": "podcast", "alcance": 62, "linha": -12, "escopo": "nacional" }
   ],
   "jornalistas": [
     { "id": "j_marcia", "nome": "Márcia Aragão", "veiculo": "portal_recife", "cargo": "repórter de política", "rigor": 80 },
     { "id": "j_ronaldo", "nome": "Ronaldo Peixoto", "veiculo": "diario_pe", "cargo": "colunista", "rigor": 65 },
     { "id": "j_luana", "nome": "Luana Sampaio", "veiculo": "tv_capibaribe", "cargo": "apresentadora", "rigor": 55 },
     { "id": "j_gilberto", "nome": "Gilberto Rabelo", "veiculo": "radio_frevo", "cargo": "comentarista", "rigor": 45 },
-    { "id": "j_carol", "nome": "Carolina Lins", "veiculo": "blog_politica_pe", "cargo": "editora", "rigor": 88 }
+    { "id": "j_carol", "nome": "Carolina Lins", "veiculo": "blog_politica_pe", "cargo": "editora", "rigor": 88 },
+    { "id": "j_marta", "nome": "Marta Nunes", "veiculo": "tv_nordeste", "cargo": "âncora regional", "rigor": 58 },
+    { "id": "j_beatriz", "nome": "Beatriz Furtado", "veiculo": "rede_brasil", "cargo": "âncora do jornal nacional", "rigor": 72 },
+    { "id": "j_paulo", "nome": "Paulo Weber", "veiculo": "portal_central", "cargo": "entrevistador", "rigor": 84 },
+    { "id": "j_sergio", "nome": "Sérgio Bastos", "veiculo": "radio_noticia", "cargo": "comentarista político", "rigor": 62 },
+    { "id": "j_renata", "nome": "Renata Fialho", "veiculo": "valor_brasil", "cargo": "colunista de economia", "rigor": 76 },
+    { "id": "j_bocao", "nome": "Zé Bocão", "veiculo": "tv_massa", "cargo": "apresentador", "rigor": 28 },
+    { "id": "j_pod", "nome": "Dupla do Papo de Política", "veiculo": "pod_politica_br", "cargo": "apresentadores", "rigor": 40 },
+    { "id": "j_agreste", "nome": "Fábio Correia", "veiculo": "jornal_agreste", "cargo": "repórter", "rigor": 42 },
+    { "id": "j_revista", "nome": "Helena Braz", "veiculo": "revista_nordeste", "cargo": "repórter especial", "rigor": 70 }
   ]
 }

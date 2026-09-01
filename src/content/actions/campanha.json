@@ -30,7 +30,13 @@
         },
         "atributoPeso": "carisma"
       },
-      "peso": 1.4
+      "peso": 1.4,
+      "variantes": [
+        { "titulo": "Caminhada com carro de som na periferia" },
+        { "titulo": "Corpo a corpo no calçadão" },
+        { "titulo": "Caminhada com a militância pelo conjunto" },
+        { "titulo": "Panfletagem e aperto de mão na avenida" }
+      ]
     },
     {
       "id": "carreata",
@@ -347,6 +353,41 @@
         "atributoPeso": "comunicacao"
       },
       "peso": 1.7
+    },
+    {
+      "id": "agenda_esportiva_campanha",
+      "categoria": "CAMPANHA",
+      "titulo": "Agenda esportiva",
+      "desc": "Aparecer no jogo, na corrida, no torneio. Palco cheio, câmera de celular por todo lado.",
+      "custo": { "tempo": 2, "energia": 12, "campanhaGasto": 800 },
+      "requisitos": {},
+      "efeitos": { "territorioBairroAlvo": { "presenca": [3, 6], "penetracao": [1, 3] }, "reputacao": { "notoriedade": [1, 3] }, "seguidores": { "pct": [0.003, 0.012] }, "atributoPeso": "carisma" },
+      "peso": 1
+    },
+    {
+      "id": "comicio_segmento",
+      "categoria": "CAMPANHA",
+      "titulo": "Ato com um segmento",
+      "desc": "Palanque montado para um grupo específico: pauta deles, bandeira deles, voto deles.",
+      "custo": { "tempo": 2, "energia": 14, "campanhaGasto": 3500 },
+      "requisitos": {},
+      "efeitos": { "cortejarGrupo": [5, 10], "reputacao": { "notoriedade": [1, 3] }, "ecoMidiatico": [1, 4], "atributoPeso": "oratoria" },
+      "peso": 1
+    },
+    {
+      "id": "feira_campanha",
+      "categoria": "CAMPANHA",
+      "titulo": "Corpo a corpo na feira",
+      "desc": "Santinho na mão, aperto de mão em série, foto com quem pedir. Base pura.",
+      "custo": { "tempo": 2, "energia": 14, "campanhaGasto": 500 },
+      "requisitos": {},
+      "efeitos": { "territorioBairroAlvo": { "presenca": [4, 8], "penetracao": [2, 4] }, "relacionamentosNovos": 1, "atributoPeso": "carisma" },
+      "peso": 1.2,
+      "variantes": [
+        { "titulo": "Corpo a corpo na feira da Encruzilhada" },
+        { "titulo": "Santinho na saída do metrô" },
+        { "titulo": "Feira de Casa Amarela, hora do rush" }
+      ]
     }
   ]
 }

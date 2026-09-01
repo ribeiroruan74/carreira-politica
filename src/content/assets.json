@@ -1,0 +1,19 @@
+{
+  "$comment": "Itens 16/17 — negócios e instituições. Tudo FICTÍCIO. Empresas: custo em R$, retornoMensal médio (fração do valor), volat (desvio), conflito (setor sensível se você tem mandato). Instituições: custo de fundação, manutenção mensal, impactoBase (pontos de impacto social/mês no nível 1).",
+  "empresas": [
+    { "id": "restaurante", "nome": "Restaurante", "custo": 180000, "retornoMensal": 0.011, "volat": 0.05, "conflito": null },
+    { "id": "loja", "nome": "Loja de varejo", "custo": 120000, "retornoMensal": 0.010, "volat": 0.045, "conflito": null },
+    { "id": "tech", "nome": "Empresa de tecnologia", "custo": 300000, "retornoMensal": 0.016, "volat": 0.11, "conflito": null },
+    { "id": "construtora", "nome": "Construtora", "custo": 600000, "retornoMensal": 0.014, "volat": 0.08, "conflito": "obras públicas" },
+    { "id": "midia", "nome": "Grupo de mídia local", "custo": 350000, "retornoMensal": 0.009, "volat": 0.09, "conflito": "cobertura de imprensa" },
+    { "id": "servicos", "nome": "Empresa de serviços", "custo": 200000, "retornoMensal": 0.012, "volat": 0.05, "conflito": null }
+  ],
+  "instituicoes": [
+    { "id": "escola", "nome": "Escola", "custo": 400000, "manutencao": 9000, "impactoBase": 3, "tema": "educacao" },
+    { "id": "faculdade", "nome": "Faculdade", "custo": 1200000, "manutencao": 26000, "impactoBase": 6, "tema": "educacao" },
+    { "id": "hospital", "nome": "Hospital / clínica", "custo": 1500000, "manutencao": 34000, "impactoBase": 7, "tema": "saude" },
+    { "id": "instituto", "nome": "Instituto", "custo": 500000, "manutencao": 11000, "impactoBase": 4, "tema": "assistencia" },
+    { "id": "centro_cultural", "nome": "Centro cultural", "custo": 350000, "manutencao": 8000, "impactoBase": 3, "tema": "cultura" },
+    { "id": "projeto_social", "nome": "Projeto social", "custo": 150000, "manutencao": 5000, "impactoBase": 3, "tema": "assistencia" }
+  ]
+}

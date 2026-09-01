@@ -14,6 +14,9 @@ import { tickVidaPessoal } from './personal';
 import { tickFamilia } from './family';
 import { tickInfluenciadores } from './influencers';
 import { tickConvitesMidia } from './press';
+import { tickPartido } from './party';
+import { tickTelefone } from './phone';
+import { tickAssets } from './assets';
 import { tickMarcos } from './milestones';
 import { checarConquistas } from './achievements';
 import { checarFimDeJogo } from './endgame';
@@ -41,6 +44,9 @@ export function runMonth(s) {
   push(tickVidaPessoal(s));         // Fase 22 — saúde + energia máxima
   push(tickInfluenciadores(s));     // Fase 15/16 — mercado de influência
   push(tickConvitesMidia(s));       // Etapa 9 — convites de entrevista/podcast
+  tickPartido(s);                   // Item 1 — expira negociação de filiação
+  tickTelefone(s);                  // Item 10 — decai relação de telefone + cooldown
+  push(tickAssets(s));              // Itens 16/17 — empresas e instituições
   push(mandateTick(s));
   push(tickEleicao(s));
 

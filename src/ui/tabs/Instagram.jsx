@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useGame } from '../../state/store';
 import { Card, Stat, Meter, Pill, PageHead, Sparkline } from '../components/primitives';
-import { FORMATOS, PAUTAS, postar, estimarAlcance, relevanciaMidiatica } from '../../engine/social';
+import { FORMATOS, PAUTAS, postar, estimarAlcance, relevanciaMidiatica, fazerLive, perguntasCaixa } from '../../engine/social';
+import { bairrosDaCidade } from '../../engine/offices';
 import { imagemResumo, IMAGEM_EIXOS } from '../../engine/image';
 import { influenciadoresDisponiveis, contratarInfluenciador } from '../../engine/influencers';
 import { formatBRL } from '../../engine/tick';
@@ -35,6 +36,27 @@ export default function Instagram() {
       aplicar((st) => { res = postar(st, formato, pauta); });
       setUltimo(res);
       setErro(null);
+    } catch (e) { setErro(e.message); }
+  }
+
+  const bairros = bairrosDaCidade(s.personagem.cidade);
+  const [liveModo, setLiveModo] = useState('aberta');
+  const [liveBairro, setLiveBairro] = useState(bairros[0].id);
+  const [caixaResp, setCaixaResp] = useState({});
+  const [liveRes, setLiveRes] = useState(null);
+  const jaFezLive = (s.redes.ultimaLive ?? -99) === s.tempo.mes;
+  const perguntas = useMemo(
+    () => (liveModo === 'caixa' ? perguntasCaixa(s) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [liveModo, s.tempo.mes],
+  );
+
+  function transmitir() {
+    try {
+      let res;
+      const respostas = perguntas.map((q, i) => caixaResp[i] || q.tons[0].id);
+      aplicar((st) => { res = fazerLive(st, { modo: liveModo, bairroId: liveBairro, respostas }); });
+      setLiveRes(res); setCaixaResp({}); setErro(null);
     } catch (e) { setErro(e.message); }
   }
 
@@ -89,6 +111,46 @@ export default function Instagram() {
         {ultimo && (
           <div className="card" style={{ marginTop: 12, background: 'var(--surface-2)' }}>
             <p className="small" style={{ margin: 0 }}>{ultimo.resumo}</p>
+          </div>
+        )}
+      </Card>
+
+      <Card title="Live" aside={`2 tempo · ${jaFezLive ? 'já fez este mês' : 'ao vivo é sem roteiro'}`}>
+        <div className="chips" style={{ marginBottom: 10 }}>
+          {[['aberta', 'Live aberta'], ['bairro', 'Live de bairro'], ['caixa', 'Caixa de perguntas']].map(([id, nome]) => (
+            <button key={id} className={`btn sm ${liveModo === id ? '' : 'ghost'}`} onClick={() => { setLiveModo(id); setLiveRes(null); }}>{nome}</button>
+          ))}
+        </div>
+        {liveModo === 'bairro' && (
+          <select value={liveBairro} onChange={(e) => setLiveBairro(e.target.value)} style={{ marginBottom: 10 }}>
+            {bairros.map((b) => <option key={b.id} value={b.id}>{b.nome} · {b.regiao}</option>)}
+          </select>
+        )}
+        {liveModo === 'caixa' && (
+          <div className="stack" style={{ gap: 10, marginBottom: 10 }}>
+            <p className="small dim" style={{ margin: 0 }}>As perguntas vêm do seu histórico. Escolha como responder cada uma.</p>
+            {perguntas.map((q, i) => (
+              <div key={q.id}>
+                <p className="small" style={{ margin: '0 0 4px', fontWeight: 600 }}>"{q.texto}"</p>
+                <div className="chips">
+                  {q.tons.map((t) => (
+                    <button key={t.id} className={`btn sm ${(caixaResp[i] || q.tons[0].id) === t.id ? '' : 'ghost'}`}
+                      onClick={() => setCaixaResp({ ...caixaResp, [i]: t.id })}>{t.texto}</button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="small faint" style={{ margin: '0 0 8px' }}>
+          {liveModo === 'aberta' && 'Maior alcance e maior variância: pode viralizar ou escorregar numa fala.'}
+          {liveModo === 'bairro' && 'Alcance menor, mas firma sua presença e voto naquele bairro.'}
+          {liveModo === 'caixa' && 'Interação direta: boa resposta cola confiança, má resposta vira corte.'}
+        </p>
+        <button className="btn" disabled={jaFezLive || s.tempo.pontosRestantes < 2 || !!s.eventoPendente} onClick={transmitir}>Entrar ao vivo</button>
+        {liveRes && (
+          <div className="card" style={{ marginTop: 12, background: 'var(--surface-2)' }}>
+            <p className="small" style={{ margin: 0 }}>{liveRes.resumo}</p>
           </div>
         )}
       </Card>

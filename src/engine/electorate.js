@@ -6,7 +6,7 @@
 import electorateDef from '../content/electorate.json';
 import lawsDef from '../content/laws.json';
 import partiesDef from '../content/parties.json';
-import { clamp } from './rng';
+import { clamp, streamRng } from './rng';
 
 const GRUPOS = electorateDef.grupos;
 const GRUPO_POR_ID = Object.fromEntries(GRUPOS.map((g) => [g.id, g]));
@@ -14,6 +14,24 @@ const TEMA_POR_ID = Object.fromEntries(lawsDef.temas.map((t) => [t.id, t]));
 
 export function nomeGrupo(id) {
   return GRUPO_POR_ID[id]?.nome || id;
+}
+
+// Item 3 — lista {id, nome, eixo} para seletores de UI (Agenda, Inteligência).
+export const GRUPOS_LISTA = GRUPOS.map((g) => ({ id: g.id, nome: g.nome, eixo: g.eixo }));
+
+// Item 3 — encontro/discurso direcionado a um grupo social. O grupo-alvo sente o
+// efeito cheio; grupos ideologicamente próximos sentem um respingo; os opostos
+// podem até esfriar um pouco (você "se marcou"). Não dá voto — mexe em satisfação.
+export function cortejarGrupo(state, gid, forca) {
+  const alvo = GRUPO_POR_ID[gid];
+  if (!alvo || !forca) return;
+  ajustarSatisfacao(state, gid, forca);
+  for (const g of GRUPOS) {
+    if (g.id === gid) continue;
+    const prox = 1 - Math.abs(g.eixo - alvo.eixo) / 120; // 1 = colado, <0 = oposto
+    if (prox > 0.35) ajustarSatisfacao(state, g.id, forca * prox * 0.4);
+    else if (prox < -0.2) ajustarSatisfacao(state, g.id, forca * prox * 0.18);
+  }
 }
 
 export function satisfacaoDe(state, gid) {
@@ -81,9 +99,30 @@ export function tickEleitorado(s) {
   }
 
   // alerta quando um grupo relevante vira contra
-  const pior = resumoSatisfacao(s)[0];
+  const ord = resumoSatisfacao(s);
+  const pior = ord[0];
   if (pior && pior.valor <= -35 && s.tempo.mes % 3 === 0) {
     eventos.push({ tipo: 'ALERTA', texto: `${pior.nome} estão descontentes com você (${pior.valor}).` });
+  }
+
+  // Item 3 — o nível do grupo abre ou fecha portas
+  const melhor = ord[ord.length - 1];
+  const rg = streamRng(s.meta.seed, 'grupos_oport', s.tempo.mes);
+  if (melhor && melhor.valor >= 58 && rg.chance(0.26)) {
+    if (rg.chance(0.5)) {
+      const d = Math.round(s.redes.seguidores * rg.range([0.004, 0.014])) + rg.int(30, 120);
+      s.redes.seguidores += d;
+      eventos.push({ tipo: 'INFO', texto: `${melhor.nome} andam divulgando seu nome — +${d} seguidores.` });
+    } else {
+      s.reputacao.notoriedade = clamp(s.reputacao.notoriedade + rg.range([0.5, 1.6]), 0, 100);
+      s.reputacao.ecoMidiatico = clamp(s.reputacao.ecoMidiatico + rg.int(2, 6), -50, 100);
+      eventos.push({ tipo: 'INFO', texto: `${melhor.nome} te colocaram num palanque importante.` });
+    }
+  }
+  if (pior && pior.valor <= -50 && rg.chance(0.3)) {
+    s.reputacao.ecoMidiatico = clamp(s.reputacao.ecoMidiatico + rg.int(3, 8), -50, 100);
+    s.reputacao.rejeicao = clamp(s.reputacao.rejeicao + rg.range([0.4, 1.5]), 0, 100);
+    eventos.push({ tipo: 'ALERTA', texto: `${pior.nome} organizaram um ato público contra você.` });
   }
   return { eventos };
 }

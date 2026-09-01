@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { Pill, Meter } from './primitives';
 import { corPartido, nomePartido } from '../../engine/voteModel';
-import { acaoRelacao, acoesRelacaoInfo, tentarAlianca, romperAlianca, limiarAlianca, chanceAlianca } from '../../engine/world';
+import { acaoRelacao, acoesRelacaoInfo, tentarAlianca, romperAlianca, oferecerApoio, limiarAlianca, chanceAlianca } from '../../engine/world';
 
 function eixoLabel(e) {
   if (e <= -50) return 'esquerda';
@@ -13,6 +13,14 @@ function eixoLabel(e) {
 }
 const clampMeter = (v) => Math.max(0, Math.min(100, v + 50));
 const ACOES = acoesRelacaoInfo();
+const CAT_ORDEM = [['contato', 'Contato'], ['trabalho', 'Trabalho'], ['negocio', 'Negociação'], ['publico', 'Público'], ['ataque', 'Confronto']];
+const ESTILO_DICA = {
+  combativo: 'Combativo — responde mal a crítica, bem a apoio.',
+  articulador: 'Articulador — aberto a negociação e parceria.',
+  tecnico: 'Técnico — valoriza reunião de trabalho, dispensa evento.',
+  midiatico: 'Midiático — adora elogio e evento, entedia em reunião.',
+  cabo_eleitoral: 'Cabo eleitoral — gosta de café, almoço, contato de rua.',
+};
 
 // Fase 28/Etapa 4 — ficha de um ator político + ações de relação sob demanda.
 export default function FichaPolitico({ polId, onClose }) {
@@ -72,15 +80,39 @@ export default function FichaPolitico({ polId, onClose }) {
         {typeof pol.aprovacao === 'number' && <p className="small dim" style={{ marginTop: 6 }}><strong>Aprovação (gestão):</strong> {Math.round(pol.aprovacao)}%</p>}
 
         <div style={{ marginTop: 14 }}>
-          <div className="small faint mono" style={{ borderBottom: '1px solid var(--line)', paddingBottom: 3, marginBottom: 8 }}>APROXIMAÇÃO</div>
+          <div className="small faint mono" style={{ borderBottom: '1px solid var(--line)', paddingBottom: 3, marginBottom: 8 }}>INTERAGIR</div>
+          {pol.estilo && ESTILO_DICA[pol.estilo] && (
+            <p className="small dim" style={{ margin: '0 0 8px' }}>▸ {ESTILO_DICA[pol.estilo]}</p>
+          )}
+          {CAT_ORDEM.map(([cat, label]) => {
+            const acoes = Object.entries(ACOES).filter(([, cfg]) => (cfg.cat || 'contato') === cat);
+            if (!acoes.length) return null;
+            return (
+              <div key={cat} style={{ marginBottom: 8 }}>
+                <div className="small faint" style={{ marginBottom: 4 }}>{label}</div>
+                <div className="chips">
+                  {acoes.map(([tipo, cfg]) => (
+                    <button key={tipo} className={`btn sm ${cat === 'ataque' ? 'ghost' : 'ghost'}`}
+                      style={cat === 'ataque' ? { color: 'var(--red)' } : undefined}
+                      disabled={semTempo(cfg.tempo) || (cfg.exigeContato && (pol.ultimoContatoMes ?? -99) < 0) || (cfg.dinheiro > s.financas.pessoal)}
+                      title={cfg.dinheiro ? `R$ ${cfg.dinheiro}` : undefined}
+                      onClick={() => agir((st) => acaoRelacao(st, polId, tipo))}>
+                      {cfg.nome} <span className="faint">· {cfg.tempo}t</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          <div className="small faint" style={{ marginBottom: 4 }}>Aliança</div>
           <div className="chips">
-            {Object.entries(ACOES).map(([tipo, cfg]) => (
-              <button key={tipo} className="btn sm ghost"
-                disabled={semTempo(cfg.tempo) || (cfg.exigeContato && (pol.ultimoContatoMes ?? -99) < 0) || (cfg.dinheiro > s.financas.pessoal)}
-                onClick={() => agir((st) => acaoRelacao(st, polId, tipo))}>
-                {cfg.nome} <span className="faint">· {cfg.tempo}t</span>
+            {!noGrupo && (
+              <button className="btn sm ghost" disabled={semTempo(1)}
+                title="Banca ele publicamente agora — destrava a aliança nos próximos meses"
+                onClick={() => agir((st) => oferecerApoio(st, polId))}>
+                Oferecer apoio <span className="faint">· 1t</span>
               </button>
-            ))}
+            )}
             {!noGrupo && (
               <button className="btn sm"
                 disabled={rel < limiarAlianca(pol)}

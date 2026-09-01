@@ -1,7 +1,7 @@
 // Forma do save + versão + migrações. Salvar nunca pode quebrar entre updates:
 // toda mudança estrutural ganha um número de versão e uma função de migração.
 
-export const SAVE_VERSION = 15;
+export const SAVE_VERSION = 20;
 
 // Estado "vazio" de referência — documenta a forma completa do save.
 export function emptyState() {
@@ -13,6 +13,7 @@ export function emptyState() {
       dificuldade: 'NORMAL',
       criadoEm: null,
       salvoEm: null,
+      acoesRecentes: [], // Agenda — { id, mes } das últimas ações feitas (anti-repetição)
     },
     tempo: {
       mes: 0, // meses decorridos desde o início
@@ -40,13 +41,18 @@ export function emptyState() {
       historicoProfissional: [],
       historicoPolitico: [],
       grupoPolitico: [], // ids de mundo.politicos alinhados ao jogador
+      partidoHistorico: [], // Item 1 — { partidoId, mesEntrada, mesSaida, motivo, cargoNaEpoca }
       derrotasSeguidas: 0, // Fase 30 — derrotas eleitorais consecutivas (reseta ao vencer)
       // Fase 30 — tally acumulado da carreira (mandatos passados somados aqui ao encerrar cada um)
       legado: {
         mesesEmMandato: 0, projetosAprovados: 0, projetosRejeitados: 0, fiscalizacoes: 0,
         promessasFeitas: 0, promessasCumpridas: 0, obrasEntregues: 0,
         eleicoesVencidas: 0, eleicoesPerdidas: 0, melhorVotacao: 0,
+        institutosFundados: 0, impactoSocial: 0, // Item 17
       },
+      empresas: [], // Item 16 — { id, tipo, nome, valor, saude, mesInicio }
+      investimentos: { valor: 0, perfil: 'conservador' }, // Item 21 — investimento financeiro passivo
+      instituicoes: [], // Item 17 — { id, tipo, nome, tema, nivel, impacto, reconhecimento, saude, mesFundacao }
       emprego: null, // { id, titulo, setor, salario, horas, mesInicio }
       licenciado: false, // afastado do emprego (campanha/mandato) — meio salário, zero horas
       // Fase 22 — vida pessoal
@@ -111,6 +117,8 @@ export function emptyState() {
       cascatas: [], // Fase 31 — { id, tipo, dados, estagio, proximoMes, encerrada }
       investigacoes: [], // Fase 10 — { id, jornalistaId, tema, estagio, proximoMes, encerrada, dados }
       convitesMidia: [], // Etapa 9 — { id, tipo:'entrevista'|'podcast', refId, veiculoNome, mes, expiraMes }
+      telefone: { relacoes: {}, cooldown: {} }, // Item 10 — relação/cooldown com jornalistas e famosos
+      coligacaoArticulada: null, // Item 12 — { comPartido, ateMes } acordo de coligação costurado pelo jogador
       satisfacaoGrupos: {}, // Fase 8 — grupoId -> -100..100, persiste, alimenta o modelo de votos
       nacional: { evento: null, clima: 0, historico: [] }, // Fase 24 — cenário macro
       influenciadores: [], // Fase 15/16 — { id, nome, nicho, plataforma, alcance, eixo, cache, relacao, humor, aliadoDe, contratadoAte }
@@ -278,6 +286,51 @@ const migracoes = {
     if (v.paisVivos == null) v.paisVivos = true;
     // conjuge do formato antigo ({nome, apoio}) → {nome, relacao}
     if (v.conjuge && v.conjuge.relacao == null) v.conjuge.relacao = v.conjuge.apoio ?? 65;
+    return s;
+  },
+  // v15 -> v16: Agenda — anti-repetição
+  15: (s) => {
+    s.meta.acoesRecentes = s.meta.acoesRecentes || [];
+    return s;
+  },
+  // v17 -> v18: Item 10 — telefonemas
+  17: (s) => {
+    s.mundo.telefone = s.mundo.telefone || { relacoes: {}, cooldown: {} };
+    return s;
+  },
+  // v19 -> v20: Itens 16/17 — empresas e instituições
+  19: (s) => {
+    if (!Array.isArray(s.personagem.empresas)) s.personagem.empresas = [];
+    if (!Array.isArray(s.personagem.instituicoes)) s.personagem.instituicoes = [];
+    const leg = (s.personagem.legado ||= {});
+    if (leg.institutosFundados == null) leg.institutosFundados = 0;
+    if (leg.impactoSocial == null) leg.impactoSocial = 0;
+    return s;
+  },
+  // v18 -> v19: Itens 14/15 — gabinete com prioridade, delegações, experiência
+  18: (s) => {
+    if (s.mandato?.gabinete) {
+      const g = s.mandato.gabinete;
+      if (g.prioridade === undefined) g.prioridade = null;
+      if (!g.delegacoes) g.delegacoes = {};
+      if (g.ultimaReuniao === undefined) g.ultimaReuniao = -99;
+      for (const a of Object.values(g.contratados || {})) {
+        if (a.experiencia == null) a.experiencia = 0;
+      }
+    }
+    return s;
+  },
+  // v16 -> v17: Item 1 — histórico partidário
+  16: (s) => {
+    const p = s.personagem;
+    if (!Array.isArray(p.partidoHistorico)) p.partidoHistorico = [];
+    // backfill: se já é filiado e não há registro aberto, cria um a partir de agora
+    if (p.partidoId && !p.partidoHistorico.some((h) => h.mesSaida == null)) {
+      p.partidoHistorico.push({
+        partidoId: p.partidoId, mesEntrada: 0, mesSaida: null,
+        motivo: null, cargoNaEpoca: p.cargoAtual || 'NENHUM',
+      });
+    }
     return s;
   },
 };

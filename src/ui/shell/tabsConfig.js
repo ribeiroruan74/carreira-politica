@@ -16,8 +16,10 @@ import Imprensa from '../tabs/Imprensa';
 import Inteligencia from '../tabs/Inteligencia';
 import Pesquisas from '../tabs/Pesquisas';
 import Financas from '../tabs/Financas';
+import Negocios from '../tabs/Negocios';
 import Conquistas from '../tabs/Conquistas';
 import Historico from '../tabs/Historico';
+import Telefone from '../tabs/Telefone';
 import Config from '../tabs/Config';
 
 export const TABS = [
@@ -29,6 +31,7 @@ export const TABS = [
   { id: 'mandato', nome: 'Mandato', ico: '🏛', comp: Mandato, visivel: (s) => !!s.mandato },
   { id: 'gabinete', nome: 'Gabinete', ico: '👔', comp: Gabinete, visivel: (s) => !!s.mandato },
   { id: 'pessoas', nome: 'Pessoas', ico: '⚇', comp: Pessoas },
+  { id: 'telefone', nome: 'Telefone', ico: '📞', comp: Telefone, visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
   { id: 'mapa', nome: 'Mapa', ico: '◈', comp: Mapa },
   { id: 'politica', nome: 'Política', ico: '⚖', comp: Politica, visivel: (s) => !!s.personagem.partidoId || s.personagem.fase !== 'VIDA' },
   { id: 'redes', nome: 'Instagram', ico: '📷', comp: Instagram },
@@ -36,6 +39,7 @@ export const TABS = [
   { id: 'inteligencia', nome: 'Inteligência', ico: '🧠', comp: Inteligencia, visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
   { id: 'pesquisas', nome: 'Pesquisas', ico: '📊', comp: Pesquisas },
   { id: 'financas', nome: 'Finanças', ico: '$', comp: Financas },
+  { id: 'negocios', nome: 'Negócios', ico: '🏢', comp: Negocios, visivel: (s) => s.personagem.fase !== 'VIDA' || s.personagem.patrimonio > 50000 },
   { id: 'conquistas', nome: 'Conquistas', ico: '🏆', comp: Conquistas },
   { id: 'historico', nome: 'Histórico', ico: '≡', comp: Historico },
   { id: 'config', nome: 'Configurações', ico: '⚙', comp: Config },

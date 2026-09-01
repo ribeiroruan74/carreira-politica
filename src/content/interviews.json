@@ -47,8 +47,62 @@
       "texto": "{rival} disse que o senhor 'não entregou nada'. Qual sua resposta?",
       "tons": [
         { "id": "obra", "texto": "Listar entregas concretas com números", "score": 1, "rep": { "confianca": [1, 3], "notoriedade": [1, 3] } },
-        { "id": "eleva", "texto": "Dizer que não vai entrar na baixaria", "score": 1, "rep": { "confianca": [1, 3] } },
-        { "id": "revida", "texto": "Revidar com o histórico do rival", "score": -1, "rep": { "rejeicao": [2, 5], "notoriedade": [2, 5], "ecoMidiatico": [2, 5] } }
+        { "id": "eleva", "texto": "Dizer que não vai entrar na baixaria", "score": 1, "rep": { "confianca": [1, 3] }, "rival": 3 },
+        { "id": "revida", "texto": "Revidar com o histórico do rival", "score": -1, "rep": { "rejeicao": [2, 5], "notoriedade": [2, 5], "ecoMidiatico": [2, 5] }, "rival": -8 }
+      ]
+    },
+    {
+      "id": "cargo", "contexto": "cargo", "peso": 1.3,
+      "texto": "Como {cargo}, o que o senhor de fato consegue mudar na vida de quem está assistindo?",
+      "tons": [
+        { "id": "concreto", "texto": "Explicar com clareza os limites e o alcance real do cargo", "score": 1, "rep": { "confianca": [1, 4], "notoriedade": [1, 2] } },
+        { "id": "inflado", "texto": "Vender o cargo como mais poderoso do que é", "score": -1, "rep": { "notoriedade": [1, 3], "rejeicao": [1, 3], "confianca": [-2, 0] } },
+        { "id": "burocratico", "texto": "Responder em jargão institucional", "score": 0, "rep": {} }
+      ]
+    },
+    {
+      "id": "projeto", "contexto": "projeto", "peso": 1.4,
+      "texto": "Seu projeto \"{projeto}\" foi {desfecho}. O que isso diz sobre sua atuação?",
+      "tons": [
+        { "id": "credito", "texto": "Mostrar o impacto prático e a quem beneficia", "score": 1, "rep": { "confianca": [1, 3], "notoriedade": [1, 3] }, "grupoAuto": true },
+        { "id": "aprende", "texto": "Se foi rejeitado, dizer o que aprendeu e o próximo passo", "score": 1, "rep": { "confianca": [1, 3] } },
+        { "id": "vaidade", "texto": "Usar a resposta só para se promover", "score": -1, "rep": { "rejeicao": [1, 3] } }
+      ]
+    },
+    {
+      "id": "adversario", "contexto": "adversario", "peso": 1.3,
+      "texto": "{rival} ({partido}) vem crescendo e é hoje seu principal adversário. Como o senhor o avalia?",
+      "tons": [
+        { "id": "respeito", "texto": "Reconhecer a força dele e marcar as diferenças de projeto", "score": 1, "rep": { "confianca": [1, 3] }, "rival": 4 },
+        { "id": "desdem", "texto": "Menosprezar publicamente", "score": -1, "rep": { "rejeicao": [1, 4], "ecoMidiatico": [2, 5] }, "rival": -7 },
+        { "id": "ignora", "texto": "Dizer que não perde tempo com adversário", "score": 0, "rep": { "notoriedade": [0, 2] } }
+      ]
+    },
+    {
+      "id": "trocou_partido", "contexto": "trocou_partido", "peso": 1.5,
+      "texto": "O senhor já passou por {n} partidos — saiu do {anterior} e hoje está no {atual}. Como o eleitor deve confiar nisso?",
+      "tons": [
+        { "id": "principio", "texto": "Explicar a mudança por divergência real de rumo", "score": 1, "rep": { "confianca": [1, 3] } },
+        { "id": "honesto", "texto": "Admitir que a política partidária tem cálculo, sem cinismo", "score": 0, "rep": { "notoriedade": [1, 2], "rejeicao": [0, 2] } },
+        { "id": "irrita", "texto": "Se irritar e chamar a pergunta de picuinha", "score": -2, "rep": { "rejeicao": [3, 7], "ecoMidiatico": [3, 6], "confianca": [-3, 0] } }
+      ]
+    },
+    {
+      "id": "grupo_contra", "contexto": "grupo_contra", "peso": 1.4,
+      "texto": "{grupo} estão claramente insatisfeitos com o senhor. O que tem a dizer a eles?",
+      "tons": [
+        { "id": "escuta", "texto": "Reconhecer a falha e apresentar um compromisso concreto", "score": 1, "rep": { "confianca": [1, 3] }, "grupoAuto": true },
+        { "id": "generico", "texto": "Dar uma resposta vaga de 'vou trabalhar por todos'", "score": -1, "rep": { "confianca": [-2, 0] } },
+        { "id": "confronto", "texto": "Dizer que esse grupo 'nunca vai me apoiar mesmo'", "score": -2, "rep": { "rejeicao": [2, 6] }, "grupoAuto": true }
+      ]
+    },
+    {
+      "id": "noticia", "contexto": "noticia", "peso": 1.1,
+      "texto": "Sobre {assunto} — qual a sua posição?",
+      "tons": [
+        { "id": "posiciona", "texto": "Tomar uma posição clara e justificá-la", "score": 1, "rep": { "confianca": [1, 3], "notoriedade": [1, 3] } },
+        { "id": "cauteloso", "texto": "Responder com cautela, sem se comprometer", "score": 0, "rep": {} },
+        { "id": "empurra", "texto": "Dizer que 'não é da minha alçada'", "score": -1, "rep": { "confianca": [-2, 0] } }
       ]
     },
     {
@@ -67,6 +121,24 @@
         { "id": "foco", "texto": "Dizer que o foco é o mandato atual", "score": 1, "rep": { "confianca": [1, 2] } },
         { "id": "assume", "texto": "Assumir a ambição abertamente", "score": 0, "rep": { "notoriedade": [2, 4], "rejeicao": [0, 2] } },
         { "id": "esquiva", "texto": "Rir e não responder", "score": -1, "rep": {} }
+      ]
+    },
+    {
+      "id": "pessoal", "contexto": "generico", "peso": 0.8,
+      "texto": "Fora da política, o que faz o senhor perder o sono hoje?",
+      "tons": [
+        { "id": "humano", "texto": "Dar uma resposta pessoal e sincera", "score": 1, "rep": { "confianca": [1, 3], "rejeicao": [-2, 0] } },
+        { "id": "tecnico", "texto": "Devolver para uma pauta de governo", "score": 0, "rep": { "notoriedade": [0, 1] } },
+        { "id": "evasivo", "texto": "Dizer que 'está tudo sob controle'", "score": -1, "rep": {} }
+      ]
+    },
+    {
+      "id": "cobranca", "contexto": "generico", "peso": 0.85,
+      "texto": "Se ao fim do mandato nada do que prometeu sair do papel, o senhor devolve o salário?",
+      "tons": [
+        { "id": "compromisso", "texto": "Assumir metas verificáveis e topar ser cobrado", "score": 1, "rep": { "confianca": [2, 4], "notoriedade": [1, 2] } },
+        { "id": "realista", "texto": "Explicar que mandato tem limites que não dependem só de você", "score": 0, "rep": {} },
+        { "id": "ironia", "texto": "Responder com ironia à pergunta", "score": -1, "rep": { "rejeicao": [1, 4] } }
       ]
     },
     {

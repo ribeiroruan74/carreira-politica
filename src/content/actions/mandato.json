@@ -263,6 +263,56 @@
         "atributoPeso": "comunicacao"
       },
       "peso": 1.7
+    },
+    {
+      "id": "visita_escola",
+      "categoria": "MANDATO",
+      "titulo": "Visita a uma escola",
+      "desc": "Ver a reforma parada, a falta de professor, a merenda. Diretora tem uma lista.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "territorioBairroAlvo": { "presenca": [2, 5], "penetracao": [2, 4] }, "satisfacaoTema": "educacao", "atributoPeso": "empatia" },
+      "peso": 1.1
+    },
+    {
+      "id": "visita_saude",
+      "categoria": "MANDATO",
+      "titulo": "Visita a um posto de saúde",
+      "desc": "Fila desde as 4h, falta de médico, remédio em falta. Você ouve — e alguém filma.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "territorioBairroAlvo": { "presenca": [2, 5], "penetracao": [2, 4] }, "satisfacaoTema": "saude", "reputacao": { "notoriedade": [0, 2] }, "atributoPeso": "empatia" },
+      "peso": 1.1
+    },
+    {
+      "id": "reuniao_comunitaria",
+      "categoria": "MANDATO",
+      "titulo": "Reunião comunitária de prestação de contas",
+      "desc": "Cadeira de plástico, microfone que chia, gente cobrando o que você prometeu. Cara a cara.",
+      "custo": { "tempo": 2, "energia": 12, "dinheiroPessoal": 200 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "territorioBairroAlvo": { "presenca": [3, 6], "penetracao": [2, 5] }, "relacionamentosNovos": 1, "reputacao": { "confianca": [0, 2] }, "atributoPeso": "oratoria" },
+      "peso": 1.1
+    },
+    {
+      "id": "visita_tecnica",
+      "categoria": "MANDATO",
+      "titulo": "Visita técnica a uma obra",
+      "desc": "Capacete, planilha de medição, engenheiro explicando o atraso. Fiscalização de verdade.",
+      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "fiscalizar": true, "reputacao": { "notoriedade": [0, 2] }, "atributoPeso": "organizacao" },
+      "peso": 0.9
+    },
+    {
+      "id": "discurso_grupo",
+      "categoria": "MANDATO",
+      "titulo": "Discurso para um segmento",
+      "desc": "Falar direto para a plateia de um grupo social, com a pauta deles no centro. Palanque marcado.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "cortejarGrupo": [5, 9], "reputacao": { "notoriedade": [1, 3] }, "ecoMidiatico": [1, 5], "atributoPeso": "oratoria" },
+      "peso": 1
     }
   ]
 }

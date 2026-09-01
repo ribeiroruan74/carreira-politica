@@ -17,7 +17,7 @@ import { cascatasAtivas, conterCascata } from './cascade';
 import { captarDoacao } from './donors';
 import { recrutarMilitancia } from './militancy';
 import { cuidarDeSi } from './personal';
-import { impactoDeTema } from './electorate';
+import { impactoDeTema, cortejarGrupo, GRUPOS_LISTA } from './electorate';
 import { gravarPodcast } from './podcasts';
 import { cultivarInfluenciador, colaborarInfluenciador } from './influencers';
 import { ganharXp } from './attributes';
@@ -28,7 +28,8 @@ const TODAS = [
   ...mandatoDef.acoes, ...prefeitoDef.acoes, ...deputadoDef.acoes, ...midiaDef.acoes,
 ];
 // Etapa 6 — ações de mandato que valem para QUALQUER cargo eletivo
-const MANDATO_COMPARTILHADAS = ['discurso_plenario', 'buscar_financiador', 'militancia_mandato', 'conter_repercussao'];
+const MANDATO_COMPARTILHADAS = ['discurso_plenario', 'buscar_financiador', 'militancia_mandato', 'conter_repercussao',
+  'visita_escola', 'visita_saude', 'reuniao_comunitaria', 'visita_tecnica', 'discurso_grupo'];
 const AUTOCUIDADO = ['descansar', 'cuidar_de_si', 'treino_pratico'];
 
 export function acaoPorId(id) {
@@ -46,6 +47,9 @@ function elegivel(acao, state) {
   if (r.temEmprego && !state.personagem.emprego) return false;
   if (r.temCascata && !(state.mundo?.cascatas || []).some((c) => !c.encerrada)) return false;
   if (r.temProjetoTramitando && !(state.mandato?.projetos || []).some((p) => p.status === 'TRAMITANDO')) return false;
+  // Item 18 — eventos que dependem de patrimônio (itens 16/17)
+  if (r.temInstituicao && !(state.personagem.instituicoes || []).length) return false;
+  if (r.temEmpresa && !(state.personagem.empresas || []).length) return false;
   if ((acao.custo.tempo || 0) > state.tempo.pontosRestantes) return false;
   return true;
 }
@@ -77,14 +81,29 @@ export function acoesDisponiveis(state) {
   const rng = streamRng(state.meta.seed, "menu", state.tempo.mes, fase);
   const escolhidas = [];
   const restante = [...pool];
-  const alvo = Math.min(restante.length, 5 + (rng.chance(0.4) ? 1 : 0));
+  const catCount = {};
+  const alvo = Math.min(restante.length, 6 + (rng.chance(0.5) ? 1 : 0));
   while (escolhidas.length < alvo && restante.length) {
     // Etapa 7 — o peso base é modulado pelo contexto (crise, promessa, eleição…)
-    const a = rng.weighted(restante, (x) => (x.peso ?? 1) * pesoContextual(x, state));
+    // Agenda — e por diversidade: 2ª ação da mesma categoria no leque pesa menos,
+    // 3ª quase não entra, para o mês não virar "4 cards de mídia".
+    const a = rng.weighted(restante, (x) => {
+      const c = catCount[x.categoria] || 0;
+      const spread = c === 0 ? 1 : c === 1 ? 0.4 : 0.12;
+      return (x.peso ?? 1) * pesoContextual(x, state) * spread;
+    });
     escolhidas.push(a);
+    catCount[a.categoria] = (catCount[a.categoria] || 0) + 1;
     restante.splice(restante.indexOf(a), 1);
   }
-  return escolhidas;
+  // Agenda — variação de fachada: uma ação com `variantes` aparece com um rótulo
+  // diferente a cada mês (mesmo id/efeito). Puramente cosmético.
+  return escolhidas.map((a) => {
+    if (!a.variantes?.length) return a;
+    const vr = streamRng(state.meta.seed, "variante", state.tempo.mes, a.id);
+    const v = vr.pick(a.variantes);
+    return { ...a, titulo: v.titulo || v, desc: v.desc || a.desc, tituloBase: a.titulo };
+  });
 }
 
 // Etapa 7 — multiplicador de peso conforme a situação atual. Faz o leque
@@ -125,6 +144,19 @@ export function pesoContextual(a, state) {
   // energia/saúde no chão → descanso e autocuidado
   if ((state.tempo.energia < 35 || (state.personagem.vida?.saude ?? 100) < 40)
     && (a.id === 'descansar' || a.id === 'cuidar_de_si')) m *= 2.5;
+
+  // Agenda — anti-repetição: ação feita há pouco quase não reaparece
+  const recentes = state.meta?.acoesRecentes || [];
+  const ult = recentes.find((r) => r.id === a.id);
+  if (ult) {
+    const atras = state.tempo.mes - ult.mes;
+    if (atras <= 1) m *= 0.1;
+    else if (atras === 2) m *= 0.35;
+    else if (atras <= 4) m *= 0.65;
+  }
+  // duas ações da mesma categoria seguidas também cansam
+  const catRecente = recentes.slice(0, 2).map((r) => acaoPorId(r.id)?.categoria);
+  if (a.categoria && catRecente.filter((c) => c === a.categoria).length === 2) m *= 0.55;
 
   return m;
 }
@@ -200,6 +232,18 @@ const EFEITOS = {
     const faixa = Array.isArray(ef.treinarAtributo) ? ef.treinarAtributo : [20, 40];
     const r = ganharXp(state, attr, rng.rangeInt(faixa));
     resumo.push(r.subiu ? `${attr} +${r.subiu} (agora ${r.valor})` : `${attr}: progresso rumo ao próximo ponto`);
+  },
+
+  // Item 2 — curso pago: dinheiro + tempo compram pontos de atributo direto
+  // (retornos decrescentes perto do teto). Não é a barra de XP das ações comuns.
+  cursoAtributo({ state, ef, rng, resumo }) {
+    const attr = ef.atributoAlvo || 'comunicacao';
+    const atr = state.personagem.atributos;
+    if (atr[attr] == null) atr[attr] = 45;
+    const bruto = rng.range(Array.isArray(ef.cursoAtributo) ? ef.cursoAtributo : [1.5, 3]);
+    const efetivo = bruto * clamp((88 - atr[attr]) / 42, 0.15, 1);
+    atr[attr] = Math.round(clamp(atr[attr] + efetivo, 5, 88) * 10) / 10;
+    resumo.push(`${attr} +${efetivo.toFixed(1)} (agora ${Math.round(atr[attr])})`);
   },
 
   skillsAleatoria({ state, ef, rng, resumo }) {
@@ -331,6 +375,15 @@ const EFEITOS = {
     resumo.push('repercutiu com o público da pauta');
   },
 
+  // Item 3 — encontro/discurso direcionado a um grupo social escolhido
+  cortejarGrupo({ state, ef, opts, rng, mult, resumo }) {
+    const gid = opts.grupoId || GRUPOS_LISTA[0].id;
+    const faixa = Array.isArray(ef.cortejarGrupo) ? ef.cortejarGrupo : [3, 6];
+    const forca = rng.range(faixa) * mult;
+    cortejarGrupo(state, gid, forca);
+    resumo.push(`aproximou-se de ${(GRUPOS_LISTA.find((g) => g.id === gid) || {}).nome || gid}`);
+  },
+
   // Etapa 6 — entrega concreta num bairro (obra do prefeito, emenda do deputado).
   // Território + aprovação + satisfação da pauta local + PROGRIDE PROMESSAS.
   entregaLocal({ state, ef, opts, rng, mult, resumo }) {
@@ -406,6 +459,7 @@ const ORDEM_EFEITOS = [
   'pedirAumento', 'trocarEmprego', 'apoioPartido', 'conterCascata',
   'captarDoacao', 'recrutarMilitancia', 'cuidarDeSi', 'satisfacaoTema',
   'gravarPodcast', 'cultivarInfluenciador', 'colaborarInfluenciador', 'entregaLocal', 'gabineteBonus',
+  'cortejarGrupo', 'cursoAtributo',
 ];
 
 // permite a outros módulos (Bloco B) registrarem novos efeitos sem editar este arquivo
@@ -464,6 +518,9 @@ export function aplicarAcao(state, acaoId, opts = {}) {
   }
 
   state.meta.rngState = rng.state;
+  // Agenda — registra a ação para o anti-repetição do leque
+  (state.meta.acoesRecentes ||= []).unshift({ id: acaoId, mes });
+  state.meta.acoesRecentes = state.meta.acoesRecentes.slice(0, 10);
   state.log.unshift({ mes, tipo: 'ACAO', texto: `${acao.titulo} — ${resumo.join(', ') || 'concluído'}.` });
   state.log = state.log.slice(0, 200);
   return resumo;
@@ -539,6 +596,9 @@ export function precisaAtributo(acaoId) {
 }
 export function precisaPodcast(acaoId) {
   return !!acaoPorId(acaoId)?.efeitos?.gravarPodcast;
+}
+export function precisaGrupo(acaoId) {
+  return !!acaoPorId(acaoId)?.efeitos?.cortejarGrupo;
 }
 export function precisaInfluenciador(acaoId) {
   const ef = acaoPorId(acaoId)?.efeitos || {};

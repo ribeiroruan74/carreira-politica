@@ -50,6 +50,36 @@
       "requisitos": { "faseMin": "PARTIDO" },
       "efeitos": { "cultivarPoliticoFixo": "np_joao_campos", "cultivarPolitico": [3, 8], "reputacao": { "notoriedade": [1, 3] }, "atributoPeso": "carisma" },
       "peso": 0.7
+    },
+    {
+      "id": "reuniao_partidaria",
+      "categoria": "POLITICA",
+      "titulo": "Reunião do diretório",
+      "desc": "Executiva municipal, briga por espaço na chapa, quem banca quem. Aparecer conta.",
+      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "apoioPartido": [2, 6], "relacionamentosNovos": 1, "atributoPeso": "negociacao" },
+      "peso": 1
+    },
+    {
+      "id": "convencao_partidaria",
+      "categoria": "POLITICA",
+      "titulo": "Convenção partidária",
+      "desc": "Evento formal do partido: discursos, disputa de espaço, foto de corpo fechado.",
+      "custo": { "tempo": 3, "energia": 14, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "apoioPartido": [3, 7], "relacionamentosNovos": 1, "reputacao": { "notoriedade": [1, 3] }, "ecoMidiatico": [1, 4], "atributoPeso": "lideranca" },
+      "peso": 0.7
+    },
+    {
+      "id": "articular_bastidor",
+      "categoria": "POLITICA",
+      "titulo": "Articulação de bastidor",
+      "desc": "Ligações, um café aqui, um recado ali. Costura invisível que segura uma votação.",
+      "custo": { "tempo": 1, "energia": 6, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "apoioPartido": [1, 4], "relacionamentosContato": true, "relacionamentosNovos": 1, "atributoPeso": "negociacao" },
+      "peso": 0.9
     }
   ]
 }

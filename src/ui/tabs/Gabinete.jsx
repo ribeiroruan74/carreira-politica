@@ -3,7 +3,11 @@ import { useGame } from '../../state/store';
 import { Card, Stat, Meter, Pill, PageHead } from '../components/primitives';
 import { formatBRL } from '../../engine/tick';
 import { streamRng } from '../../engine/rng';
-import { candidatosAssessor, contratarAssessor, demitirAssessor } from '../../engine/mandate';
+import {
+  candidatosAssessor, contratarAssessor, demitirAssessor,
+  reuniaoGabinete, definirPrioridade, delegar, promoverAssessor,
+  AREAS_GABINETE, DELEGACOES, capacidadeDelegacao, multGabinete, chefeGabinete,
+} from '../../engine/mandate';
 import staffDef from '../../content/staff.json';
 
 export default function Gabinete() {
@@ -12,6 +16,7 @@ export default function Gabinete() {
   const m = s.mandato;
   const [aba, setAba] = useState(null); // cargoChave sendo contratado
   const [erro, setErro] = useState(null);
+  const [briefing, setBriefing] = useState(null);
 
   // candidatos determinísticos por cargo+mês
   const candidatos = useMemo(() => {
@@ -29,12 +34,96 @@ export default function Gabinete() {
   function agir(fn) {
     try { aplicar(fn); setErro(null); setAba(null); } catch (e) { setErro(e.message); }
   }
+  function reunir() {
+    try { let r; aplicar((st) => { r = reuniaoGabinete(st); }); setBriefing(r?.briefing || null); setErro(null); }
+    catch (e) { setErro(e.message); }
+  }
+
+  const chefe = chefeGabinete(s);
+  const cap = capacidadeDelegacao(s);
+  const del = m.gabinete.delegacoes || {};
+  const nDel = Object.values(del).filter(Boolean).length;
 
   return (
     <div className="stack">
       <PageHead eyebrow="Gabinete" title="Sua equipe">
         Funcionários bons custam mais e entregam mais. Baixa lealdade é risco de crise ou de perder gente para um rival.
       </PageHead>
+
+      <Card title="🧑‍💼 Chefe de gabinete" aside={chefe ? <Pill tone={chefe.lealdade >= 60 ? 'accent' : 'amber'}>{chefe.traçoNome}</Pill> : <Pill tone="red">vaga aberta</Pill>}>
+        {chefe ? (
+          <>
+            <div className="row"><span className="grow name">{chefe.nome}</span><span className="num small">{formatBRL(chefe.salario)}/mês</span></div>
+            <div className="grid cols-2" style={{ gap: 10, marginTop: 8 }}>
+              <Meter label={`Competência ${chefe.experiencia ? `(+${Math.round(chefe.experiencia * 6)} exp.)` : ''}`} value={Math.min(100, chefe.competencia + (chefe.experiencia || 0) * 6)} tone="ok" />
+              <Meter label="Lealdade" value={chefe.lealdade} tone={chefe.lealdade >= 55 ? 'ok' : 'warn'} />
+            </div>
+            <p className="small dim" style={{ marginTop: 8 }}>
+              Um bom chefe multiplica toda a equipe e destrava até {cap} tarefa(s) delegada(s). {chefe.lealdade >= 60 ? 'Leal — segura a lealdade dos outros.' : chefe.risco === 'vira rival' ? 'Ambicioso — corrói a lealdade da equipe e pode romper com você.' : ''}
+            </p>
+            <div className="chips" style={{ marginTop: 8 }}>
+              <button className="btn sm ghost" onClick={() => agir((st) => promoverAssessor(st, 'chefe_gabinete'))}>Promover</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="small dim">Sem chefe de gabinete a casa toda rende menos e você não pode delegar rotinas.</p>
+            {aba === 'chefe_gabinete' ? (
+              <div className="stack" style={{ gap: 8, marginTop: 8 }}>
+                {candidatos.map((c) => (
+                  <div key={c.id} className="row">
+                    <span className="grow"><span className="name">{c.nome}</span> <Pill>{c.traçoNome}</Pill>{' '}
+                      <span className="small faint">comp. {c.competencia} · leald. {c.lealdade}</span></span>
+                    <span className="num small">{formatBRL(c.salario)}</span>
+                    <button className="btn sm" onClick={() => agir((st) => contratarAssessor(st, c))}>Contratar</button>
+                  </div>
+                ))}
+                <button className="btn sm ghost" onClick={() => setAba(null)}>Cancelar</button>
+              </div>
+            ) : (
+              <button className="btn sm" style={{ marginTop: 8 }} onClick={() => setAba('chefe_gabinete')}>Ver candidatos a chefe</button>
+            )}
+          </>
+        )}
+      </Card>
+
+      <Card title="Gestão do gabinete">
+        <div className="chips" style={{ marginBottom: 10 }}>
+          <button className="btn sm" disabled={m.gabinete.ultimaReuniao === s.tempo.mes || s.tempo.pontosRestantes < 1} onClick={reunir}>
+            Reunião de alinhamento · 1t
+          </button>
+        </div>
+        {briefing && (
+          <div className="card" style={{ background: 'var(--surface-2)', padding: 10, marginBottom: 10 }}>
+            {briefing.map((b, i) => <p key={i} className="small" style={{ margin: 0 }}>▸ {b}</p>)}
+          </div>
+        )}
+
+        <div className="small faint mono" style={{ marginBottom: 4 }}>PRIORIDADE DA EQUIPE</div>
+        <div className="chips" style={{ marginBottom: 4 }}>
+          {AREAS_GABINETE.map((ar) => (
+            <button key={ar.id} className={`btn sm ${m.gabinete.prioridade === ar.id ? '' : 'ghost'}`}
+              onClick={() => agir((st) => definirPrioridade(st, ar.id))}>
+              {ar.nome} <span className="faint">{Math.round(multGabinete(s, ar.id) * 100)}%</span>
+            </button>
+          ))}
+        </div>
+        <p className="small faint" style={{ margin: '0 0 12px' }}>A área priorizada rende mais; as demais, um pouco menos.</p>
+
+        <div className="small faint mono" style={{ marginBottom: 4 }}>DELEGAR ROTINAS ({nDel}/{cap})</div>
+        <div className="stack" style={{ gap: 6 }}>
+          {DELEGACOES.map((d) => (
+            <div key={d.id} className="row" style={{ alignItems: 'baseline' }}>
+              <span className="grow small">{d.nome} <span className="dim">— {d.desc}</span></span>
+              <button className={`btn sm ${del[d.id] ? '' : 'ghost'}`}
+                disabled={!del[d.id] && (nDel >= cap || !chefe)}
+                onClick={() => agir((st) => delegar(st, d.id, !del[d.id]))}>
+                {del[d.id] ? 'Delegado' : 'Delegar'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       <div className="grid cols-3">
         <Card><Stat k="Verba mensal" v={formatBRL(m.gabinete.verbaMensal)} /></Card>
@@ -44,7 +133,7 @@ export default function Gabinete() {
 
       {erro && <Card><p className="small" style={{ color: 'var(--red)', margin: 0 }}>{erro}</p></Card>}
 
-      {staffDef.cargos.map((cargo) => {
+      {staffDef.cargos.filter((c) => c.chave !== 'chefe_gabinete').map((cargo) => {
         const a = contratados[cargo.chave];
         return (
           <Card key={cargo.chave}>

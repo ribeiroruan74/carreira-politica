@@ -70,6 +70,19 @@ export function formarColigacoes(state) {
     }
   }
 
+  // 3.5) Item 12 — coligação articulada pelo jogador force o parceiro para a sua
+  const art = state.mundo?.coligacaoArticulada;
+  const meu = state.personagem?.partidoId;
+  if (art && meu && state.tempo.mes <= art.ateMes && deColigacao[meu] && deColigacao[art.comPartido]
+    && deColigacao[meu] !== deColigacao[art.comPartido]) {
+    const destino = deColigacao[meu];
+    const origem = deColigacao[art.comPartido];
+    membros[origem] = (membros[origem] || []).filter((x) => x !== art.comPartido);
+    membros[destino] = [...(membros[destino] || []), art.comPartido];
+    deColigacao[art.comPartido] = destino;
+    if (membros[origem].length === 0) { delete membros[origem]; delete nomes[origem]; }
+  }
+
   // 4) nomes de coligação a partir das siglas
   for (const [cid, pids] of Object.entries(membros)) {
     if (nomes[cid]) continue;

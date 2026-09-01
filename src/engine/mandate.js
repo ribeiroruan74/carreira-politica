@@ -8,6 +8,9 @@ import lawsDef from '../content/laws.json';
 import committeesDef from '../content/committees.json';
 import neighborhoods from '../content/neighborhoods/recife.json';
 import partiesDef from '../content/parties.json';
+import pressDef from '../content/press.json';
+
+const pressJornalistas = pressDef.jornalistas;
 
 const BAIRROS = neighborhoods.bairros;
 const MANDATO_MESES = 48;
@@ -53,6 +56,7 @@ export function candidatosAssessor(state, cargoChave, rng) {
       traçoNome: traço.nome,
       competencia: clamp(Math.round(compBase), 5, 98),
       lealdade: clamp(50 + (traço.lealdade || 0) + rng.int(-10, 10), 5, 98),
+      experiencia: 0, // Item 14 — cresce no cargo, soma à competência efetiva
       salario: Math.round(salBase / 100) * 100,
       risco: traço.risco || null,
       mesContratado: null,
@@ -79,6 +83,9 @@ export function iniciarMandato(state, cargoId = 'VEREADOR') {
     gabinete: {
       verbaMensal: verba,
       contratados: {},
+      prioridade: null, // Item 15 — área foco do gabinete
+      delegacoes: {}, // Item 15 — { rotina: true } tarefas delegadas ao gabinete
+      ultimaReuniao: -99,
     },
     projetos: [],
     sessoes: [],
@@ -96,6 +103,22 @@ export function iniciarMandato(state, cargoId = 'VEREADOR') {
   });
 }
 
+// Item 14 — o chefe de gabinete. Competência efetiva já contando a experiência.
+export function chefeGabinete(state) {
+  return state.mandato?.gabinete?.contratados?.chefe_gabinete || null;
+}
+function compEfetiva(a) {
+  if (!a) return 0;
+  return clamp(a.competencia + (a.experiencia || 0) * 6, 5, 100);
+}
+// Fator global do chefe sobre TODO o gabinete: bom chefe multiplica a equipe,
+// chefe fraco atrapalha, e a falta de um pesa.
+export function fatorChefe(state) {
+  const c = chefeGabinete(state);
+  if (!c) return 0.82;
+  return clamp(0.78 + (compEfetiva(c) / 100) * 0.4 + (c.lealdade / 100) * 0.14, 0.8, 1.32);
+}
+
 // competência efetiva do gabinete numa área
 export function forcaGabinete(state, area) {
   const g = state.mandato?.gabinete;
@@ -104,14 +127,18 @@ export function forcaGabinete(state, area) {
   for (const cargo of staffDef.cargos) {
     const a = g.contratados[cargo.chave];
     if (a && cargo.afeta.includes(area)) {
-      soma += a.competencia * (0.6 + a.lealdade / 250);
+      soma += compEfetiva(a) * (0.6 + a.lealdade / 250);
       n++;
     }
   }
-  return n ? 0.5 + (soma / n / 100) : 0.45;
+  const base = n ? 0.5 + (soma / n / 100) : 0.45;
+  // Item 15 — a área marcada como prioridade rende mais; as outras, um pouco menos
+  const pri = g.prioridade;
+  const ajustePri = !pri ? 0 : pri === area ? 0.12 : -0.04;
+  return clamp((base + ajustePri) * fatorChefe(state), 0.2, 1.4);
 }
 
-// Etapa 8 — multiplicador prático do gabinete numa área (0.9..1.6). Fora de
+// Etapa 8 — multiplicador prático do gabinete numa área (0.85..1.75). Fora de
 // mandato não há gabinete → 1. Assessor bom na área compensa; nenhum, penaliza de leve.
 export function multGabinete(state, area) {
   if (!state.mandato) return 1;
@@ -126,6 +153,94 @@ export function contratarAssessor(state, assessor) {
   }
   g.contratados[assessor.cargoChave] = { ...assessor, mesContratado: state.tempo.mes };
   state.log.unshift({ mes: state.tempo.mes, tipo: 'GABINETE', texto: `${assessor.nome} contratado(a) como ${staffDef.cargos.find((c) => c.chave === assessor.cargoChave).nome}.` });
+}
+
+// Item 15 — áreas de atuação do gabinete (para prioridade e leitura de UI)
+export const AREAS_GABINETE = [
+  { id: 'projetos', nome: 'Projetos de lei' },
+  { id: 'negociacao_votos', nome: 'Negociação de votos' },
+  { id: 'midia', nome: 'Comunicação e mídia' },
+  { id: 'territorio', nome: 'Território e demandas' },
+  { id: 'fiscalizacao', nome: 'Fiscalização e orçamento' },
+  { id: 'aliancas', nome: 'Articulação política' },
+];
+export const DELEGACOES = [
+  { id: 'comunicacao', nome: 'Cuidar da comunicação', desc: 'assessoria posta conteúdo e sustenta sua notoriedade.' },
+  { id: 'territorio', nome: 'Monitorar o território', desc: 'equipe roda os bairros e mantém sua presença.' },
+  { id: 'projetos', nome: 'Tocar os projetos', desc: 'assessoria parlamentar empurra o apoio dos projetos em tramitação.' },
+  { id: 'entrevistas', nome: 'Buscar entrevistas', desc: 'gabinete corre atrás de espaço na imprensa.' },
+];
+
+// quantas rotinas o gabinete consegue tocar em paralelo depende do chefe
+export function capacidadeDelegacao(state) {
+  const c = chefeGabinete(state);
+  if (!c) return 0;
+  return c.competencia >= 65 ? 3 : c.competencia >= 45 ? 2 : 1;
+}
+
+export function delegar(state, rotina, ligar = true) {
+  const g = state.mandato?.gabinete;
+  if (!g) throw new Error('Sem gabinete.');
+  if (!DELEGACOES.some((d) => d.id === rotina)) throw new Error('Rotina inválida.');
+  g.delegacoes = g.delegacoes || {};
+  if (ligar) {
+    if (!chefeGabinete(state)) throw new Error('Contrate um chefe de gabinete antes de delegar.');
+    const ativas = Object.values(g.delegacoes).filter(Boolean).length;
+    if (ativas >= capacidadeDelegacao(state)) throw new Error(`Seu chefe de gabinete só dá conta de ${capacidadeDelegacao(state)} rotina(s) ao mesmo tempo.`);
+    g.delegacoes[rotina] = true;
+  } else {
+    delete g.delegacoes[rotina];
+  }
+  return { ok: true };
+}
+
+export function definirPrioridade(state, area) {
+  const g = state.mandato?.gabinete;
+  if (!g) throw new Error('Sem gabinete.');
+  g.prioridade = g.prioridade === area ? null : area;
+  return { ok: true, prioridade: g.prioridade };
+}
+
+// reunião de alinhamento — 1 tempo, 1x/mês. Sobe a lealdade da equipe e devolve
+// um briefing curto da situação (as áreas mais fracas do gabinete).
+export function reuniaoGabinete(state) {
+  const g = state.mandato?.gabinete;
+  if (!g) throw new Error('Sem gabinete.');
+  if (g.ultimaReuniao === state.tempo.mes) throw new Error('Você já reuniu o gabinete este mês.');
+  if ((state.tempo.pontosRestantes ?? 0) < 1) throw new Error('Sem tempo (custa 1).');
+  state.tempo.pontosRestantes -= 1;
+  g.ultimaReuniao = state.tempo.mes;
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  for (const a of Object.values(g.contratados)) {
+    a.lealdade = clamp(a.lealdade + rng.range([1, 3]), 0, 100);
+  }
+  state.meta.rngState = rng.state;
+  const areas = AREAS_GABINETE.map((ar) => ({ ...ar, m: multGabinete(state, ar.id) })).sort((x, y) => x.m - y.m);
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'GABINETE', texto: 'Reunião de gabinete — equipe alinhada.' });
+  return {
+    ok: true,
+    briefing: [
+      `Ponto mais frágil do gabinete: ${areas[0].nome} (rendimento ${Math.round(areas[0].m * 100)}%).`,
+      `Mais forte: ${areas[areas.length - 1].nome} (${Math.round(areas[areas.length - 1].m * 100)}%).`,
+      chefeGabinete(state) ? `Chefia: ${chefeGabinete(state).nome}, lealdade ${Math.round(chefeGabinete(state).lealdade)}.` : 'Você está sem chefe de gabinete — a casa rende menos.',
+    ],
+  };
+}
+
+export function promoverAssessor(state, cargoChave) {
+  const g = state.mandato?.gabinete;
+  const a = g?.contratados[cargoChave];
+  if (!a) throw new Error('Ninguém nesse cargo.');
+  const novoSalario = Math.round(a.salario * 1.25 / 100) * 100;
+  const folha = Object.values(g.contratados).reduce((s, x) => s + x.salario, 0) - a.salario + novoSalario;
+  if (folha > g.verbaMensal * 1.05) throw new Error('A folha estouraria a verba.');
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  a.salario = novoSalario;
+  a.lealdade = clamp(a.lealdade + rng.range([8, 16]), 0, 100);
+  a.competencia = clamp(a.competencia + rng.range([1, 4]), 5, 100);
+  state.meta.rngState = rng.state;
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'GABINETE', texto: `${a.nome} promovido(a) — salário e lealdade em alta.` });
+  return { ok: true };
 }
 
 export function demitirAssessor(state, cargoChave) {
@@ -482,9 +597,17 @@ export function mandateTick(s) {
     }
   }
 
+  // Item 14 — o chefe de gabinete dá o tom da casa
+  const chefe = s.mandato.gabinete.contratados.chefe_gabinete;
+  const chefeLeal = chefe && chefe.lealdade >= 60;
+  const chefeAmbicioso = chefe && chefe.risco === 'vira rival';
+
   // eventos de gabinete (lealdade baixa / traço problemático)
   for (const [chave, a] of Object.entries(s.mandato.gabinete.contratados)) {
-    if (rng.chance(0.03) && a.lealdade < 45) {
+    // experiência acumula devagar no cargo (teto ~2.5 pontos, ~+15 de competência)
+    a.experiencia = Math.min(2.5, (a.experiencia || 0) + rng.range([0.03, 0.07]));
+    const pedeDemissao = 0.03 * (chefeLeal ? 0.5 : 1) + (chefeAmbicioso && chave !== 'chefe_gabinete' ? 0.02 : 0);
+    if (rng.chance(pedeDemissao) && a.lealdade < 45) {
       if (a.risco === 'gera crise') {
         s.reputacao.rejeicao = clamp(s.reputacao.rejeicao + rng.range([3, 9]), 0, 100);
         s.reputacao.ecoMidiatico = clamp(s.reputacao.ecoMidiatico - rng.range([2, 8]), -50, 100);
@@ -494,7 +617,45 @@ export function mandateTick(s) {
         eventos.push({ tipo: 'GABINETE', texto: `${a.nome} pediu demissão do gabinete.` });
       }
     }
-    if (a) a.lealdade = clamp(a.lealdade + rng.range([-1, 1.5]), 0, 100);
+    // chefe leal segura a lealdade da equipe; chefe ambicioso corrói
+    const driftBase = rng.range([-1, 1.5]);
+    const driftChefe = chave === 'chefe_gabinete' ? 0 : (chefeLeal ? 0.8 : chefeAmbicioso ? -0.8 : 0);
+    if (a) a.lealdade = clamp(a.lealdade + driftBase + driftChefe, 0, 100);
+  }
+  // chefe ambicioso muito competente e pouco leal pode romper e virar rival de peso
+  if (chefeAmbicioso && chefe.lealdade < 30 && (m - (s.mandato.mesInicio)) > 12 && rng.chance(0.04)) {
+    delete s.mandato.gabinete.contratados.chefe_gabinete;
+    s.reputacao.ecoMidiatico = clamp(s.reputacao.ecoMidiatico + rng.range([4, 10]), -50, 100);
+    eventos.push({ tipo: 'ALERTA', texto: `${chefe.nome} deixou a chefia de gabinete e vai disputar espaço político contra você.` });
+  }
+
+  // Item 15 — tarefas delegadas ao gabinete rendem um efeito passivo por mês
+  const del = s.mandato.gabinete.delegacoes || {};
+  if (del.comunicacao) {
+    s.reputacao.notoriedade = clamp(s.reputacao.notoriedade + rng.range([0.2, 0.8]) * multGabinete(s, 'midia'), 0, 100);
+  }
+  if (del.territorio) {
+    const bs = Object.keys(s.territorio.porBairro);
+    if (bs.length) {
+      const bid = bs[m % bs.length];
+      const t = s.territorio.porBairro[bid];
+      t.presenca = clamp(t.presenca + rng.range([0.3, 1.1]) * multGabinete(s, 'territorio'), 0, 100);
+    }
+  }
+  if (del.projetos) {
+    for (const pj of s.mandato.projetos) {
+      if (pj.status === 'TRAMITANDO') pj.apoio = clamp(pj.apoio + rng.range([0.4, 1.6]) * multGabinete(s, 'projetos'), 0, 100);
+    }
+  }
+  if (del.entrevistas && rng.chance(0.12 * multGabinete(s, 'midia'))) {
+    s.mundo.convitesMidia = s.mundo.convitesMidia || [];
+    if (s.mundo.convitesMidia.length < 3) {
+      const j = pressJornalistas[rng.int(0, pressJornalistas.length - 1)];
+      if (j && !s.mundo.convitesMidia.some((c) => c.refId === j.id)) {
+        s.mundo.convitesMidia.push({ id: `cv_${j.id}_${m}`, tipo: 'entrevista', refId: j.id, criadoMes: m, expiraMes: m + 3 });
+        eventos.push({ tipo: 'MIDIA', texto: `Seu gabinete conseguiu um convite de entrevista.` });
+      }
+    }
   }
 
   // aprovação: regressão à média + desgaste de mandato (cresce ao longo do termo)

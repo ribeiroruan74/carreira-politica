@@ -1,6 +1,7 @@
 import neighborhoods from '../content/neighborhoods/recife.json';
 import electorateDef from '../content/electorate.json';
 import partiesDef from '../content/parties.json';
+import lawsDef from '../content/laws.json';
 import { riscosAbertos } from './worldMemory';
 import { cascatasAtivas } from './cascade';
 import { resumoSatisfacao } from './electorate';
@@ -8,10 +9,16 @@ import { eventoNacionalAtual, rotuloClima, climaNacional } from './national';
 import { exposicaoDoadores, doadoresResumo } from './donors';
 import { imagemResumo } from './image';
 import { influenciadoresDisponiveis } from './influencers';
+import { temaCanonico } from './mandate';
 
 const BAIRROS = neighborhoods.bairros;
 const GRUPOS = electorateDef.grupos;
+const TEMAS = lawsDef.temas;
 const P = (id) => partiesDef.partidos.find((x) => x.id === id);
+const GRUPO = (id) => GRUPOS.find((g) => g.id === id);
+const TEMA = (id) => TEMAS.find((t) => t.id === id);
+const nomeTema = (id) => TEMA(id)?.nome || id;
+const nomeBairro = (id) => BAIRROS.find((b) => b.id === id)?.nome || id;
 
 // ============================================================
 // FASE 5 — Central de Inteligência
@@ -214,4 +221,238 @@ export function relatorios(state) {
   }
 
   return out;
+}
+
+// ============================================================
+// Item 5 — pesquisas dirigidas (sob demanda). O jogador escolhe o alvo.
+// Tudo derivado do estado; a "leitura" pode errar, os números não.
+// ============================================================
+
+function eixoJogador(state) {
+  const pa = P(state.personagem.partidoId);
+  return pa?.eixo ?? 0;
+}
+
+// --- pesquisar bairro ---
+export function pesquisarBairro(state, bairroId) {
+  const b = BAIRROS.find((x) => x.id === bairroId) || BAIRROS[0];
+  const t = state.territorio.porBairro[b.id] || { presenca: 0, penetracao: 0 };
+  const alinho = 1 - Math.abs(eixoJogador(state) - b.eixo) / 100;
+  const temaChave = temaCanonico((b.problemas || ['assistencia'])[0]);
+  const disponivel = Math.round((1 - t.penetracao / 100) * alinho * 100);
+  const linhas = [
+    `${(b.populacao / 1000).toFixed(0)} mil habitantes · ${b.regiao} · renda ${b.renda}/5 · perfil ${b.eixo > 15 ? 'mais à direita' : b.eixo < -15 ? 'mais à esquerda' : 'de centro'}.`,
+    `Sua presença aqui: ${Math.round(t.presenca)} · voto firme (penetração): ${Math.round(t.penetracao)}.`,
+    `Pauta que mais mobiliza: ${nomeTema(temaChave)} (também: ${(b.problemas || []).slice(1).map((p) => nomeTema(temaCanonico(p))).join(', ') || '—'}).`,
+    alinho > 0.7 ? 'Perfil ideológico favorável — vale investir.'
+      : alinho < 0.45 ? 'Perfil ideológico adverso — retorno baixo por caminhada; foque em entrega concreta.'
+        : 'Perfil misto — disputável com trabalho de base.',
+    `Voto ainda disponível estimado: ${disponivel}/100.`,
+  ];
+  return { id: b.id, nome: b.nome, temaChave, linhas };
+}
+
+// --- pesquisar grupo social ---
+export function pesquisarGrupo(state, grupoId) {
+  const g = GRUPO(grupoId) || GRUPOS[0];
+  const sat = Math.round((state.mundo?.satisfacaoGrupos?.[g.id]) || 0);
+  const temasDoGrupo = TEMAS.filter((t) => (t.grupos || []).includes(g.id));
+  const dist = Math.abs(eixoJogador(state) - g.eixo);
+  const linhas = [
+    `Satisfação com você: ${sat > 0 ? '+' : ''}${sat} (−100 a 100). Volatilidade ${Math.round(g.volatilidade * 100)}% — ${g.volatilidade > 0.6 ? 'muda de ideia rápido' : 'leal, custa a virar e custa a voltar'}.`,
+    `Pautas que mobilizam esse grupo: ${temasDoGrupo.map((t) => t.nome).join(', ') || '—'}.`,
+    dist < 25 ? 'Alinhamento ideológico com você: bom.' : dist < 55 ? 'Alinhamento ideológico: parcial.' : 'Alinhamento ideológico: ruim — conquista custa mais.',
+    sat <= -20 ? 'Prioridade: reverter. Um encontro + uma entrega na pauta deles.'
+      : sat >= 40 ? 'Já são seus — mantenha com presença, não desperdice tempo cortejando.'
+        : 'Terreno neutro — dá para crescer com discurso dirigido e projeto no tema.',
+  ];
+  return { id: g.id, nome: g.nome, temas: temasDoGrupo.map((t) => t.id), linhas };
+}
+
+// --- rivais que dá para pesquisar ---
+export function rivaisConhecidos(state) {
+  return Object.values(state.mundo.politicos || {})
+    .filter((p) => p.ativo && (p.relacaoJogador < 25 || p.influencia > 55))
+    .sort((a, b) => (b.influencia + b.notoriedade) - (a.influencia + a.notoriedade))
+    .slice(0, 12)
+    .map((p) => ({ id: p.id, nome: p.nome, partidoId: p.partidoId }));
+}
+
+// --- pesquisar rival ---
+export function pesquisarRival(state, polId) {
+  const p = state.mundo.politicos?.[polId];
+  if (!p) return null;
+  const noticia = (state.mundo.noticias || []).find((n) => n.texto.includes(p.nome));
+  const meuEixo = eixoJogador(state);
+  const linhas = [
+    `${p.partidoId} · ${p.cargo || 'sem cargo'} · influência ${Math.round(p.influencia)} · notoriedade ${Math.round(p.notoriedade)} · rejeição ${Math.round(p.rejeicao)}.`,
+    `Relação com você: ${Math.round(p.relacaoJogador)} (${p.relacaoJogador < -20 ? 'hostil' : p.relacaoJogador < 10 ? 'fria' : 'cordial'}).`,
+    noticia ? `Movimento recente: "${noticia.texto}"` : 'Sem movimentos de destaque no último mês.',
+    p.rejeicao > 40 ? 'Ponto fraco: rejeição alta. Não precisa atacar — basta se diferenciar e deixar ele falar.'
+      : Math.abs((p.ideologiaEixo ?? 0) - meuEixo) > 45 ? 'Ponto fraco: está longe do eleitor de centro. Dispute esse espaço.'
+        : p.influencia < 45 ? 'Ponto fraco: base institucional curta. Trabalhe as lideranças antes dele.'
+          : 'Sem brecha óbvia — evite confronto direto e construa entrega.',
+  ];
+  return { id: p.id, nome: p.nome, linhas };
+}
+
+// --- analisar tendências ---
+export function analisarTendencias(state) {
+  const campos = [
+    ['notoriedade', 'Notoriedade'], ['aprovacao', 'Aprovação'],
+    ['rejeicao', 'Rejeição'], ['seguidores', 'Seguidores'],
+  ];
+  const linhas = campos.map(([k, nome]) => {
+    const d6 = tendencia(state.series, k, 6);
+    const d3 = tendencia(state.series, k, 3);
+    const seta = d6 > 1 ? '↑' : d6 < -1 ? '↓' : '→';
+    const acel = Math.abs(d3) > Math.abs(d6 - d3) && Math.abs(d3) > 2 ? ' (acelerando)' : '';
+    return `${nome}: ${seta} ${d6 >= 0 ? '+' : ''}${Math.round(d6)} em 6 meses${acel}.`;
+  });
+  const dRej = tendencia(state.series, 'rejeicao', 4);
+  if (dRej > 5) linhas.push('Alerta: a rejeição está em rota de subida — identifique o que mudou nos últimos 2 meses.');
+  return { linhas };
+}
+
+// --- eleitorado potencial ---
+export function eleitoradoPotencial(state) {
+  const ex = eixoJogador(state);
+  const grupos = GRUPOS.map((g) => {
+    const sat = (state.mundo?.satisfacaoGrupos?.[g.id]) || 0;
+    const afin = 1 - Math.abs(ex - g.eixo) / 100;
+    const espaco = afin * (1 - (sat + 100) / 260); // afim, mas ainda não conquistado
+    return { nome: g.nome, id: g.id, espaco, sat: Math.round(sat), afin };
+  }).sort((a, b) => b.espaco - a.espaco);
+  const bairros = BAIRROS.map((b) => {
+    const t = state.territorio.porBairro[b.id] || { penetracao: 0 };
+    const afin = 1 - Math.abs(ex - b.eixo) / 100;
+    return { nome: b.nome, id: b.id, espaco: afin * (1 - t.penetracao / 100) * (b.populacao / 100000) };
+  }).sort((a, b) => b.espaco - a.espaco);
+  return {
+    linhas: [
+      `Grupos com voto disponível a seu favor: ${grupos.slice(0, 3).map((g) => `${g.nome} (satisf. ${g.sat > 0 ? '+' : ''}${g.sat})`).join(', ')}.`,
+      `Bairros afins ainda pouco fidelizados: ${bairros.slice(0, 3).map((b) => b.nome).join(', ')}.`,
+      'Priorize onde afinidade é alta E o voto ainda não está firmado — é aí que o esforço rende mais.',
+    ],
+    grupos: grupos.slice(0, 3).map((g) => g.id),
+    bairros: bairros.slice(0, 3).map((b) => b.id),
+  };
+}
+
+// --- forças e fraquezas ---
+export function forcasEfraquezas(state) {
+  const r = state.reputacao;
+  const a = state.personagem.atributos;
+  const fortes = []; const fracas = [];
+  const at = (k, nome) => { if ((a[k] ?? 45) >= 62) fortes.push(nome); else if ((a[k] ?? 45) <= 38) fracas.push(nome); };
+  at('carisma', 'carisma'); at('comunicacao', 'comunicação'); at('oratoria', 'oratória');
+  at('negociacao', 'negociação'); at('lideranca', 'liderança'); at('organizacao', 'gestão');
+  if (r.notoriedade >= 55) fortes.push('já é um nome conhecido'); else if (r.notoriedade <= 25) fracas.push('pouco conhecido');
+  if (r.rejeicao <= 20) fortes.push('rejeição baixa'); else if (r.rejeicao >= 40) fracas.push('rejeição alta');
+  if (r.aprovacao >= 55) fortes.push('aprovação sólida'); else if (r.aprovacao <= 35) fracas.push('aprovação fraca');
+  const base = Object.values(state.territorio.porBairro || {}).filter((t) => t.presenca > 30).length;
+  if (base >= 3) fortes.push(`base territorial em ${base} bairros`); else if (base === 0) fracas.push('sem reduto territorial');
+  const caixa = state.financas.campanha + state.financas.gabinete;
+  if (caixa > 80000) fortes.push('caixa confortável'); else if (caixa < 15000 && state.personagem.fase !== 'VIDA') fracas.push('caixa curto');
+  return {
+    linhas: [
+      `Forças: ${fortes.join(', ') || 'nada se destaca ainda'}.`,
+      `Fraquezas: ${fracas.join(', ') || 'sem vulnerabilidade grave'}.`,
+      fracas.length > fortes.length ? 'Leitura: você ainda está construindo — evite disputas onde a fraqueza pesa.' : 'Leitura: dá para partir para o ataque nos seus pontos fortes.',
+    ],
+  };
+}
+
+// --- temas populares agora ---
+export function temasPopulares(state) {
+  const clima = climaNacional(state);
+  const ranking = TEMAS.map((t) => {
+    const satGrupos = (t.grupos || []).map((gid) => (state.mundo?.satisfacaoGrupos?.[gid]) || 0);
+    const carencia = satGrupos.length ? -satGrupos.reduce((s, v) => s + v, 0) / satGrupos.length : 0; // grupo insatisfeito = tema urgente
+    const ventoNac = (clima > 0 ? ['seguranca', 'empreendedorismo'] : ['saude', 'educacao', 'assistencia', 'habitacao']).includes(t.id) ? 12 : 0;
+    return { t, score: carencia + ventoNac };
+  }).sort((a, b) => b.score - a.score);
+  return {
+    linhas: [
+      `Pautas com mais tração agora: ${ranking.slice(0, 3).map((x) => x.t.nome).join(', ')}.`,
+      `Menos urgentes hoje: ${ranking.slice(-2).map((x) => x.t.nome).join(', ')}.`,
+      clima !== 0 ? `O clima nacional (${clima > 0 ? 'centro-direita' : 'centro-esquerda'}) empurra ${clima > 0 ? 'segurança e economia' : 'saúde, educação e assistência'}.` : null,
+    ].filter(Boolean),
+    temas: ranking.slice(0, 4).map((x) => x.t.id),
+  };
+}
+
+// --- "O que devo propor?" ---
+export function sugerirProjetos(state) {
+  const ex = eixoJogador(state);
+  const promsAbertas = (state.mandato?.promessas || []).filter((p) => !p.cumprida);
+  const usados = new Set((state.mandato?.projetos || []).map((p) => `${p.tema}|${p.bairroFoco}`));
+  const cand = [];
+
+  // 1) promessas em aberto → projeto que as cumpre
+  for (const pr of promsAbertas) {
+    const key = `${pr.tema}|${pr.bairroId}`;
+    if (usados.has(key)) continue;
+    cand.push({
+      tema: pr.tema, tipo: 'projeto_lei', bairroId: pr.bairroId,
+      motivo: `Cumpre a promessa de ${nomeTema(pr.tema)} na ${nomeBairro(pr.bairroId)}${state.tempo.mes > pr.prazo ? ' — JÁ VENCIDA' : ''}.`,
+      prioridade: state.tempo.mes > pr.prazo ? 3 : 2,
+    });
+  }
+  // 2) grupo social irritado → projeto no tema dele, no bairro mais fraco desse perfil
+  const pior = resumoSatisfacao(state)[0];
+  if (pior && pior.valor <= -20) {
+    const temaG = TEMAS.find((t) => (t.grupos || [])[0] === pior.id) || TEMAS.find((t) => (t.grupos || []).includes(pior.id));
+    if (temaG) {
+      const bairro = BAIRROS.filter((b) => (b.problemas || []).map(temaCanonico).includes(temaG.id))
+        .sort((a, b) => b.populacao - a.populacao)[0] || BAIRROS[0];
+      cand.push({
+        tema: temaG.id, tipo: 'indicacao', bairroId: bairro.id,
+        motivo: `${pior.nome} estão insatisfeitos (${pior.valor}); ${nomeTema(temaG.id)} é a pauta que os mobiliza.`,
+        prioridade: 2,
+      });
+    }
+  }
+  // 3) bairro de alto potencial não explorado → projeto no problema dele
+  const alvoBairro = BAIRROS.map((b) => {
+    const t = state.territorio.porBairro[b.id] || { penetracao: 0 };
+    const afin = 1 - Math.abs(ex - b.eixo) / 100;
+    return { b, score: afin * (1 - t.penetracao / 100) * (b.populacao / 100000) };
+  }).sort((a, b) => b.score - a.score)[0];
+  if (alvoBairro) {
+    const tema = temaCanonico((alvoBairro.b.problemas || ['assistencia'])[0]);
+    if (!usados.has(`${tema}|${alvoBairro.b.id}`)) {
+      cand.push({
+        tema, tipo: 'projeto_lei', bairroId: alvoBairro.b.id,
+        motivo: `${alvoBairro.b.nome} tem perfil favorável e voto disponível; ${nomeTema(tema)} é a dor local.`,
+        prioridade: 1,
+      });
+    }
+  }
+  // 4) tema em alta nacional que você ainda não trabalhou
+  const quente = temasPopulares(state).temas[0];
+  if (quente && ![...usados].some((k) => k.startsWith(`${quente}|`))) {
+    const bairro = BAIRROS.filter((b) => (b.problemas || []).map(temaCanonico).includes(quente))
+      .sort((a, b) => b.populacao - a.populacao)[0] || BAIRROS[0];
+    cand.push({
+      tema: quente, tipo: 'audiencia', bairroId: bairro.id,
+      motivo: `${nomeTema(quente)} é a pauta com mais tração agora e você ainda não se posicionou nela.`,
+      prioridade: 1,
+    });
+  }
+
+  // dedup por tema+bairro, ordena por prioridade
+  const seen = new Set();
+  const lista = cand.filter((c) => {
+    const k = `${c.tema}|${c.bairroId}`;
+    if (seen.has(k)) return false; seen.add(k); return true;
+  }).sort((a, b) => b.prioridade - a.prioridade).slice(0, 4);
+
+  return lista.map((c) => ({
+    ...c,
+    temaNome: nomeTema(c.tema),
+    bairroNome: nomeBairro(c.bairroId),
+    tipoNome: lawsDef.tipos.find((t) => t.id === c.tipo)?.nome || c.tipo,
+    tituloExemplo: (lawsDef.titulos[c.tema] || [`Projeto de ${nomeTema(c.tema)}`])[0].replace('{bairro}', nomeBairro(c.bairroId)),
+  }));
 }

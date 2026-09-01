@@ -30,6 +30,62 @@
       "requisitos": {},
       "efeitos": { "colaborarInfluenciador": true, "atributoPeso": "comunicacao" },
       "peso": 1
+    },
+    {
+      "id": "cafe_jornalista",
+      "categoria": "MIDIA",
+      "titulo": "Café com um jornalista",
+      "desc": "Conversa reservada, sem gravador. Você planta um contexto; ele decide se compra.",
+      "custo": { "tempo": 1, "energia": 5, "dinheiroPessoal": 90 },
+      "requisitos": {},
+      "efeitos": { "reputacao": { "notoriedade": [1, 3] }, "relacionamentosNovos": 1, "atributoPeso": "comunicacao" },
+      "peso": 1
+    },
+    {
+      "id": "sessao_fotos",
+      "categoria": "MIDIA",
+      "titulo": "Sessão de fotos",
+      "desc": "Banco de imagens para as redes e para a imprensa: bastidor, rua, retrato. Custa fotógrafo.",
+      "custo": { "tempo": 1, "energia": 4, "dinheiroPessoal": 450 },
+      "requisitos": {},
+      "efeitos": { "seguidores": { "pct": [0.003, 0.012] }, "reputacao": { "notoriedade": [0, 2] } },
+      "peso": 0.8
+    },
+    {
+      "id": "mesa_redonda",
+      "categoria": "MIDIA",
+      "titulo": "Mesa-redonda de análise",
+      "desc": "Programa de debate com outros convidados. Espaço para brilhar — ou levar o pior de casa.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "reputacao": { "notoriedade": [1, 4], "rejeicao": [0, 2] }, "ecoMidiatico": [2, 7], "atributoPeso": "oratoria" },
+      "peso": 0.85
+    },
+    {
+      "id": "participar_programa",
+      "categoria": "MIDIA",
+      "titulo": "Ir a um programa de TV ou rádio",
+      "desc": "Bloco de entrevista num programa popular. Alcance grande, plateia difícil, corte fácil.",
+      "custo": { "tempo": 2, "energia": 9, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "reputacao": { "notoriedade": [2, 5], "rejeicao": [0, 3] }, "ecoMidiatico": [2, 8], "seguidores": { "pct": [0.0, 0.02] }, "atributoPeso": "comunicacao" },
+      "peso": 0.8,
+      "variantes": [
+        { "titulo": "Entrevista no jornal da TV Nordeste" },
+        { "titulo": "Bloco no programa de auditório" },
+        { "titulo": "Participação na rádio da manhã" },
+        { "titulo": "Quadro de política no portal nacional" }
+      ]
+    },
+    {
+      "id": "coletiva_imprensa",
+      "categoria": "MIDIA",
+      "titulo": "Convocar uma coletiva",
+      "desc": "Você chama a imprensa e define a pauta. Só funciona se tiver o que anunciar — coletiva vazia queima.",
+      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "reputacao": { "notoriedade": [1, 4] }, "ecoMidiatico": [3, 9], "atributoPeso": "comunicacao" },
+      "peso": 0.7
     }
   ]
 }

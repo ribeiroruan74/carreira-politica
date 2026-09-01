@@ -6,9 +6,22 @@
       "categoria": "PESSOAL",
       "titulo": "Ir a um evento e fazer networking",
       "desc": "Coquetéis, palestras, jantares. Conhecer gente que pode abrir portas.",
-      "custo": { "tempo": 2, "energia": 12, "dinheiroPessoal": 300 },
+      "custo": {
+        "tempo": 2,
+        "energia": 12,
+        "dinheiroPessoal": 300
+      },
       "requisitos": {},
-      "efeitos": { "relacionamentosNovos": 1, "reputacao": { "notoriedade": [0, 1] }, "atributoPeso": "carisma" },
+      "efeitos": {
+        "relacionamentosNovos": 1,
+        "reputacao": {
+          "notoriedade": [
+            0,
+            1
+          ]
+        },
+        "atributoPeso": "carisma"
+      },
       "peso": 1.1
     },
     {
@@ -16,9 +29,18 @@
       "categoria": "PESSOAL",
       "titulo": "Cultivar um contato existente",
       "desc": "Um café, uma ligação, um favor pequeno. Confiança se constrói com presença.",
-      "custo": { "tempo": 1, "energia": 6, "dinheiroPessoal": 80 },
-      "requisitos": { "temContato": true },
-      "efeitos": { "relacionamentosContato": 1, "atributoPeso": "empatia" },
+      "custo": {
+        "tempo": 1,
+        "energia": 6,
+        "dinheiroPessoal": 80
+      },
+      "requisitos": {
+        "temContato": true
+      },
+      "efeitos": {
+        "relacionamentosContato": 1,
+        "atributoPeso": "empatia"
+      },
       "peso": 1.3
     },
     {
@@ -26,9 +48,19 @@
       "categoria": "PESSOAL",
       "titulo": "Fazer um curso",
       "desc": "Oratória, gestão pública, negociação. Ganho grande de XP no atributo que você escolher — mas caro e demorado.",
-      "custo": { "tempo": 3, "energia": 15, "dinheiroPessoal": 700 },
+      "custo": {
+        "tempo": 3,
+        "energia": 15,
+        "dinheiroPessoal": 700
+      },
       "requisitos": {},
-      "efeitos": { "treinarAtributo": [40, 65], "alvoAtributo": true },
+      "efeitos": {
+        "treinarAtributo": [
+          40,
+          65
+        ],
+        "alvoAtributo": true
+      },
       "peso": 0.8
     },
     {
@@ -36,9 +68,18 @@
       "categoria": "PESSOAL",
       "titulo": "Treinar por conta própria",
       "desc": "Livro, exercício de discurso no espelho, análise dos próprios erros. XP pequeno mas barato.",
-      "custo": { "tempo": 1, "energia": 6 },
+      "custo": {
+        "tempo": 1,
+        "energia": 6
+      },
       "requisitos": {},
-      "efeitos": { "treinarAtributo": [12, 24], "alvoAtributo": true },
+      "efeitos": {
+        "treinarAtributo": [
+          12,
+          24
+        ],
+        "alvoAtributo": true
+      },
       "peso": 0.7
     },
     {
@@ -46,9 +87,24 @@
       "categoria": "PESSOAL",
       "titulo": "Buscar mentoria com um político",
       "desc": "Aprender com quem já fez o caminho. XP num atributo à sua escolha + relação com o mentor.",
-      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 200 },
+      "custo": {
+        "tempo": 2,
+        "energia": 8,
+        "dinheiroPessoal": 200
+      },
       "requisitos": {},
-      "efeitos": { "treinarAtributo": [22, 40], "alvoAtributo": true, "cultivarPolitico": [2, 5], "alvoPolitico": true },
+      "efeitos": {
+        "treinarAtributo": [
+          22,
+          40
+        ],
+        "alvoAtributo": true,
+        "cultivarPolitico": [
+          2,
+          5
+        ],
+        "alvoPolitico": true
+      },
       "peso": 0.7
     },
     {
@@ -56,9 +112,30 @@
       "categoria": "PESSOAL",
       "titulo": "Cuidar da imagem pública",
       "desc": "Assessoria de estilo, ensaio de fotos, revisão de redes antigas.",
-      "custo": { "tempo": 1, "energia": 5, "dinheiroPessoal": 500 },
+      "custo": {
+        "tempo": 1,
+        "energia": 5,
+        "dinheiroPessoal": 500
+      },
       "requisitos": {},
-      "efeitos": { "reputacao": { "confianca": [1, 3], "rejeicao": [-2, 0] }, "seguidores": { "pct": [0.0, 0.02] } },
+      "efeitos": {
+        "reputacao": {
+          "confianca": [
+            1,
+            3
+          ],
+          "rejeicao": [
+            -2,
+            0
+          ]
+        },
+        "seguidores": {
+          "pct": [
+            0.0,
+            0.02
+          ]
+        }
+      },
       "peso": 0.7
     },
     {
@@ -66,9 +143,16 @@
       "categoria": "PESSOAL",
       "titulo": "Pegar um freela",
       "desc": "Um trampo extra no fim de semana. Dinheiro rápido na conta, custa energia.",
-      "custo": { "tempo": 2, "energia": 14, "dinheiroPessoal": 0 },
+      "custo": {
+        "tempo": 2,
+        "energia": 14,
+        "dinheiroPessoal": 0
+      },
       "requisitos": {},
-      "efeitos": { "freela": true, "atributoPeso": "disciplina" },
+      "efeitos": {
+        "freela": true,
+        "atributoPeso": "disciplina"
+      },
       "peso": 1.2
     },
     {
@@ -76,9 +160,18 @@
       "categoria": "PESSOAL",
       "titulo": "Pedir um aumento no emprego",
       "desc": "Marcar a conversa, mostrar resultados, negociar. Pode dar certo ou não.",
-      "custo": { "tempo": 1, "energia": 6, "dinheiroPessoal": 0 },
-      "requisitos": { "temEmprego": true },
-      "efeitos": { "pedirAumento": true, "atributoPeso": "negociacao" },
+      "custo": {
+        "tempo": 1,
+        "energia": 6,
+        "dinheiroPessoal": 0
+      },
+      "requisitos": {
+        "temEmprego": true
+      },
+      "efeitos": {
+        "pedirAumento": true,
+        "atributoPeso": "negociacao"
+      },
       "peso": 0.9
     },
     {
@@ -86,9 +179,17 @@
       "categoria": "PESSOAL",
       "titulo": "Procurar um emprego melhor",
       "desc": "Entrevistas, currículo, indicações. Trocar de vaga muda seu salário e suas horas.",
-      "custo": { "tempo": 3, "energia": 16, "dinheiroPessoal": 200 },
+      "custo": {
+        "tempo": 3,
+        "energia": 16,
+        "dinheiroPessoal": 200
+      },
       "requisitos": {},
-      "efeitos": { "trocarEmprego": true, "alvoEmprego": true, "atributoPeso": "comunicacao" },
+      "efeitos": {
+        "trocarEmprego": true,
+        "alvoEmprego": true,
+        "atributoPeso": "comunicacao"
+      },
       "peso": 1.0
     },
     {
@@ -96,9 +197,24 @@
       "categoria": "PESSOAL",
       "titulo": "Responder a uma repercussão negativa",
       "desc": "Nota, vídeo direto ou coletiva para tentar cortar uma bola de neve antes que ela cresça mais.",
-      "custo": { "tempo": 1, "energia": 8, "dinheiroPessoal": 0 },
-      "requisitos": { "temCascata": true },
-      "efeitos": { "conterCascata": true, "reputacao": { "notoriedade": [0, 2] }, "atributoPeso": "comunicacao" },
+      "custo": {
+        "tempo": 1,
+        "energia": 8,
+        "dinheiroPessoal": 0
+      },
+      "requisitos": {
+        "temCascata": true
+      },
+      "efeitos": {
+        "conterCascata": true,
+        "reputacao": {
+          "notoriedade": [
+            0,
+            2
+          ]
+        },
+        "atributoPeso": "comunicacao"
+      },
       "peso": 1.6
     },
     {
@@ -106,9 +222,18 @@
       "categoria": "PESSOAL",
       "titulo": "Tirar um tempo para descansar",
       "desc": "Ninguém aguenta o ritmo o ano inteiro. Recuperar energia.",
-      "custo": { "tempo": 2, "energia": 0, "dinheiroPessoal": 0 },
+      "custo": {
+        "tempo": 2,
+        "energia": 0,
+        "dinheiroPessoal": 0
+      },
       "requisitos": {},
-      "efeitos": { "energia": [20, 35] },
+      "efeitos": {
+        "energia": [
+          20,
+          35
+        ]
+      },
       "peso": 0.6
     },
     {
@@ -116,9 +241,15 @@
       "categoria": "PESSOAL",
       "titulo": "Cuidar da saúde e da vida pessoal",
       "desc": "Consulta, exercício, um tempo com quem importa. Saúde baixa derruba sua energia máxima.",
-      "custo": { "tempo": 2, "energia": 0, "dinheiroPessoal": 200 },
+      "custo": {
+        "tempo": 2,
+        "energia": 0,
+        "dinheiroPessoal": 200
+      },
       "requisitos": {},
-      "efeitos": { "cuidarDeSi": true },
+      "efeitos": {
+        "cuidarDeSi": true
+      },
       "peso": 0.7
     },
     {
@@ -126,9 +257,16 @@
       "categoria": "COMUNIDADE",
       "titulo": "Formar um núcleo de militância num bairro",
       "desc": "Reunir apoiadores, distribuir tarefas, criar grupo. Voluntários mantêm sua presença viva mesmo quando você não está lá.",
-      "custo": { "tempo": 2, "energia": 12, "dinheiroPessoal": 250 },
+      "custo": {
+        "tempo": 2,
+        "energia": 12,
+        "dinheiroPessoal": 250
+      },
       "requisitos": {},
-      "efeitos": { "recrutarMilitancia": true, "atributoPeso": "lideranca" },
+      "efeitos": {
+        "recrutarMilitancia": true,
+        "atributoPeso": "lideranca"
+      },
       "peso": 1.1
     },
     {
@@ -136,29 +274,117 @@
       "categoria": "PESSOAL",
       "titulo": "Publicar nas redes sociais",
       "desc": "Um post honesto sobre o que você defende. Sem garantia de alcance.",
-      "custo": { "tempo": 1, "energia": 4, "dinheiroPessoal": 0 },
+      "custo": {
+        "tempo": 1,
+        "energia": 4,
+        "dinheiroPessoal": 0
+      },
       "requisitos": {},
-      "efeitos": { "seguidores": { "pct": [-0.01, 0.05] }, "reputacao": { "notoriedade": [0, 2], "rejeicao": [-1, 2] }, "atributoPeso": "comunicacao" },
-      "peso": 1.2
+      "efeitos": {
+        "seguidores": {
+          "pct": [
+            -0.01,
+            0.05
+          ]
+        },
+        "reputacao": {
+          "notoriedade": [
+            0,
+            2
+          ],
+          "rejeicao": [
+            -1,
+            2
+          ]
+        },
+        "atributoPeso": "comunicacao"
+      },
+      "peso": 1.2,
+      "variantes": [
+        {
+          "titulo": "Thread sobre uma proposta sua"
+        },
+        {
+          "titulo": "Vídeo curto respondendo uma crítica"
+        },
+        {
+          "titulo": "Post de bastidor do seu dia"
+        },
+        {
+          "titulo": "Card com um dado sobre a cidade"
+        }
+      ]
     },
     {
       "id": "visitar_bairro",
       "categoria": "COMUNIDADE",
       "titulo": "Passar o dia num bairro",
       "desc": "Feira, associação de moradores, comércio da rua. Ouvir demandas de perto.",
-      "custo": { "tempo": 2, "energia": 14, "dinheiroPessoal": 150 },
+      "custo": {
+        "tempo": 2,
+        "energia": 14,
+        "dinheiroPessoal": 150
+      },
       "requisitos": {},
-      "efeitos": { "territorioBairroAlvo": { "presenca": [3, 7], "penetracao": [1, 3] }, "reputacao": { "confianca": [0, 2] }, "atributoPeso": "empatia" },
-      "peso": 1.4
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            3,
+            7
+          ],
+          "penetracao": [
+            1,
+            3
+          ]
+        },
+        "reputacao": {
+          "confianca": [
+            0,
+            2
+          ]
+        },
+        "atributoPeso": "empatia"
+      },
+      "peso": 1.4,
+      "variantes": [
+        {
+          "titulo": "Dia inteiro na periferia"
+        },
+        {
+          "titulo": "Caminhada com lideranças pelo bairro"
+        },
+        {
+          "titulo": "Visita a um conjunto habitacional"
+        },
+        {
+          "titulo": "Volta pelas ruas alagadas do bairro"
+        },
+        {
+          "titulo": "Tarde numa comunidade ribeirinha"
+        }
+      ]
     },
     {
       "id": "reuniao_liderancas",
       "categoria": "COMUNIDADE",
       "titulo": "Reunião com lideranças comunitárias",
       "desc": "Presidentes de associação, pastores, donos de comércio. Quem move o bairro.",
-      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 200 },
+      "custo": {
+        "tempo": 2,
+        "energia": 10,
+        "dinheiroPessoal": 200
+      },
       "requisitos": {},
-      "efeitos": { "relacionamentosNovos": 1, "territorioBairroAlvo": { "presenca": [2, 5] }, "atributoPeso": "lideranca" },
+      "efeitos": {
+        "relacionamentosNovos": 1,
+        "territorioBairroAlvo": {
+          "presenca": [
+            2,
+            5
+          ]
+        },
+        "atributoPeso": "lideranca"
+      },
       "peso": 1.0
     },
     {
@@ -166,9 +392,41 @@
       "categoria": "VIDA_PUBLICA",
       "titulo": "Organizar um mutirão de rua",
       "desc": "Limpeza de canal, reforma de praça, campanha de vacina. Militância prática.",
-      "custo": { "tempo": 3, "energia": 20, "dinheiroPessoal": 600 },
-      "requisitos": { "faseMin": "VIDA" },
-      "efeitos": { "territorioBairroAlvo": { "presenca": [6, 12], "penetracao": [3, 6] }, "reputacao": { "aprovacao": [1, 3], "confianca": [1, 3], "notoriedade": [1, 3] }, "atributoPeso": "lideranca" },
+      "custo": {
+        "tempo": 3,
+        "energia": 20,
+        "dinheiroPessoal": 600
+      },
+      "requisitos": {
+        "faseMin": "VIDA"
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            6,
+            12
+          ],
+          "penetracao": [
+            3,
+            6
+          ]
+        },
+        "reputacao": {
+          "aprovacao": [
+            1,
+            3
+          ],
+          "confianca": [
+            1,
+            3
+          ],
+          "notoriedade": [
+            1,
+            3
+          ]
+        },
+        "atributoPeso": "lideranca"
+      },
       "peso": 0.9
     },
     {
@@ -176,10 +434,508 @@
       "categoria": "VIDA_PUBLICA",
       "titulo": "Escrever um artigo para a imprensa local",
       "desc": "Um texto de opinião num portal ou jornal de bairro. Posiciona você numa pauta.",
-      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 0 },
+      "custo": {
+        "tempo": 2,
+        "energia": 8,
+        "dinheiroPessoal": 0
+      },
       "requisitos": {},
-      "efeitos": { "reputacao": { "notoriedade": [1, 4], "confianca": [0, 2], "rejeicao": [0, 2] }, "atributoPeso": "comunicacao" },
+      "efeitos": {
+        "reputacao": {
+          "notoriedade": [
+            1,
+            4
+          ],
+          "confianca": [
+            0,
+            2
+          ],
+          "rejeicao": [
+            0,
+            2
+          ]
+        },
+        "atributoPeso": "comunicacao"
+      },
       "peso": 0.9
+    },
+    {
+      "id": "feira_livre",
+      "categoria": "COMUNIDADE",
+      "titulo": "Manhã na feira",
+      "desc": "Andar entre as bancas, cumprimentar feirante e freguês, ouvir reclamação de preço.",
+      "custo": {
+        "tempo": 2,
+        "energia": 12,
+        "dinheiroPessoal": 80
+      },
+      "requisitos": {},
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            3,
+            6
+          ],
+          "penetracao": [
+            1,
+            3
+          ]
+        },
+        "relacionamentosNovos": 1,
+        "atributoPeso": "carisma"
+      },
+      "peso": 1.2,
+      "variantes": [
+        {
+          "titulo": "Manhã na feira da Encruzilhada"
+        },
+        {
+          "titulo": "Feira de Casa Amarela"
+        },
+        {
+          "titulo": "Feira do bairro, sábado de manhã"
+        },
+        {
+          "titulo": "Volta pela feira orgânica"
+        }
+      ]
+    },
+    {
+      "id": "visita_comercio",
+      "categoria": "COMUNIDADE",
+      "titulo": "Rua do comércio",
+      "desc": "Entrar de loja em loja no corredor comercial: lojista quer segurança, calçada e fluxo.",
+      "custo": {
+        "tempo": 1,
+        "energia": 8,
+        "dinheiroPessoal": 60
+      },
+      "requisitos": {},
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            2,
+            4
+          ],
+          "penetracao": [
+            1,
+            2
+          ]
+        },
+        "reputacao": {
+          "notoriedade": [
+            0,
+            1
+          ]
+        },
+        "atributoPeso": "carisma"
+      },
+      "peso": 1.1,
+      "variantes": [
+        {
+          "titulo": "Corredor comercial da Conde da Boa Vista"
+        },
+        {
+          "titulo": "Lojistas do centro do bairro"
+        },
+        {
+          "titulo": "Galeria e camelódromo"
+        }
+      ]
+    },
+    {
+      "id": "reuniao_associacao",
+      "categoria": "COMUNIDADE",
+      "titulo": "Reunião na associação de moradores",
+      "desc": "Sentar com a diretoria da associação e a pauta que eles cobram há anos.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10,
+        "dinheiroPessoal": 0
+      },
+      "requisitos": {
+        "faseMin": "VIDA_PUBLICA"
+      },
+      "efeitos": {
+        "territorioBairroAlvo": {
+          "presenca": [
+            2,
+            5
+          ],
+          "penetracao": [
+            2,
+            4
+          ]
+        },
+        "relacionamentosNovos": 1,
+        "atributoPeso": "empatia"
+      },
+      "peso": 1.1
+    },
+    {
+      "id": "evento_esportivo",
+      "categoria": "PESSOAL",
+      "titulo": "Prestigiar um evento esportivo",
+      "desc": "Final do campeonato de várzea, corrida de rua, torneio da escolinha. Foto com a molecada.",
+      "custo": {
+        "tempo": 2,
+        "energia": 8,
+        "dinheiroPessoal": 200
+      },
+      "requisitos": {},
+      "efeitos": {
+        "reputacao": {
+          "notoriedade": [
+            1,
+            3
+          ],
+          "confianca": [
+            0,
+            1
+          ]
+        },
+        "seguidores": {
+          "pct": [
+            0.002,
+            0.01
+          ]
+        },
+        "atributoPeso": "carisma"
+      },
+      "peso": 0.95,
+      "variantes": [
+        {
+          "titulo": "Final do campeonato de várzea"
+        },
+        {
+          "titulo": "Largada da corrida de rua"
+        },
+        {
+          "titulo": "Torneio da escolinha de futebol"
+        },
+        {
+          "titulo": "Jogo do time do bairro"
+        }
+      ]
+    },
+    {
+      "id": "evento_cultural",
+      "categoria": "PESSOAL",
+      "titulo": "Ir a um evento cultural",
+      "desc": "Sarau, feira de artesanato, estreia de peça, roda de coco. Circular no meio cultural.",
+      "custo": {
+        "tempo": 2,
+        "energia": 8,
+        "dinheiroPessoal": 150
+      },
+      "requisitos": {},
+      "efeitos": {
+        "reputacao": {
+          "notoriedade": [
+            1,
+            3
+          ]
+        },
+        "seguidores": {
+          "pct": [
+            0.002,
+            0.009
+          ]
+        },
+        "atributoPeso": "carisma"
+      },
+      "peso": 0.9,
+      "variantes": [
+        {
+          "titulo": "Sarau na periferia"
+        },
+        {
+          "titulo": "Feira de artesanato e economia criativa"
+        },
+        {
+          "titulo": "Estreia de peça no teatro local"
+        },
+        {
+          "titulo": "Roda de coco e maracatu"
+        }
+      ]
+    },
+    {
+      "id": "palestra_faculdade",
+      "categoria": "COMUNIDADE",
+      "titulo": "Palestra numa faculdade",
+      "desc": "Falar para uma plateia de estudantes e responder perguntas difíceis sem roteiro.",
+      "custo": {
+        "tempo": 2,
+        "energia": 12,
+        "dinheiroPessoal": 0
+      },
+      "requisitos": {
+        "faseMin": "VIDA_PUBLICA"
+      },
+      "efeitos": {
+        "reputacao": {
+          "notoriedade": [
+            1,
+            4
+          ]
+        },
+        "relacionamentosNovos": 1,
+        "atributoPeso": "oratoria"
+      },
+      "peso": 0.85
+    },
+    {
+      "id": "jantar_networking",
+      "categoria": "PESSOAL",
+      "titulo": "Jantar de articulação",
+      "desc": "Mesa com gente que decide: empresário, dirigente, um nome da imprensa. Conta pesa no bolso.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10,
+        "dinheiroPessoal": 600
+      },
+      "requisitos": {
+        "faseMin": "VIDA_PUBLICA"
+      },
+      "efeitos": {
+        "relacionamentosNovos": 2,
+        "reputacao": {
+          "notoriedade": [
+            0,
+            1
+          ]
+        },
+        "atributoPeso": "carisma"
+      },
+      "peso": 0.85
+    },
+    {
+      "id": "preparar_debate",
+      "categoria": "DESENVOLVIMENTO",
+      "titulo": "Preparação para debate",
+      "desc": "Simular perguntas, cronometrar respostas, treinar o bloco de ataque e o de defesa.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10,
+        "dinheiroPessoal": 0
+      },
+      "requisitos": {},
+      "efeitos": {
+        "treinarAtributo": [
+          16,
+          30
+        ],
+        "atributoAlvo": "oratoria"
+      },
+      "peso": 0.7
+    },
+    {
+      "id": "media_training",
+      "categoria": "DESENVOLVIMENTO",
+      "titulo": "Media training",
+      "desc": "Consultoria de comunicação: como não cair em pegadinha, como encurtar a resposta, o que vestir.",
+      "custo": {
+        "tempo": 2,
+        "energia": 6,
+        "dinheiroPessoal": 2200
+      },
+      "requisitos": {},
+      "efeitos": {
+        "cursoAtributo": [
+          2,
+          3.6
+        ],
+        "atributoAlvo": "comunicacao"
+      },
+      "peso": 0.6
+    },
+    {
+      "id": "curso_gestao_publica",
+      "categoria": "DESENVOLVIMENTO",
+      "titulo": "Curso de gestão pública",
+      "desc": "Fim de semana estudando orçamento, licitação e indicadores. Chato, mas rende no gabinete.",
+      "custo": {
+        "tempo": 3,
+        "energia": 10,
+        "dinheiroPessoal": 2800
+      },
+      "requisitos": {},
+      "efeitos": {
+        "cursoAtributo": [
+          2.4,
+          4.2
+        ],
+        "atributoAlvo": "organizacao"
+      },
+      "peso": 0.55
+    },
+    {
+      "id": "coaching_oratoria",
+      "categoria": "DESENVOLVIMENTO",
+      "titulo": "Coaching de oratória",
+      "desc": "Aulas particulares de voz, presença de palco e construção de discurso.",
+      "custo": {
+        "tempo": 2,
+        "energia": 8,
+        "dinheiroPessoal": 2400
+      },
+      "requisitos": {},
+      "efeitos": {
+        "cursoAtributo": [
+          2,
+          3.8
+        ],
+        "atributoAlvo": "oratoria"
+      },
+      "peso": 0.55
+    },
+    {
+      "id": "consultoria_estrategia",
+      "categoria": "DESENVOLVIMENTO",
+      "titulo": "Consultoria estratégica",
+      "desc": "Um consultor sênior desenha cenários eleitorais com você por algumas semanas.",
+      "custo": {
+        "tempo": 3,
+        "energia": 8,
+        "dinheiroPessoal": 3800
+      },
+      "requisitos": {
+        "faseMin": "VIDA_PUBLICA"
+      },
+      "efeitos": {
+        "cursoAtributo": [
+          2.6,
+          4.6
+        ],
+        "atributoAlvo": "estrategia"
+      },
+      "peso": 0.5
+    },
+    {
+      "id": "curso_negociacao",
+      "categoria": "DESENVOLVIMENTO",
+      "titulo": "Curso de negociação",
+      "desc": "Técnica de barganha, leitura de mesa, como não ceder cedo demais.",
+      "custo": {
+        "tempo": 2,
+        "energia": 8,
+        "dinheiroPessoal": 2600
+      },
+      "requisitos": {},
+      "efeitos": {
+        "cursoAtributo": [
+          2,
+          3.8
+        ],
+        "atributoAlvo": "negociacao"
+      },
+      "peso": 0.55
+    },
+    {
+      "id": "curso_lideranca",
+      "categoria": "DESENVOLVIMENTO",
+      "titulo": "Formação em liderança",
+      "desc": "Programa de liderança: gestão de equipe, delegação, tomada de decisão sob pressão.",
+      "custo": {
+        "tempo": 3,
+        "energia": 10,
+        "dinheiroPessoal": 3200
+      },
+      "requisitos": {},
+      "efeitos": {
+        "cursoAtributo": [
+          2.4,
+          4.2
+        ],
+        "atributoAlvo": "lideranca"
+      },
+      "peso": 0.5
+    },
+    {
+      "id": "inauguracao",
+      "categoria": "COMUNIDADE",
+      "titulo": "Inauguração",
+      "desc": "Fita cortada, discurso curto, foto com a comunidade. Só faz sentido se você tem o que inaugurar.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 300 },
+      "requisitos": { "temInstituicao": true },
+      "efeitos": { "reputacao": { "confianca": [2, 5], "notoriedade": [1, 3] }, "ecoMidiatico": [2, 6], "relacionamentosNovos": 1, "atributoPeso": "carisma" },
+      "peso": 0.9
+    },
+    {
+      "id": "premiacao",
+      "categoria": "PESSOAL",
+      "titulo": "Receber uma premiação",
+      "desc": "Uma entidade de classe ou veículo de imprensa te dá um prêmio de reconhecimento.",
+      "custo": { "tempo": 1, "energia": 5, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "reputacao": { "confianca": [1, 3], "notoriedade": [1, 3] }, "ecoMidiatico": [1, 4] },
+      "peso": 0.4
+    },
+    {
+      "id": "congresso_setorial",
+      "categoria": "DESENVOLVIMENTO",
+      "titulo": "Congresso ou seminário",
+      "desc": "Dois dias de painéis, crachá e cafézinho. Rede boa, atualização melhor ainda.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 600 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "relacionamentosNovos": 1, "cursoAtributo": [1.2, 2.4], "atributoAlvo": "estrategia" },
+      "peso": 0.7
+    },
+    {
+      "id": "encontro_empresarial",
+      "categoria": "PESSOAL",
+      "titulo": "Encontro com empresários",
+      "desc": "Almoço de câmara de comércio: quem investe na cidade quer falar com você.",
+      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 400 },
+      "requisitos": { "temEmpresa": true },
+      "efeitos": { "relacionamentosNovos": 2, "reputacao": { "confianca": [1, 2] }, "atributoPeso": "negociacao" },
+      "peso": 0.8
+    },
+    {
+      "id": "encontro_grupo",
+      "categoria": "COMUNIDADE",
+      "titulo": "Encontro com um segmento",
+      "desc": "Sentar com as lideranças de um grupo social e assumir a pauta deles como sua.",
+      "custo": {
+        "tempo": 2,
+        "energia": 10,
+        "dinheiroPessoal": 150
+      },
+      "requisitos": {
+        "faseMin": "VIDA_PUBLICA"
+      },
+      "efeitos": {
+        "cortejarGrupo": [
+          3,
+          6
+        ],
+        "reputacao": {
+          "notoriedade": [
+            0,
+            1
+          ]
+        },
+        "atributoPeso": "empatia"
+      },
+      "peso": 1.1,
+      "variantes": [
+        {
+          "titulo": "Café com lideranças evangélicas"
+        },
+        {
+          "titulo": "Roda de conversa com o movimento estudantil"
+        },
+        {
+          "titulo": "Encontro com a associação comercial"
+        },
+        {
+          "titulo": "Visita a um centro de convivência de idosos"
+        },
+        {
+          "titulo": "Reunião com o sindicato dos servidores"
+        }
+      ]
     }
   ]
 }

@@ -160,6 +160,10 @@ export function aplicarObjetivo(state, objetivoId, opts = {}) {
     if (!partido) throw new Error('Partido inválido.');
     state.personagem.partidoId = pid;
     state.personagem.fase = 'PARTIDO';
+    (state.personagem.partidoHistorico ||= []).push({
+      partidoId: pid, mesEntrada: mes, mesSaida: null, motivo: null,
+      cargoNaEpoca: state.personagem.cargoAtual || 'NENHUM',
+    });
     // aporte inicial simbólico de estrutura partidária
     state.financas.partidaria += Math.round(partido.tamanho * 120);
     state.personagem.historicoPolitico.push({ mes, texto: `Filiou-se ao ${partido.nome} (${pid}).` });
@@ -189,8 +193,8 @@ export function aplicarObjetivo(state, objetivoId, opts = {}) {
         // Etapa 13 — referendo mais duro: centro em ~50 de aprovação e desgaste
         // de incumbência fixo (máquina cansada, oposição unida). Só mandato
         // claramente bom rende saldo positivo; o mediano vira lastro.
-        const desempenho = clamp((state.reputacao.aprovacao - 50) / 32 + (taxaProm - 0.45) * 0.9, -1.2, 1.2);
-        const desgaste = 0.4;
+        const desempenho = clamp((state.reputacao.aprovacao - 52) / 32 + (taxaProm - 0.45) * 0.9, -1.2, 1.2);
+        const desgaste = 0.5;
         state.reputacao.notoriedade = Math.min(100, state.reputacao.notoriedade + 2 + 5 * Math.max(0, desempenho));
         state.reputacao.rejeicao = clamp(state.reputacao.rejeicao + 3 - 4 * desempenho, 0, 100);
         const pr = state.mundo.partidosRuntime?.[state.personagem.partidoId];

@@ -1,0 +1,17 @@
+{
+  "$comment": "Item 10/19 — personagens públicos FICTÍCIOS para o universo do jogo (cantor, ator, atleta, apresentador, radialista, podcaster, personalidade). alcance 0-100 = tamanho da audiência; acessibilidade 0-100 = chance de atender/topar contato. 'eixo' -100..100 é uma inclinação leve de público, não posicionamento declarado. Efeito é alcance/notoriedade/repercussão — nunca voto direto.",
+  "famosos": [
+    { "id": "fm_dj_klev", "nome": "DJ Klev", "tipo": "cantor", "genero": "brega-funk", "alcance": 88, "acessibilidade": 45, "eixo": -10, "publico": ["jovens", "periferia", "informais"] },
+    { "id": "fm_marina_sol", "nome": "Marina Sol", "tipo": "cantora", "genero": "MPB / forró", "alcance": 74, "acessibilidade": 55, "eixo": -25, "publico": ["classe_media", "estudantes_universitarios", "servidores"] },
+    { "id": "fm_rei_do_coco", "nome": "Rei do Coco", "tipo": "cantor", "genero": "coco / cultura popular", "alcance": 58, "acessibilidade": 70, "eixo": -15, "publico": ["periferia", "movimentos_sociais", "idosos"] },
+    { "id": "fm_tiao_ator", "nome": "Tião Belmonte", "tipo": "ator", "genero": "novela e teatro", "alcance": 66, "acessibilidade": 50, "eixo": 5, "publico": ["classe_media", "idosos", "catolicos_praticantes"] },
+    { "id": "fm_lu_comediante", "nome": "Lu Bezerra", "tipo": "comediante", "genero": "stand-up", "alcance": 71, "acessibilidade": 62, "eixo": -5, "publico": ["jovens", "classe_media", "informais"] },
+    { "id": "fm_capitao_pe", "nome": "Capitão do Náutico", "tipo": "atleta", "genero": "futebol", "alcance": 79, "acessibilidade": 38, "eixo": 0, "publico": ["jovens", "trabalhadores_formais", "periferia", "informais"] },
+    { "id": "fm_ana_volei", "nome": "Ana Petrolina", "tipo": "atleta", "genero": "vôlei / olímpica", "alcance": 63, "acessibilidade": 58, "eixo": -10, "publico": ["jovens", "estudantes_universitarios", "classe_media"] },
+    { "id": "fm_dodo_tv", "nome": "Dodô Ramalho", "tipo": "apresentador", "genero": "programa de auditório", "alcance": 82, "acessibilidade": 42, "eixo": 10, "publico": ["idosos", "informais", "periferia", "catolicos_praticantes"] },
+    { "id": "fm_lelo_radio", "nome": "Lelo da Manhã", "tipo": "radialista", "genero": "rádio popular", "alcance": 69, "acessibilidade": 66, "eixo": 15, "publico": ["informais", "trabalhadores_formais", "idosos"] },
+    { "id": "fm_bruna_pod", "nome": "Bruna Cast", "tipo": "podcaster", "genero": "podcast de cultura pop", "alcance": 60, "acessibilidade": 64, "eixo": -20, "publico": ["jovens", "estudantes_universitarios"] },
+    { "id": "fm_seu_zé_pod", "nome": "Seu Zé Explica", "tipo": "podcaster", "genero": "podcast de história e cidade", "alcance": 47, "acessibilidade": 72, "eixo": -10, "publico": ["servidores", "estudantes_universitarios", "classe_media"] },
+    { "id": "fm_gil_influ", "nome": "Gil Maravilha", "tipo": "personalidade", "genero": "moda e lifestyle", "alcance": 76, "acessibilidade": 48, "eixo": 5, "publico": ["jovens", "classe_media", "informais"] }
+  ]
+}

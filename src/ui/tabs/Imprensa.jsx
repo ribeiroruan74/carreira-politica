@@ -6,7 +6,8 @@ import { tomCobertura, JORNALISTAS, veiculo, convitesMidiaAtivos } from '../../e
 import { relevanciaMidiatica } from '../../engine/social';
 import { montarEdicao } from '../../engine/newspaper';
 
-const TIPO_LABEL = { jornal: 'Jornal', portal: 'Portal', tv: 'TV', radio: 'Rádio', blog: 'Blog', revista: 'Revista' };
+const TIPO_LABEL = { jornal: 'Jornal', portal: 'Portal', tv: 'TV', radio: 'Rádio', blog: 'Blog', revista: 'Revista', podcast: 'Podcast' };
+const ESCOPO_LABEL = { nacional: 'Nacional', regional: 'Regional', local: 'Local (PE)' };
 function tomLabel(t) {
   if (t >= 35) return { txt: 'favorável', tone: 'accent' };
   if (t >= 5) return { txt: 'neutra-positiva', tone: 'blue' };
@@ -17,7 +18,9 @@ function tomLabel(t) {
 export default function Imprensa() {
   const s = useGame((g) => g.estado);
   const iniciarEntrevista = useGame((g) => g.iniciarEntrevista);
-  const [jornalista, setJornalista] = useState(JORNALISTAS[0].id);
+  const [jornalista, setJornalista] = useState(
+    [...JORNALISTAS].sort((a, b) => (veiculo(a.veiculo)?.alcance ?? 50) - (veiculo(b.veiculo)?.alcance ?? 50))[0].id,
+  );
 
   const veiculos = tomCobertura(s);
   const edicao = montarEdicao(s);
@@ -95,15 +98,24 @@ export default function Imprensa() {
       </Card>
 
       <Card title="Veículos">
-        {veiculos.map((v) => {
-          const l = tomLabel(v.tom);
+        {['nacional', 'regional', 'local'].map((escopo) => {
+          const grupo = veiculos.filter((v) => (v.escopo || 'local') === escopo);
+          if (!grupo.length) return null;
           return (
-            <div key={v.id} className="row">
-              <span className="grow">
-                <span className="name">{v.nome}</span> <span className="small faint">{TIPO_LABEL[v.tipo]}</span>
-              </span>
-              <span className="faint small" style={{ width: 70, textAlign: 'right' }}>alcance {v.alcance}</span>
-              <Pill tone={l.tone}>{l.txt}</Pill>
+            <div key={escopo} style={{ marginBottom: 8 }}>
+              <div className="small faint mono" style={{ marginBottom: 4 }}>{ESCOPO_LABEL[escopo]}</div>
+              {grupo.map((v) => {
+                const l = tomLabel(v.tom);
+                return (
+                  <div key={v.id} className="row">
+                    <span className="grow">
+                      <span className="name">{v.nome}</span> <span className="small faint">{TIPO_LABEL[v.tipo]}</span>
+                    </span>
+                    <span className="faint small" style={{ width: 70, textAlign: 'right' }}>alcance {v.alcance}</span>
+                    <Pill tone={l.tone}>{l.txt}</Pill>
+                  </div>
+                );
+              })}
             </div>
           );
         })}
@@ -112,9 +124,15 @@ export default function Imprensa() {
       <Card title="Conceder entrevista" aside="custa 2 tempo · 10 energia">
         <label>Jornalista</label>
         <select value={jornalista} onChange={(e) => setJornalista(e.target.value)}>
-          {JORNALISTAS.map((j) => (
-            <option key={j.id} value={j.id}>{j.nome} — {j.cargo}, {veiculo(j.veiculo)?.nome} (rigor {j.rigor})</option>
-          ))}
+          {JORNALISTAS.map((j) => {
+            const v = veiculo(j.veiculo);
+            const alcancavel = (v?.alcance ?? 50) <= relevanciaMidiatica(s) * 1.6 + 35;
+            return (
+              <option key={j.id} value={j.id} disabled={!alcancavel}>
+                {j.nome} — {j.cargo}, {v?.nome} (rigor {j.rigor}){alcancavel ? '' : ' — fora do seu alcance'}
+              </option>
+            );
+          })}
         </select>
         <p className="small faint" style={{ marginTop: 6 }}>
           São 4–6 perguntas, contextualizadas pelo seu histórico (promessas, crises, ataques). Jornalista rigoroso amplifica respostas ruins; preparo (comunicação, oratória, inteligência) suaviza.

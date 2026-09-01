@@ -33,8 +33,9 @@ export function tickConvitesMidia(s) {
   if (!rng.chance(chance)) return { eventos: [] };
 
   // teto de alcance do veículo que topa te chamar — cresce com a relevância e a
-  // assessoria de comunicação (que abre portas maiores do que você teria sozinho)
-  const teto = 25 + rel * 1.35 + (gCom - 1) * 38;
+  // assessoria de comunicação (que abre portas maiores do que você teria sozinho).
+  // piso ~40 garante que sempre há um veículo pequeno disposto a te ouvir.
+  const teto = 34 + rel * 1.3 + (gCom - 1) * 38;
   const ehPodcast = rng.chance(0.4);
 
   if (ehPodcast) {

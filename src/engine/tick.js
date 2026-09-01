@@ -102,24 +102,27 @@ export function runTick(s) {
       + Math.min(24, Math.round(Math.log10(1 + s.redes.seguidores / 1000) * 8)),
     0, 100,
   );
+  // Item 8 — regressão PROPORCIONAL (menos oscilação): notoriedade alta escorre
+  // mais rápido, notoriedade perto do piso quase não se mexe. Sem quedas bruscas.
   if (s.reputacao.notoriedade > pisoNotoriedade) {
-    s.reputacao.notoriedade = Math.max(
-      pisoNotoriedade,
-      s.reputacao.notoriedade - 2.2,
-    );
+    const excessoNoto = s.reputacao.notoriedade - pisoNotoriedade;
+    s.reputacao.notoriedade = Math.max(pisoNotoriedade, s.reputacao.notoriedade - (0.6 + excessoNoto * 0.06));
   }
 
   // Rejeição também não é permanente: esfria em direção a um piso, mais rápido
-  // com honestidade percebida alta e sem eco negativo pendente.
+  // com honestidade percebida alta, confiança acumulada, e sem eco negativo pendente.
+  // Item 22 — confiança (que só era escrita, nunca lida) agora tem consequência real:
+  // quem construiu confiança é perdoado mais rápido quando erra.
   const pisoRejeicao = clamp(
     6 + (55 - s.personagem.atributos.honestidadePercebida) / 8
+      - (s.reputacao.confianca - 40) / 32
       + Math.max(0, -s.reputacao.ecoMidiatico) / 8,
     3, 45,
   );
   if (s.reputacao.rejeicao > pisoRejeicao) {
     // decai mais rápido quanto mais longe do piso (não deixa disparar)
     const excesso = s.reputacao.rejeicao - pisoRejeicao;
-    const taxa = 2.4 + excesso * 0.12 + (s.personagem.atributos.honestidadePercebida - 50) / 40;
+    const taxa = 2.4 + excesso * 0.12 + (s.personagem.atributos.honestidadePercebida - 50) / 40 + (s.reputacao.confianca - 40) / 130;
     s.reputacao.rejeicao = Math.max(pisoRejeicao, s.reputacao.rejeicao - Math.max(1, taxa));
   }
 

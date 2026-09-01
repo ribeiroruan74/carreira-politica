@@ -163,6 +163,10 @@ export function montarBiografia(s) {
     seguidores: s.redes?.seguidores || 0,
     patrimonio: p.patrimonio || 0,
     caixaPessoal: s.financas?.pessoal || 0,
+    empresas: (p.empresas || []).map((e) => e.nome),
+    instituicoes: (p.instituicoes || []).map((i) => ({ nome: i.nome, nivel: i.nivel })),
+    institutosFundados: leg.institutosFundados || 0,
+    impactoSocial: Math.round(leg.impactoSocial || 0),
     base,
     inimigos,
     redutos,
@@ -194,6 +198,8 @@ function calcularNota(s, leg) {
   n += (mediaSerie(s, 'aprovacao') - 45) * 0.25; // aprovação média
   n -= (s.reputacao.rejeicao - 25) * 0.15; // rejeição
   n += Math.min(6, Object.keys(s.conquistas?.desbloqueadas || {}).length * 0.3);
+  // Item 17 — legado social de instituições fundadas (impacto acumulado)
+  n += Math.min(10, (leg.institutosFundados || 0) * 2 + (leg.impactoSocial || 0) / 2500);
   n -= (leg.eleicoesPerdidas || 0) * 2.5;
   if (s.fimDeJogo?.tipo === 'ESCANDALO') n -= 22;
   if (s.fimDeJogo?.tipo === 'DERROTA') n -= 8;
@@ -228,6 +234,9 @@ function vereditoDaHistoria(s, leg, nota, ctx) {
   } else if (nota >= 62 && ctx.redutos.length >= 2) {
     titulo = 'Cacique de território';
     veredito = `Dono de ${ctx.redutos.slice(0, 2).join(' e ')}. Uma base fiel que ninguém tirou de você — e que sustentou toda a carreira. Poder de verdade, do tipo que se herda.`;
+  } else if (nota >= 55 && (leg.institutosFundados || 0) >= 2 && (leg.impactoSocial || 0) > 2500) {
+    titulo = 'O construtor de instituições';
+    veredito = 'Mais do que mandatos, deixou obras que continuam funcionando sem você — escolas, institutos, projetos que levam o seu nome. O legado que não depende de eleição.';
   } else if (nota >= 55) {
     titulo = 'Político de carreira';
     veredito = 'Nem herói, nem vilão: um quadro competente que soube se manter, negociar e entregar o suficiente. A maioria da classe política sonha em terminar assim.';

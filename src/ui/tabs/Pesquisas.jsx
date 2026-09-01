@@ -2,6 +2,7 @@ import { useGame } from '../../state/store';
 import { Card, PageHead, Sparkline, Meter, Pill } from '../components/primitives';
 import { corPartido } from '../../engine/voteModel';
 import { resumoSatisfacao } from '../../engine/electorate';
+import { relevanciaMidiatica } from '../../engine/social';
 import { nomeMes } from '../../engine/tick';
 import partiesDef from '../../content/parties.json';
 
@@ -32,6 +33,27 @@ export default function Pesquisas() {
       <PageHead eyebrow="Pesquisas e opinião" title="Como o Recife te enxerga">
         Números de opinião pública. Eles se movem sozinhos — com o que você faz, com o que a imprensa diz, com o que os adversários fazem.
       </PageHead>
+
+      <Card title="Os números da sua imagem — o que é o quê">
+        <div className="stack" style={{ gap: 7 }}>
+          {[
+            ['Seguidores', s.redes.seguidores.toLocaleString('pt-BR'), 'Tamanho da sua audiência nas redes. Ajuda no alcance e na notoriedade — mas NÃO vira voto.'],
+            ['Alcance médio', s.redes.alcanceMedio.toLocaleString('pt-BR'), 'Quantas pessoas um conteúdo seu atinge, em média.'],
+            ['Notoriedade', `${Math.round(s.reputacao.notoriedade)}/100`, 'O quanto o eleitor te conhece. Entra no modelo de voto — não se vota em quem não se conhece.'],
+            ['Repercussão', `${Math.round(s.reputacao.ecoMidiatico)}`, 'Barulho recente em torno do seu nome (eco midiático). Sobe com viral/entrevista e decai a cada mês.'],
+            ['Fama / presença de mídia', `${relevanciaMidiatica(s)}/100`, 'Notoriedade + audiência + repercussão + peso do cargo. Alimenta convites de imprensa e o peso do seu nome no partido. Não é voto.'],
+            ['Aprovação', `${Math.round(s.reputacao.aprovacao)}%`, 'O quanto quem te conhece aprova o seu trabalho. Regride à média sozinha.'],
+            ['Rejeição', `${Math.round(s.reputacao.rejeicao)}%`, 'Voto que você não pega de jeito nenhum. Também esfria com o tempo.'],
+            ['Intenção de voto', s.eleicao?.pesquisas?.at(-1) ? 'ver abaixo' : 'só em campanha', 'Só existe durante uma eleição. É o resultado de tudo acima somado a território, ideologia e adversários.'],
+          ].map(([nome, val, desc]) => (
+            <div key={nome} className="row" style={{ alignItems: 'baseline', gap: 8 }}>
+              <span style={{ minWidth: 150, fontWeight: 600 }} className="small">{nome}</span>
+              <span className="num small" style={{ minWidth: 70 }}>{val}</span>
+              <span className="small dim grow">{desc}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       <div className="grid cols-2">
         <Card title="Sua aprovação e rejeição">

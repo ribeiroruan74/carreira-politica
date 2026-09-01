@@ -110,7 +110,7 @@ function propensao(cand, grupo, unidade, ruido) {
   const forcaPart = (pa.forcaRecife / 100) * 0.9;
 
   // 6) eco midiático recente
-  const eco = clamp(cand.ecoMidiatico / 100, -0.6, 1.2) * 0.9;
+  const eco = clamp(cand.ecoMidiatico / 100, -0.6, 1.2) * 0.72;
 
   // 7) afinidade de arquétipo com o grupo
   const alvo = cand.grupoAlvo?.includes(grupo.id) ? 1.6 : 0;
@@ -137,7 +137,7 @@ export function estimarVotos(candidatos, state, cargoId = 'VEREADOR') {
   const ctx = contextoEleicao(state, cargoId);
   const eleicaoId = state.eleicao?.id || `sim_${cargoId}`;
   const validosPorCand = Object.fromEntries(candidatos.map((c) => [c.id, 0]));
-  const T = 2.2; // temperatura do softmax (maior = disputa menos concentrada — Etapa 13)
+  const T = 2.6; // temperatura do softmax (maior = disputa menos concentrada — Item 23)
 
   for (const unidade of ctx.unidades) {
     const somaMix = Object.values(unidade.mix).reduce((s, w) => s + w, 0) || 1;

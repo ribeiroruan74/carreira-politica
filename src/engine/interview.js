@@ -1,23 +1,25 @@
 import { createRng, streamRng, clamp } from './rng';
 import { JORNALISTAS, veiculo } from './press';
 import { ganharXp } from './attributes';
+import { ajustarSatisfacao, impactoDeTema, resumoSatisfacao } from './electorate';
 import intDef from '../content/interviews.json';
 import lawsDef from '../content/laws.json';
+import partiesDef from '../content/parties.json';
 import neighborhoods from '../content/neighborhoods/recife.json';
 
 const nomeBairro = (id) => neighborhoods.bairros.find((b) => b.id === id)?.nome || id;
 const nomeTema = (id) => lawsDef.temas.find((t) => t.id === id)?.nome || id;
+const nomePartido = (id) => partiesDef.partidos.find((p) => p.id === id)?.nome || id;
 
-// contextos ativos no estado atual → dados para preencher os placeholders
+// contextos ativos no estado atual → dados para preencher os placeholders.
+// Também define `_alvos`: grupo/rival que a resposta pode afetar.
 function contextos(state) {
   const c = {};
+  const alvos = {};
   const prom = state.mandato?.promessas?.find((p) => !p.cumprida && state.tempo.mes - p.mesFeita > 6);
   if (prom) {
-    c.promessa_furada = {
-      meses: state.tempo.mes - prom.mesFeita,
-      tema: nomeTema(prom.tema),
-      bairro: nomeBairro(prom.bairroId),
-    };
+    c.promessa_furada = { meses: state.tempo.mes - prom.mesFeita, tema: nomeTema(prom.tema), bairro: nomeBairro(prom.bairroId) };
+    alvos.promessa_furada = { temaId: prom.tema };
   }
   const ultimaCrise = state.log.find((l) => l.tipo === 'CRISE');
   if (ultimaCrise) c.crise_recente = { crise: ultimaCrise.texto.split(':')[0].toLowerCase() };
@@ -28,45 +30,84 @@ function contextos(state) {
   const ataque = state.mundo.noticias?.find((n) => n.tipo === 'ATAQUE' && n.texto.includes('atacou você'));
   if (ataque) {
     const rivalNome = ataque.texto.split(' (')[0];
+    const rival = Object.values(state.mundo.politicos || {}).find((p) => p.nome === rivalNome);
     c.ataque_rival = { rival: rivalNome };
+    alvos.ataque_rival = { rivalId: rival?.id || null };
   }
   if (state.reputacao.rejeicao > 30) c.rejeicao_alta = {};
+
+  // cargo em exercício
+  if (state.mandato) {
+    const exec = state.mandato.executivo;
+    c.cargo = { cargo: state.mandato.cargoNome || 'parlamentar', escopo: exec ? 'do Executivo' : 'do Legislativo' };
+  }
+  // projeto recente (aprovado ou rejeitado)
+  const proj = (state.mandato?.projetos || []).slice().reverse()
+    .find((p) => p.status === 'APROVADO' || p.status === 'REJEITADO');
+  if (proj) {
+    c.projeto = { projeto: proj.titulo || proj.nome || 'seu projeto', desfecho: proj.status === 'APROVADO' ? 'aprovado' : 'rejeitado' };
+    if (proj.tema) alvos.projeto = { temaId: proj.tema };
+  }
+  // adversário em ascensão (relação baixa + influência alta)
+  const rivalForte = Object.values(state.mundo.politicos || {})
+    .filter((p) => p.ativo && p.relacaoJogador < 12 && p.influencia > 58)
+    .sort((a, b) => b.influencia - a.influencia)[0];
+  if (rivalForte) {
+    c.adversario = { rival: rivalForte.nome, partido: rivalForte.partidoId };
+    alvos.adversario = { rivalId: rivalForte.id };
+  }
+  // histórico partidário (item 1): já trocou de sigla
+  const hist = state.personagem.partidoHistorico || [];
+  if (hist.length >= 2) {
+    const anterior = hist[hist.length - 2];
+    c.trocou_partido = { n: hist.length, anterior: anterior?.partidoId || '—', atual: nomePartido(state.personagem.partidoId) };
+  }
+  // grupo social irritado (item 3)
+  const pior = resumoSatisfacao(state)[0];
+  if (pior && pior.valor <= -28) {
+    c.grupo_contra = { grupo: pior.nome };
+    alvos.grupo_contra = { grupoId: pior.id };
+  }
+  // acontecimento em destaque
+  const quente = (state.mundo.noticias || []).find((n) => n.destaque && n.tipo !== 'MIDIA' && !n.texto.includes(state.personagem.nome));
+  if (quente) c.noticia = { assunto: quente.texto.replace(/\.$/, '').toLowerCase() };
+
   c.generico = {};
-  return c;
+  return { c, alvos };
 }
 
 function preencher(texto, dados) {
   return texto.replace(/\{(\w+)\}/g, (_, k) => dados?.[k] ?? '—');
 }
 
-// Monta a entrevista: 4-6 perguntas relevantes ao estado. Determinístico.
+// Monta a entrevista: EXATAMENTE 3 perguntas, priorizando o que é quente no estado.
 export function montarEntrevista(state, jornalistaId) {
   const j = JORNALISTAS.find((x) => x.id === jornalistaId) || JORNALISTAS[0];
   const v = veiculo(j.veiculo);
   const rng = streamRng(state.meta.seed, 'entrevista', jornalistaId, state.tempo.mes);
-  const ctx = contextos(state);
+  const { c: ctx, alvos } = contextos(state);
+  const N = 3;
 
-  const elegiveis = intDef.perguntas.filter((p) => ctx[p.contexto]);
+  const especificas = intDef.perguntas.filter((p) => p.contexto !== 'generico' && ctx[p.contexto]);
   const genericas = intDef.perguntas.filter((p) => p.contexto === 'generico');
-  const pool = [...elegiveis];
-  // completa com genéricas se faltar
-  for (const g of rng.shuffle(genericas)) {
-    if (pool.length >= 5) break;
-    if (!pool.includes(g)) pool.push(g);
-  }
-  const n = clamp(pool.length, 4, 6);
+
   const escolhidas = [];
-  const rest = [...pool];
-  while (escolhidas.length < n && rest.length) {
+  const rest = [...especificas];
+  while (escolhidas.length < N && rest.length) {
     const p = rng.weighted(rest, (x) => x.peso ?? 1);
     escolhidas.push(p);
     rest.splice(rest.indexOf(p), 1);
   }
+  for (const g of rng.shuffle(genericas)) {
+    if (escolhidas.length >= N) break;
+    if (!escolhidas.includes(g)) escolhidas.push(g);
+  }
 
-  const perguntas = escolhidas.map((p) => ({
+  const perguntas = escolhidas.slice(0, N).map((p) => ({
     id: p.id,
+    contexto: p.contexto,
     texto: preencher(p.texto, ctx[p.contexto]),
-    tons: p.tons.map((t) => ({ id: t.id, texto: t.texto, score: t.score, rep: t.rep })),
+    tons: p.tons.map((t) => ({ id: t.id, texto: t.texto, score: t.score, rep: t.rep, grupo: t.grupo, grupoAuto: t.grupoAuto, rival: t.rival })),
   }));
 
   return {
@@ -76,6 +117,7 @@ export function montarEntrevista(state, jornalistaId) {
     rigor: j.rigor,
     abertura: rng.pick(intDef.aberturas),
     perguntas,
+    alvos, // { contexto: { grupoId|rivalId|temaId } }
     idx: 0,
     score: 0,
     respostas: [],
@@ -105,6 +147,17 @@ export function responderPergunta(state, tomIdx) {
     const min = k === 'ecoMidiatico' ? -50 : 0;
     state.reputacao[k] = clamp((state.reputacao[k] ?? 0) + d, min, 100);
   }
+  // item 6 — a resposta também mexe com grupos sociais e com relações
+  const alvo = e.alvos?.[p.contexto] || {};
+  const sinal = tom.score >= 0 ? 1 : -1;
+  const gid = tom.grupo || (tom.grupoAuto && alvo.grupoId) || null;
+  if (gid) ajustarSatisfacao(state, gid, rng.range([2, 6]) * sinal);
+  if (alvo.temaId && (tom.grupoAuto || tom.grupo)) impactoDeTema(state, alvo.temaId, rng.range([2, 5]) * sinal);
+  if (typeof tom.rival === 'number' && alvo.rivalId && state.mundo.politicos[alvo.rivalId]) {
+    const pol = state.mundo.politicos[alvo.rivalId];
+    pol.relacaoJogador = clamp(pol.relacaoJogador + tom.rival, -100, 100);
+  }
+
   e.score += tom.score * (tom.score < 0 ? fatorRigor : 1);
   e.respostas.push({ pergunta: p.id, tom: tom.id });
   e.idx += 1;
