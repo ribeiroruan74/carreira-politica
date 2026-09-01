@@ -45,13 +45,20 @@ export default function AppShell() {
 
   const alertas = { inicio: feed.filter((f) => f.urgente).length };
 
+  const ATALHOS = {
+    inteligencia: { id: 'pesquisas', rotulo: 'Pesquisas' },
+    perfil: { id: 'conquistas', rotulo: 'Conquistas', tone: 'gold' },
+    politica: { id: 'pessoas', rotulo: 'Cenário' },
+  };
+  const atalho = ATALHOS[secao] && daSecao.some((t) => t.id === ATALHOS[secao].id) ? ATALHOS[secao] : null;
+
   return (
     <div className="app">
       <TopBar />
       <main className="app-main">
         {mostraHub ? (
           <div key={`hub-${secao}`} className="page-fade">
-            <SectionHub titulo={info?.titulo || ''} abas={daSecao} onAbrir={setAba} />
+            <SectionHub titulo={info?.titulo || ''} abas={daSecao} onAbrir={setAba} atalho={atalho} />
           </div>
         ) : (
           <div key={conteudoAba} className="page-fade">
