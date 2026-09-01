@@ -13,6 +13,7 @@ import { bairrosDaCidade } from '../../engine/offices';
 import partiesDef from '../../content/parties.json';
 
 const CAT_LABEL = { PESSOAL: 'Pessoal', COMUNIDADE: 'Comunidade', VIDA_PUBLICA: 'Vida pública', CAMPANHA: 'Campanha', MIDIA: 'Mídia', MANDATO: 'Mandato', POLITICA: 'Política', DESENVOLVIMENTO: 'Desenvolvimento' };
+const CAT_ICO = { PESSOAL: '🙂', COMUNIDADE: '🏘️', VIDA_PUBLICA: '📣', CAMPANHA: '🚩', MIDIA: '📸', MANDATO: '🏛️', POLITICA: '⚖️', DESENVOLVIMENTO: '📚' };
 
 function ObjetivoCard({ obj, aplicar, irPara }) {
   const [partidoId, setPartidoId] = useState(partiesDef.partidos[0].id);
@@ -183,9 +184,9 @@ export default function Agenda({ irPara }) {
           const bloq = semTempo || semGrana || semCaixa || semVaga;
           const ativoSel = sel?.acao.id === a.id;
           return (
-            <Card key={a.id}>
+            <Card key={a.id} className="acao-card">
               <div className="card-head">
-                <h3>{a.titulo}</h3>
+                <h3><span className="acao-ico" aria-hidden="true">{CAT_ICO[a.categoria] || '•'}</span>{a.titulo}</h3>
                 <Pill>{CAT_LABEL[a.categoria] || a.categoria}</Pill>
               </div>
               <p className="small dim">{a.desc}</p>

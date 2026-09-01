@@ -1,5 +1,7 @@
-// Abas ativas. Uma aba só aparece quando tem funcionalidade real E `visivel`
-// (se definido) retorna true para o estado atual.
+// Navegação em 2 níveis (rebuild visual):
+//  - 5 seções na barra inferior fixa (SECOES)
+//  - dentro de cada seção, sub-páginas (as abas de sempre) num seletor no topo da página
+// Uma aba só aparece quando `visivel` (se definido) retorna true.
 
 import Dashboard from './Dashboard';
 import Personagem from '../tabs/Personagem';
@@ -22,29 +24,52 @@ import Historico from '../tabs/Historico';
 import Telefone from '../tabs/Telefone';
 import Config from '../tabs/Config';
 
+// `titulo` = rótulo curto usado no seletor de sub-páginas (SubNav)
 export const TABS = [
-  { id: 'dashboard', nome: 'Dashboard', ico: '▤', comp: Dashboard },
-  { id: 'personagem', nome: 'Personagem', ico: '☺', comp: Personagem },
-  { id: 'familia', nome: 'Família', ico: '👪', comp: Familia },
-  { id: 'agenda', nome: 'Agenda', ico: '❒', comp: Agenda },
-  { id: 'eleicao', nome: 'Eleição', ico: '🗳', comp: Eleicao, visivel: (s) => !!s.eleicao },
-  { id: 'mandato', nome: 'Mandato', ico: '🏛', comp: Mandato, visivel: (s) => !!s.mandato },
-  { id: 'gabinete', nome: 'Gabinete', ico: '👔', comp: Gabinete, visivel: (s) => !!s.mandato },
-  { id: 'pessoas', nome: 'Pessoas', ico: '⚇', comp: Pessoas },
-  { id: 'telefone', nome: 'Telefone', ico: '📞', comp: Telefone, visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
-  { id: 'mapa', nome: 'Mapa', ico: '◈', comp: Mapa },
-  { id: 'politica', nome: 'Política', ico: '⚖', comp: Politica, visivel: (s) => !!s.personagem.partidoId || s.personagem.fase !== 'VIDA' },
-  { id: 'redes', nome: 'Instagram', ico: '📷', comp: Instagram },
-  { id: 'imprensa', nome: 'Imprensa', ico: '📰', comp: Imprensa, visivel: (s) => s.reputacao.notoriedade >= 10 || s.personagem.fase !== 'VIDA' },
-  { id: 'inteligencia', nome: 'Inteligência', ico: '🧠', comp: Inteligencia, visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
-  { id: 'pesquisas', nome: 'Pesquisas', ico: '📊', comp: Pesquisas },
-  { id: 'financas', nome: 'Finanças', ico: '$', comp: Financas },
-  { id: 'negocios', nome: 'Negócios', ico: '🏢', comp: Negocios, visivel: (s) => s.personagem.fase !== 'VIDA' || s.personagem.patrimonio > 50000 },
-  { id: 'conquistas', nome: 'Conquistas', ico: '🏆', comp: Conquistas },
-  { id: 'historico', nome: 'Histórico', ico: '≡', comp: Historico },
-  { id: 'config', nome: 'Configurações', ico: '⚙', comp: Config },
+  { id: 'dashboard', nome: 'Início', titulo: 'Início', ico: '🏠', comp: Dashboard, secao: 'inicio' },
+
+  { id: 'agenda', nome: 'Agenda', titulo: 'Agenda', ico: '📅', comp: Agenda, secao: 'agenda' },
+  { id: 'eleicao', nome: 'Eleição', titulo: 'Eleição', ico: '🗳', comp: Eleicao, secao: 'agenda', visivel: (s) => !!s.eleicao },
+
+  { id: 'mapa', nome: 'Recife', titulo: 'Recife', ico: '🗺️', comp: Mapa, secao: 'politica' },
+  { id: 'mandato', nome: 'Câmara', titulo: 'Câmara', ico: '🏛️', comp: Mandato, secao: 'politica', visivel: (s) => !!s.mandato },
+  { id: 'politica', nome: 'Partido', titulo: 'Partido', ico: '⚖️', comp: Politica, secao: 'politica', visivel: (s) => !!s.personagem.partidoId || s.personagem.fase !== 'VIDA' },
+  { id: 'pessoas', nome: 'Políticos', titulo: 'Políticos', ico: '👥', comp: Pessoas, secao: 'politica' },
+  { id: 'gabinete', nome: 'Gabinete', titulo: 'Gabinete', ico: '👔', comp: Gabinete, secao: 'politica', visivel: (s) => !!s.mandato },
+
+  { id: 'inteligencia', nome: 'Central', titulo: 'Central', ico: '🧠', comp: Inteligencia, secao: 'inteligencia', visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
+  { id: 'pesquisas', nome: 'Pesquisas', titulo: 'Pesquisas', ico: '📊', comp: Pesquisas, secao: 'inteligencia' },
+  { id: 'imprensa', nome: 'Imprensa', titulo: 'Imprensa', ico: '📰', comp: Imprensa, secao: 'inteligencia', visivel: (s) => s.reputacao.notoriedade >= 10 || s.personagem.fase !== 'VIDA' },
+
+  { id: 'personagem', nome: 'Perfil', titulo: 'Personagem', ico: '👤', comp: Personagem, secao: 'perfil' },
+  { id: 'familia', nome: 'Família', titulo: 'Família', ico: '👪', comp: Familia, secao: 'perfil' },
+  { id: 'redes', nome: 'Redes', titulo: 'Redes', ico: '📷', comp: Instagram, secao: 'perfil' },
+  { id: 'telefone', nome: 'Contatos', titulo: 'Contatos', ico: '📞', comp: Telefone, secao: 'perfil', visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
+  { id: 'financas', nome: 'Finanças', titulo: 'Finanças', ico: '💰', comp: Financas, secao: 'perfil' },
+  { id: 'negocios', nome: 'Negócios', titulo: 'Negócios', ico: '🏢', comp: Negocios, secao: 'perfil', visivel: (s) => s.personagem.fase !== 'VIDA' || s.personagem.patrimonio > 50000 },
+  { id: 'conquistas', nome: 'Conquistas', titulo: 'Conquistas', ico: '🏆', comp: Conquistas, secao: 'perfil' },
+  { id: 'historico', nome: 'Carreira', titulo: 'Carreira', ico: '📜', comp: Historico, secao: 'perfil' },
+  { id: 'config', nome: 'Ajustes', titulo: 'Ajustes', ico: '⚙️', comp: Config, secao: 'perfil' },
+];
+
+// barra inferior fixa
+export const SECOES = [
+  { id: 'inicio', nome: 'Início', ico: '🏠' },
+  { id: 'agenda', nome: 'Agenda', ico: '📅' },
+  { id: 'politica', nome: 'Política', ico: '🏛️' },
+  { id: 'inteligencia', nome: 'Dados', ico: '📊' },
+  { id: 'perfil', nome: 'Perfil', ico: '👤' },
 ];
 
 export function abasVisiveis(state) {
   return TABS.filter((t) => !t.visivel || t.visivel(state));
+}
+
+// sub-páginas visíveis de uma seção
+export function abasDaSecao(state, secaoId) {
+  return abasVisiveis(state).filter((t) => t.secao === secaoId);
+}
+
+export function secaoDaAba(abaId) {
+  return TABS.find((t) => t.id === abaId)?.secao || 'inicio';
 }

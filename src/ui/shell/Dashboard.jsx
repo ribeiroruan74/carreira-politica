@@ -1,124 +1,113 @@
 import { useGame } from '../../state/store';
 import { formatBRL, nomeMes } from '../../engine/tick';
-import { Card, Stat, Meter, Pill, PageHead } from '../components/primitives';
+import { relevanciaMidiatica } from '../../engine/social';
+import { cargoPorId } from '../../engine/offices';
 import { janelaCandidatura } from '../../engine/calendar';
-import { cascatasAtivas } from '../../engine/cascade';
-import { riscosAbertos } from '../../engine/worldMemory';
-import { eventoNacionalAtual, rotuloClima, climaNacional } from '../../engine/national';
-import { bairrosDaCidade } from '../../engine/offices';
+
+const TIPO_STYLE = {
+  'decisão': { pill: 'red', lbl: 'Decisão' },
+  'oportunidade': { pill: 'accent', lbl: 'Oportunidade' },
+  'convite': { pill: 'blue', lbl: 'Convite' },
+  'problema': { pill: 'amber', lbl: 'Problema' },
+  'notícia': { pill: '', lbl: 'Notícia' },
+};
+
+function fmtCompact(n) {
+  const neg = n < 0 ? '-' : '';
+  n = Math.abs(n);
+  if (n >= 1e6) return `${neg}${(n / 1e6).toFixed(n >= 1e7 ? 0 : 1)}M`;
+  if (n >= 1e3) return `${neg}${(n / 1e3).toFixed(n >= 1e4 ? 0 : 1)}k`;
+  return `${neg}${Math.round(n)}`;
+}
+const fmtDin = (n) => (Math.abs(n) >= 100000 ? `R$ ${fmtCompact(n)}` : formatBRL(n));
 
 function proximoPasso(s) {
   const f = s.personagem.fase;
   if (f === 'VIDA') return 'Construa vida pública: ativismo e liderança comunitária abrem caminho para um partido.';
   if (f === 'VIDA_PUBLICA') return 'Filie-se a um partido para poder disputar uma eleição.';
-  if (f === 'CANDIDATO') return `Campanha em andamento — eleição em ${nomeMes(s.eleicao?.mesPleito ?? 0)}/${s.eleicao?.anoPleito ?? ''}. Cada mês conta.`;
+  if (f === 'CANDIDATO') return `Campanha em andamento — eleição em ${nomeMes(s.eleicao?.mesPleito ?? 0)}/${s.eleicao?.anoPleito ?? ''}.`;
   if (f === 'PARTIDO' || f === 'MANDATO') {
     const j = janelaCandidatura(s);
-    if (j.aberta) return `A janela de candidatura para a eleição de ${j.ano} está ABERTA — decida na Agenda.`;
-    return `Próxima eleição municipal: ${nomeMes(j.mes)}/${j.ano}. A janela de candidatura abre em ${j.mesesAteAbrir} mês(es).`;
+    if (j.aberta) return `A janela de candidatura para ${j.ano} está ABERTA — decida na Agenda.`;
+    return `Próxima eleição: ${nomeMes(j.mes)}/${j.ano}. Janela abre em ${j.mesesAteAbrir} mês(es).`;
   }
   return '';
 }
 
-export default function Dashboard({ irPara }) {
+function StatTile({ ico, k, v, sub, tone }) {
+  return (
+    <div className={`stile ${tone || ''}`}>
+      <div className="stile-top"><span className="stile-ico">{ico}</span><span className="stile-k">{k}</span></div>
+      <div className="stile-v mono">{v}</div>
+      {sub && <div className="stile-sub">{sub}</div>}
+    </div>
+  );
+}
+
+export default function Dashboard({ irPara, feed = [] }) {
   const s = useGame((g) => g.estado);
   const avancarMes = useGame((g) => g.avancarMes);
-  const { personagem: p, tempo, financas, reputacao, redes, relacionamentos, territorio, log } = s;
-
-  const pessoas = Object.values(relacionamentos.pessoas);
-  const aliados = pessoas.filter((x) => x.nivel === 'ALIADO' || x.nivel === 'PARCEIRO').length;
-  const bairrosComPresenca = Object.entries(territorio.porBairro)
-    .filter(([, v]) => v.presenca > 0)
-    .sort((a, b) => b[1].presenca - a[1].presenca);
-  const topBairro = bairrosComPresenca[0];
-  const topBairroNome = topBairro
-    ? bairrosDaCidade(p.cidade).find((b) => b.id === topBairro[0])?.nome
-    : null;
+  const { personagem: p, tempo, financas, reputacao, redes, mundo } = s;
   const ano = tempo.anoInicial + Math.floor(tempo.mes / 12);
+  const cargo = p.cargoAtual && p.cargoAtual !== 'NENHUM' ? cargoPorId(p.cargoAtual)?.nome : null;
+  const pr = mundo.partidosRuntime?.[p.partidoId];
+  const popular = pr ? Math.round(pr.popularidade) : Math.round(reputacao.notoriedade);
+  const fama = relevanciaMidiatica(s);
 
   return (
-    <div className="stack">
-      <PageHead eyebrow={`${nomeMes(tempo.mes)} de ${ano} · ${p.idade} anos`} title={`Situação de ${p.nome}`} />
-
-      <div className="grid cols-3">
-        <Card><Stat k="Aprovação" v={`${Math.round(reputacao.aprovacao)}%`} sub={`Confiança ${Math.round(reputacao.confianca)}%`} /></Card>
-        <Card><Stat k="Rejeição" v={`${Math.round(reputacao.rejeicao)}%`} sub={`Notoriedade ${Math.round(reputacao.notoriedade)}`} /></Card>
-        <Card><Stat k="Seguidores" v={redes.seguidores.toLocaleString('pt-BR')} delta={redes.crescimentoMensal} sub={`Alcance médio ${redes.alcanceMedio.toLocaleString('pt-BR')}`} /></Card>
-        <Card><Stat k="Caixa pessoal" v={formatBRL(financas.pessoal)} sub={`Renda ${formatBRL(financas.rendaMensal)}/mês`} /></Card>
-        <Card><Stat k="Rede política" v={`${pessoas.length} contatos`} sub={`${aliados} aliado(s)`} /></Card>
-        <Card><Stat k="Território" v={topBairroNome || '—'} sub={topBairro ? `presença ${Math.round(topBairro[1].presenca)}` : 'Sem base territorial'} /></Card>
+    <div className="stack dash">
+      <div className="dash-hero">
+        <div className="dash-hero-id">
+          <h2>{p.nome}</h2>
+          <p className="dim small" style={{ margin: '2px 0 0' }}>
+            {cargo || 'Sem cargo'} · {p.idade} anos
+          </p>
+        </div>
+        <button className="btn dash-adv" disabled={!!s.eventoPendente} onClick={avancarMes}>
+          Avançar&nbsp;mês →
+        </button>
       </div>
 
-      {(cascatasAtivas(s).length > 0 || riscosAbertos(s).length > 0) && (
-        <Card title="Repercussão e riscos" className="">
-          {cascatasAtivas(s).map((c) => (
-            <div key={c.id} className="row">
-              <span className="grow"><Pill tone="amber">em curso</Pill> {c.rótulo}</span>
-              <span className="faint small">estágio {c.estagio + 1}/{c.total}</span>
-            </div>
-          ))}
-          {riscosAbertos(s).map((f) => (
-            <div key={f.id} className="row">
-              <span className="grow"><Pill tone="red">risco aberto</Pill> {f.texto}</span>
-            </div>
-          ))}
-          <p className="small faint" style={{ marginTop: 8 }}>
-            Cascatas avançam sozinhas todo mês. Riscos abertos podem voltar a te cobrar mais adiante.
-          </p>
-        </Card>
-      )}
+      <div className="stile-grid">
+        <StatTile ico="💰" k="Dinheiro" v={fmtDin(financas.pessoal)} sub={`${fmtDin(financas.rendaMensal)}/mês`} />
+        <StatTile ico="👍" k="Aprovação" v={`${Math.round(reputacao.aprovacao)}%`} sub={`Rejeição ${Math.round(reputacao.rejeicao)}%`} tone={reputacao.aprovacao >= 50 ? 'good' : reputacao.rejeicao > 35 ? 'bad' : ''} />
+        <StatTile ico="⭐" k="Fama" v={`${fama}`} sub={`Notoriedade ${Math.round(reputacao.notoriedade)}`} />
+        <StatTile ico="📣" k="Seguidores" v={fmtCompact(redes.seguidores)} sub={`${redes.crescimentoMensal >= 0 ? '+' : ''}${fmtCompact(redes.crescimentoMensal)} no mês`} />
+        <StatTile ico="🏛️" k="Popularidade" v={`${popular}`} sub={pr ? 'do seu partido' : 'notoriedade'} />
+        <StatTile ico="🎖️" k="Influência" v={`${Math.round(p.atributos.influencia ?? 45)}`} sub={`${(p.grupoPolitico || []).length} aliado(s)`} />
+        <StatTile ico="⚡" k="Energia" v={`${Math.round(tempo.energia)}`} sub={`Tempo ${tempo.pontosRestantes}/${tempo.pontosPorMes}`} tone={tempo.energia < 30 ? 'bad' : ''} />
+        <StatTile ico="📅" k="Data" v={`${nomeMes(tempo.mes)}/${String(ano).slice(2)}`} sub={`mês ${tempo.mes}`} />
+      </div>
 
-      {(() => {
-        const ev = eventoNacionalAtual(s);
-        const c = climaNacional(s);
-        if (!ev && Math.abs(c) < 8) return null;
-        return (
-          <Card title="Cenário nacional">
-            <div className="row"><span className="grow"><strong>{rotuloClima(s)}</strong></span><span className="faint small">clima {c > 0 ? '+' : ''}{c}</span></div>
-            {ev && <p className="small dim" style={{ marginTop: 6 }}>{ev.texto}</p>}
-          </Card>
-        );
-      })()}
+      <div className="card dash-next">
+        <div className="card-head"><h3>Próximo passo</h3></div>
+        <p className="small dim" style={{ margin: 0 }}>{proximoPasso(s)}</p>
+        <button className="btn ghost sm" style={{ marginTop: 12 }} onClick={() => irPara('agenda')}>Abrir a Agenda</button>
+      </div>
 
-      <Card title="Próximo passo">
-        <p className="dim small">{proximoPasso(s)}</p>
-        <div className="chips" style={{ marginTop: 10 }}>
-          <Pill tone="accent">{tempo.pontosRestantes}/{tempo.pontosPorMes} pontos de tempo</Pill>
-          <Pill tone={tempo.energia < 30 ? 'red' : 'accent'}>energia {Math.round(tempo.energia)}</Pill>
-        </div>
-        <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
-          <button className="btn" onClick={() => irPara('agenda')}>Ir para a Agenda</button>
-          <button className="btn ghost" disabled={!!s.eventoPendente} onClick={avancarMes}>Avançar o mês →</button>
-        </div>
-      </Card>
-
-      <div className="grid cols-2">
-        <Card title="Reputação">
-          <div className="stack" style={{ gap: 10 }}>
-            <Meter label="Aprovação" value={reputacao.aprovacao} />
-            <Meter label="Confiança" value={reputacao.confianca} tone="info" />
-            <Meter label="Rejeição" value={reputacao.rejeicao} tone={reputacao.rejeicao > 35 ? 'bad' : 'warn'} />
-            <Meter label="Notoriedade" value={reputacao.notoriedade} tone="info" />
-          </div>
-        </Card>
-        <Card title="Notícias do Recife" aside={`${(s.mundo.noticias || []).length}`}>
-          <div>
-            {(s.mundo.noticias || []).slice(0, 7).map((n) => (
-              <div key={n.id} className={`log-item ${n.tipo === 'ATAQUE' ? 'ALERTA' : n.tipo === 'ALIANCA' ? 'RELACIONAMENTO' : ''}`}>
-                <span className="when">{nomeMes(n.mes)}/{tempo.anoInicial + Math.floor(n.mes / 12)}</span>
-                <span className="txt">{n.texto}</span>
-              </div>
-            ))}
-            {(s.mundo.noticias || []).length === 0 && (
-              log.slice(0, 6).map((l, i) => (
-                <div key={i} className={`log-item ${l.tipo}`}>
-                  <span className="when">{nomeMes(l.mes)}/{tempo.anoInicial + Math.floor(l.mes / 12)}</span>
-                  <span className="txt">{l.texto}</span>
-                </div>
-              ))
-            )}
-          </div>
-        </Card>
+      <div className="dash-feed">
+        <div className="feed-head"><h3>Acontecendo agora</h3><span className="pill">{feed.length}</span></div>
+        {feed.length === 0 && <p className="small dim">Tudo tranquilo por enquanto. Avance o mês para ver o que se move.</p>}
+        {feed.map((f) => {
+          const st = TIPO_STYLE[f.tipo] || TIPO_STYLE['notícia'];
+          const clickable = !!f.aba;
+          return (
+            <button
+              key={f.id}
+              className={`feed-card ${f.urgente ? 'urgente' : ''} ${clickable ? 'clk' : ''}`}
+              onClick={() => clickable && irPara(f.aba)}
+              disabled={!clickable}
+            >
+              <span className="feed-ico">{f.ico}</span>
+              <span className="feed-body">
+                <span className="feed-meta"><span className={`pill ${st.pill}`}>{st.lbl}</span></span>
+                <span className="feed-title">{f.titulo}</span>
+                {f.texto && <span className="feed-text">{f.texto}</span>}
+              </span>
+              {clickable && <span className="feed-arrow">›</span>}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
