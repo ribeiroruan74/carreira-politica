@@ -8,6 +8,9 @@ import prefeitoDef from '../content/actions/prefeito.json';
 import deputadoDef from '../content/actions/deputado.json';
 import midiaDef from '../content/actions/midia.json';
 import vidaDef from '../content/actions/vida.json';
+import governadorDef from '../content/actions/governador.json';
+import senadorDef from '../content/actions/senador.json';
+import presidenteDef from '../content/actions/presidente.json';
 import contactsDef from '../content/contacts.json';
 import neighborhoods from '../content/neighborhoods/recife.json';
 import professionsDef from '../content/professions.json';
@@ -19,7 +22,7 @@ import { cascatasAtivas, conterCascata } from './cascade';
 import { captarDoacao } from './donors';
 import { recrutarMilitancia } from './militancy';
 import { cuidarDeSi } from './personal';
-import { impactoDeTema, cortejarGrupo, GRUPOS_LISTA } from './electorate';
+import { impactoDeTema, impactoGeral, cortejarGrupo, GRUPOS_LISTA } from './electorate';
 import { gravarPodcast } from './podcasts';
 import { cultivarInfluenciador, colaborarInfluenciador } from './influencers';
 import { ganharXp } from './attributes';
@@ -28,7 +31,7 @@ const FASES = ['VIDA', 'VIDA_PUBLICA', 'PARTIDO', 'CANDIDATO', 'MANDATO'];
 const TODAS = [
   ...etapa1Def.acoes, ...campanhaDef.acoes, ...politicaDef.acoes,
   ...mandatoDef.acoes, ...prefeitoDef.acoes, ...deputadoDef.acoes, ...midiaDef.acoes,
-  ...vidaDef.acoes,
+  ...vidaDef.acoes, ...governadorDef.acoes, ...senadorDef.acoes, ...presidenteDef.acoes,
 ];
 // Etapa 6 — ações de mandato que valem para QUALQUER cargo eletivo
 const MANDATO_COMPARTILHADAS = ['discurso_plenario', 'buscar_financiador', 'militancia_mandato', 'conter_repercussao',
@@ -67,6 +70,9 @@ export function acoesDisponiveis(state) {
     const cargo = state.mandato?.cargo || 'VEREADOR';
     let cargoPool;
     if (cargo === 'PREFEITO') cargoPool = prefeitoDef.acoes;
+    else if (cargo === 'GOVERNADOR') cargoPool = governadorDef.acoes;
+    else if (cargo === 'SENADOR') cargoPool = senadorDef.acoes;
+    else if (cargo === 'PRESIDENTE') cargoPool = presidenteDef.acoes;
     else if (cargo.startsWith('DEPUTADO')) cargoPool = deputadoDef.acoes;
     else cargoPool = mandatoDef.acoes; // VEREADOR
     // projetos e negociação de votos vivem na aba Mandato, não no leque
@@ -451,6 +457,14 @@ const EFEITOS = {
     resumo.push('repercutiu com o público da pauta');
   },
 
+  // Prioridade 4 — medida de alcance amplo (executivo estadual/federal): mexe
+  // com TODOS os grupos de uma vez, para o bem ou para o mal.
+  impactoGeral({ state, ef, rng, mult, resumo }) {
+    const f = rng.range(Array.isArray(ef.impactoGeral) ? ef.impactoGeral : [1.5, 4]) * mult;
+    impactoGeral(state, f);
+    resumo.push('medida repercutiu com o eleitorado em geral');
+  },
+
   // Item 3 — encontro/discurso direcionado a um grupo social escolhido
   cortejarGrupo({ state, ef, opts, rng, mult, resumo }) {
     const gid = opts.grupoId || GRUPOS_LISTA[0].id;
@@ -535,7 +549,7 @@ const ORDEM_EFEITOS = [
   'pedirAumento', 'trocarEmprego', 'apoioPartido', 'conterCascata',
   'captarDoacao', 'recrutarMilitancia', 'cuidarDeSi', 'satisfacaoTema',
   'gravarPodcast', 'cultivarInfluenciador', 'colaborarInfluenciador', 'entregaLocal', 'gabineteBonus',
-  'cortejarGrupo', 'cursoAtributo', 'bemEstar', 'viagem',
+  'cortejarGrupo', 'cursoAtributo', 'bemEstar', 'viagem', 'impactoGeral',
 ];
 
 // permite a outros módulos (Bloco B) registrarem novos efeitos sem editar este arquivo

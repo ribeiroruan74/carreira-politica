@@ -6,6 +6,7 @@ import cargosDef from '../content/cargos.json';
 import recife from '../content/neighborhoods/recife.json';
 import olinda from '../content/neighborhoods/olinda.json';
 import estadoPE from '../content/estado-pe.json';
+import brasil from '../content/brasil.json';
 
 const CIDADES = {
   RECIFE: recife,
@@ -54,8 +55,18 @@ export function regiaoDaCidade(cidadeId) {
 // Cada unidade tem { id, nome, populacao, mix, eixo }.
 export function unidadesCircunscricao(state, cargoId) {
   const c = cargoPorId(cargoId);
+  if (c.circunscricao === 'NACIONAL') return brasil.regioes;
   if (c.circunscricao === 'ESTADO') return estadoPE.regioes;
   return bairrosDaCidade(state.personagem.cidade);
+}
+
+// Prioridade 4 — a unidade territorial onde a base local do jogador "conta":
+// bairro (município), região do estado (ESTADO), macro-região (NACIONAL).
+export function unidadeBaseDoJogador(state, cargoId) {
+  const c = cargoPorId(cargoId);
+  if (c.circunscricao === 'NACIONAL') return 'nordeste'; // personagem é de PE
+  if (c.circunscricao === 'ESTADO') return regiaoDaCidade(state.personagem.cidade);
+  return null;
 }
 
 export function cadeirasDoCargo(state, cargoId) {
@@ -72,7 +83,8 @@ export function eleitoradoApto(state, cargoId) {
 export function usaSegundoTurno(state, cargoId) {
   const c = cargoPorId(cargoId);
   if (c.sistema !== 'MAJORITARIO') return false;
-  if (c.circunscricao === 'ESTADO') return true;
+  if (c.segundoTurno === false) return false; // Senado: maioria simples
+  if (c.circunscricao === 'ESTADO' || c.circunscricao === 'NACIONAL') return true;
   const pop = bairrosDaCidade(state.personagem.cidade).reduce((s, b) => s + b.populacao, 0);
   return pop > (c.segundoTurnoSePopulacaoMaiorQue ?? 200000);
 }

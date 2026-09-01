@@ -1,0 +1,70 @@
+{
+  "$comment": "Prioridade 4 — ações do Senador (legislativo federal, mandato de 8 anos). Relatoria de peso, articulação no Senado, CPI federal, emenda para o estado, posição de repercussão nacional.",
+  "acoes": [
+    {
+      "id": "relatoria_federal",
+      "categoria": "MANDATO",
+      "titulo": "Relatoria de um projeto nacional",
+      "desc": "Reforma, marco regulatório, PEC. Meses de audiência e negociação — mas o nome fica na lei.",
+      "custo": { "tempo": 3, "energia": 12 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "impactoGeral": [1.5, 3.5], "reputacao": { "notoriedade": [2, 4], "confianca": [1, 3] }, "ecoMidiatico": [3, 8], "atributoPeso": "inteligencia" },
+      "peso": 1.3,
+      "variantes": [
+        { "titulo": "Relatoria da reforma tributária" },
+        { "titulo": "Relatoria de um marco regulatório" },
+        { "titulo": "Relatoria de uma PEC" }
+      ]
+    },
+    {
+      "id": "articular_senado",
+      "categoria": "POLITICA",
+      "titulo": "Articular no Senado",
+      "desc": "Colégio de líderes, café com senadores de outros partidos, contagem de votos.",
+      "custo": { "tempo": 2, "energia": 8 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "cultivarPolitico": [3, 8], "alvoPolitico": true, "apoioPartido": [1, 4], "atributoPeso": "negociacao" },
+      "peso": 1.1
+    },
+    {
+      "id": "cpi_federal",
+      "categoria": "MANDATO",
+      "titulo": "CPI no Senado",
+      "desc": "Requerimento, convocação, oitiva. Holofote nacional — e alvo nas costas.",
+      "custo": { "tempo": 2, "energia": 11 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "fiscalizar": true, "reputacao": { "notoriedade": [2, 5], "rejeicao": [0, 3] }, "ecoMidiatico": [4, 10], "atributoPeso": "coragem" },
+      "peso": 1
+    },
+    {
+      "id": "emenda_para_estado",
+      "categoria": "MANDATO",
+      "titulo": "Emenda de bancada para o estado",
+      "desc": "Direcionar recurso federal para obras em Pernambuco. Prefeito agradece, eleitor lembra.",
+      "custo": { "tempo": 2, "energia": 8 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "entregaLocal": { "presenca": [3, 7] }, "atributoPeso": "organizacao" },
+      "peso": 1.3
+    },
+    {
+      "id": "posicao_nacional",
+      "categoria": "MIDIA",
+      "titulo": "Tomar posição num tema nacional",
+      "desc": "Discurso no plenário, entrevista, artigo. Vira manchete e define de que lado você está.",
+      "custo": { "tempo": 1, "energia": 7 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "reputacao": { "notoriedade": [2, 5], "rejeicao": [0, 3] }, "ecoMidiatico": [4, 9], "atributoPeso": "oratoria" },
+      "peso": 1
+    },
+    {
+      "id": "agenda_bancada_estado",
+      "categoria": "COMUNIDADE",
+      "titulo": "Agenda com a bancada no estado",
+      "desc": "Rodar Pernambuco com deputados aliados: inauguração de emenda, palanque, base.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 1500 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "territorioBairroAlvo": { "presenca": [3, 7], "penetracao": [2, 4] }, "relacionamentosNovos": 1, "atributoPeso": "carisma" },
+      "peso": 1
+    }
+  ]
+}

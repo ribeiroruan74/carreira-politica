@@ -1,0 +1,10 @@
+{
+  "$comment": "Prioridade 4 — circunscrição NACIONAL (Presidente). 5 macro-regiões do Brasil com população eleitoral aproximada, viés ideológico leve (eixo) e mix de grupos sociais. Usado por unidadesCircunscricao quando o cargo é NACIONAL. A região de origem do personagem (Nordeste, para quem é de PE) recebe o empurrão da base local.",
+  "regioes": [
+    { "id": "sudeste", "nome": "Sudeste", "populacao": 68000000, "eixo": 8, "problemas": ["seguranca", "mobilidade", "saude"], "mix": { "classe_media": 4, "trabalhadores_formais": 4, "empresarios": 3, "periferia": 3, "jovens": 3, "servidores": 2, "informais": 2 } },
+    { "id": "nordeste", "nome": "Nordeste", "populacao": 40000000, "eixo": -22, "problemas": ["saneamento", "assistencia", "saude", "habitacao"], "mix": { "periferia": 5, "informais": 4, "trabalhadores_formais": 3, "religiosos_evangelicos": 3, "catolicos_praticantes": 3, "idosos": 2, "jovens": 2 } },
+    { "id": "sul", "nome": "Sul", "populacao": 23000000, "eixo": 20, "problemas": ["seguranca", "empreendedorismo", "educacao"], "mix": { "classe_media": 5, "empresarios": 4, "trabalhadores_formais": 3, "servidores": 2, "idosos": 2, "jovens": 2 } },
+    { "id": "centro_oeste", "nome": "Centro-Oeste", "populacao": 12000000, "eixo": 25, "problemas": ["empreendedorismo", "meio_ambiente", "seguranca"], "mix": { "empresarios": 4, "classe_media": 3, "servidores": 3, "trabalhadores_formais": 3, "religiosos_evangelicos": 3, "informais": 2 } },
+    { "id": "norte", "nome": "Norte", "populacao": 13000000, "eixo": -8, "problemas": ["saude", "meio_ambiente", "assistencia", "mobilidade"], "mix": { "periferia": 4, "informais": 4, "movimentos_sociais": 2, "trabalhadores_formais": 2, "jovens": 3, "religiosos_evangelicos": 3, "idosos": 2 } }
+  ]
+}

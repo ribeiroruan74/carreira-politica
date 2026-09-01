@@ -209,14 +209,22 @@ function calcularNota(s, leg) {
 function vereditoDaHistoria(s, leg, nota, ctx) {
   const p = s.personagem;
   const cargosSet = new Set(p.mandatosExercidos || []);
-  const executivo = cargosSet.has('PREFEITO');
-  const parlamentar = cargosSet.has('DEPUTADO_ESTADUAL') || cargosSet.has('DEPUTADO_FEDERAL');
+  const executivo = cargosSet.has('PREFEITO') || cargosSet.has('GOVERNADOR') || cargosSet.has('PRESIDENTE');
+  const parlamentar = cargosSet.has('DEPUTADO_ESTADUAL') || cargosSet.has('DEPUTADO_FEDERAL') || cargosSet.has('SENADOR');
+  const chegouAoTopo = cargosSet.has('PRESIDENTE');
+  const foiGovernador = cargosSet.has('GOVERNADOR') || cargosSet.has('SENADOR');
   const nunca = (leg.eleicoesVencidas || 0) === 0;
   const tipo = s.fimDeJogo?.tipo;
 
   let titulo; let veredito;
 
-  if (tipo === 'ESCANDALO') {
+  if (chegouAoTopo && tipo !== 'ESCANDALO') {
+    titulo = 'Chegou à Presidência';
+    veredito = `${ctx.cargos.slice(-3).join(', ')}. Poucos brasileiros percorrem esse caminho inteiro. O nome entra nos livros — a leitura que farão dele depende do que você fez com o poder.`;
+  } else if (foiGovernador && nota >= 68 && tipo !== 'ESCANDALO') {
+    titulo = 'Chegou longe';
+    veredito = 'Governou um estado ou representou-o no Senado. Uma carreira de primeira linha — do tipo que a maioria da classe política admira e poucos alcançam.';
+  } else if (tipo === 'ESCANDALO') {
     titulo = 'A queda';
     veredito = 'A carreira desabou num escândalo. O nome virou sinônimo de tudo que o eleitor diz odiar na política. É assim que os livros vão te registrar — se registrarem.';
   } else if (nunca && p.reputacao?.notoriedade > 45) {

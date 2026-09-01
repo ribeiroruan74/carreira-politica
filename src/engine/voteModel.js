@@ -2,7 +2,7 @@ import { createRng, hashSeed, clamp } from './rng';
 import partiesDef from '../content/parties.json';
 import electorateDef from '../content/electorate.json';
 import {
-  cargoPorId, unidadesCircunscricao, cadeirasDoCargo, regiaoDaCidade,
+  cargoPorId, unidadesCircunscricao, cadeirasDoCargo, unidadeBaseDoJogador,
 } from './offices';
 import { bonusImagemGrupo } from './image';
 
@@ -40,16 +40,17 @@ export function jogadorComoCandidato(state, cargoId = 'VEREADOR') {
   );
 
   let bairrosBase = {};
-  if (cargo.circunscricao === 'ESTADO') {
-    // a base municipal do jogador vira presença concentrada na sua região;
-    // o resto do estado depende de notoriedade, partido e mídia.
+  if (cargo.circunscricao === 'ESTADO' || cargo.circunscricao === 'NACIONAL') {
+    // a base municipal do jogador vira presença concentrada na sua região/macro-região;
+    // o resto depende de notoriedade, partido, mídia e mandatos anteriores.
     const ts = Object.values(state.territorio.porBairro).filter((t) => t.presenca > 0);
     if (ts.length) {
       const mediaEfetiva = ts.reduce((s, t) => s + Math.min(t.presenca, 25 + t.penetracao * 1.6), 0) / ts.length;
       const mediaPen = ts.reduce((s, t) => s + t.penetracao, 0) / ts.length;
-      const jaTeveMandato = /VEREADOR|PREFEITO|DEPUTADO/.test(p.cargoAtual || '') ? 1.35 : 1;
-      bairrosBase[regiaoDaCidade(p.cidade)] = clamp(
-        (mediaEfetiva / 260 + mediaPen / 320) * jaTeveMandato, 0, 0.4,
+      const jaTeveMandato = /PREFEITO|GOVERNADOR|DEPUTADO|SENADOR/.test(p.cargoAtual || '') ? 1.35 : /VEREADOR/.test(p.cargoAtual || '') ? 1.1 : 1;
+      const teto = cargo.circunscricao === 'NACIONAL' ? 0.28 : 0.4;
+      bairrosBase[unidadeBaseDoJogador(state, cargoId)] = clamp(
+        (mediaEfetiva / 260 + mediaPen / 320) * jaTeveMandato, 0, teto,
       );
     }
   } else {

@@ -125,6 +125,104 @@
           "DEPUTADO_ESTADUAL"
         ]
       }
+    },
+    {
+      "id": "GOVERNADOR",
+      "nome": "Governador(a)",
+      "nomeCurto": "governador",
+      "sistema": "MAJORITARIO",
+      "circunscricao": "ESTADO",
+      "escalaEleitorado": 1,
+      "comparecimentoBase": 0.82,
+      "totalCandidatos": {
+        "min": 5,
+        "max": 9
+      },
+      "competitivos": {
+        "min": 5,
+        "max": 9
+      },
+      "usaCandidatosReais": false,
+      "mesesDeCampanha": 6,
+      "tipoPleito": "GERAL",
+      "mandatoMeses": 48,
+      "subsidioMensal": 32000,
+      "elegibilidade": {
+        "idadeMin": 30,
+        "notoriedadeMin": 45,
+        "exigeMandato": [
+          "PREFEITO",
+          "DEPUTADO_ESTADUAL",
+          "DEPUTADO_FEDERAL"
+        ]
+      },
+      "cadeiras": 1
+    },
+    {
+      "id": "SENADOR",
+      "nome": "Senador(a)",
+      "nomeCurto": "senador",
+      "sistema": "MAJORITARIO",
+      "circunscricao": "ESTADO",
+      "segundoTurno": false,
+      "cadeiras": 1,
+      "escalaEleitorado": 1,
+      "comparecimentoBase": 0.8,
+      "totalCandidatos": {
+        "min": 4,
+        "max": 8
+      },
+      "competitivos": {
+        "min": 3,
+        "max": 6
+      },
+      "usaCandidatosReais": false,
+      "mesesDeCampanha": 6,
+      "tipoPleito": "GERAL",
+      "mandatoMeses": 96,
+      "subsidioMensal": 46000,
+      "elegibilidade": {
+        "idadeMin": 35,
+        "notoriedadeMin": 42,
+        "exigeMandato": [
+          "PREFEITO",
+          "DEPUTADO_ESTADUAL",
+          "DEPUTADO_FEDERAL",
+          "GOVERNADOR"
+        ]
+      }
+    },
+    {
+      "id": "PRESIDENTE",
+      "nome": "Presidente da República",
+      "nomeCurto": "presidente",
+      "sistema": "MAJORITARIO",
+      "circunscricao": "NACIONAL",
+      "escalaEleitorado": 1,
+      "comparecimentoBase": 0.79,
+      "totalCandidatos": {
+        "min": 6,
+        "max": 11
+      },
+      "competitivos": {
+        "min": 4,
+        "max": 7
+      },
+      "usaCandidatosReais": false,
+      "mesesDeCampanha": 6,
+      "tipoPleito": "GERAL",
+      "mandatoMeses": 48,
+      "subsidioMensal": 47000,
+      "elegibilidade": {
+        "idadeMin": 35,
+        "notoriedadeMin": 62,
+        "exigeMandato": [
+          "GOVERNADOR",
+          "SENADOR",
+          "DEPUTADO_FEDERAL"
+        ]
+      },
+      "cadeiras": 1
     }
   ]
 }

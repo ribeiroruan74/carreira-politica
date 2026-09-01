@@ -69,10 +69,17 @@ export function iniciarMandato(state, cargoId = 'VEREADOR') {
   const tipoPleito = cargo.tipoPleito || 'MUNICIPAL';
   const executivo = cargo.sistema === 'MAJORITARIO';
   // o mandato vai até a próxima eleição do mesmo tipo (data fixa)
-  const mesFim = Math.max(state.tempo.mes + 36, fimDoMandato(state, tipoPleito));
+  // Senador cumpre 8 anos (dois ciclos); os demais vão até a próxima eleição do tipo.
+  const mesFim = cargo.mandatoMeses && cargo.mandatoMeses > 60
+    ? state.tempo.mes + cargo.mandatoMeses
+    : Math.max(state.tempo.mes + 36, fimDoMandato(state, tipoPleito));
   // verba de gabinete escala com o porte do cargo
-  const verba = Math.round(staffDef.verbaMensalBase
-    * (cargo.circunscricao === 'ESTADO' ? 2.4 : executivo ? 4 : 1));
+  const verbaMult = cargo.circunscricao === 'NACIONAL' ? 9
+    : cargoId === 'GOVERNADOR' ? 7
+      : cargoId === 'SENADOR' ? 3.2
+        : cargo.circunscricao === 'ESTADO' ? 2.4
+          : executivo ? 4 : 1;
+  const verba = Math.round(staffDef.verbaMensalBase * verbaMult);
   state.mandato = {
     mesInicio: state.tempo.mes,
     mesFim,

@@ -1,0 +1,71 @@
+{
+  "$comment": "Prioridade 4 — ações do Presidente da República (executivo federal). Escala nacional: medida provisória/programa, montar base no Congresso, crise nacional, agenda internacional, pacote regional, pronunciamento em rede nacional.",
+  "acoes": [
+    {
+      "id": "programa_nacional",
+      "categoria": "MANDATO",
+      "titulo": "Lançar um programa nacional",
+      "desc": "Transferência de renda, habitação, crédito, saúde. O tipo de coisa que decide reeleição.",
+      "custo": { "tempo": 3, "energia": 14 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "impactoGeral": [2.5, 5], "reputacao": { "aprovacao": [1, 4] }, "ecoMidiatico": [3, 8], "atributoPeso": "organizacao" },
+      "peso": 1.5,
+      "variantes": [
+        { "titulo": "Novo programa de transferência de renda" },
+        { "titulo": "Programa nacional de habitação" },
+        { "titulo": "Pacote de crédito e emprego" },
+        { "titulo": "Plano nacional de saúde" }
+      ]
+    },
+    {
+      "id": "montar_base_congresso",
+      "categoria": "POLITICA",
+      "titulo": "Montar base no Congresso",
+      "desc": "Distribuir ministérios, negociar cargos, contar votos. Governabilidade se compra todo dia.",
+      "custo": { "tempo": 2, "energia": 10 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "apoioPartido": [3, 7], "cultivarPolitico": [2, 6], "alvoPolitico": true, "atributoPeso": "negociacao" },
+      "peso": 1.3
+    },
+    {
+      "id": "gerir_crise_nacional",
+      "categoria": "MANDATO",
+      "titulo": "Gerir uma crise nacional",
+      "desc": "Câmbio disparando, desastre, escândalo de ministro. O país inteiro assistindo sua reação.",
+      "custo": { "tempo": 2, "energia": 12 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "conterCascata": true, "reputacao": { "notoriedade": [1, 3] }, "atributoPeso": "lideranca" },
+      "peso": 1.7
+    },
+    {
+      "id": "agenda_internacional",
+      "categoria": "VIAGENS",
+      "titulo": "Agenda internacional",
+      "desc": "Cúpula, visita de Estado, acordo comercial. Foto com líderes rende em casa — às vezes.",
+      "custo": { "tempo": 3, "energia": 12 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "viagem": "nacional", "reputacao": { "notoriedade": [2, 4], "rejeicao": [0, 2] }, "ecoMidiatico": [3, 8], "atributoPeso": "carisma" },
+      "peso": 0.9
+    },
+    {
+      "id": "pacote_regional_federal",
+      "categoria": "COMUNIDADE",
+      "titulo": "Levar um pacote para uma região",
+      "desc": "Transposição, porto, ferrovia, universidade federal. Anúncio no palanque, no meio do povo.",
+      "custo": { "tempo": 2, "energia": 11, "dinheiroPessoal": 0 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "territorioBairroAlvo": { "presenca": [4, 9], "penetracao": [2, 5] }, "satisfacaoTema": "empreendedorismo", "ecoMidiatico": [2, 6], "atributoPeso": "organizacao" },
+      "peso": 1.1
+    },
+    {
+      "id": "pronunciamento_nacional",
+      "categoria": "MIDIA",
+      "titulo": "Pronunciamento em rede nacional",
+      "desc": "Cadeia de rádio e TV. Toda emissora, todo lar. Uma frase errada vira a semana inteira.",
+      "custo": { "tempo": 1, "energia": 9 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "reputacao": { "notoriedade": [1, 3], "aprovacao": [-2, 4], "rejeicao": [0, 3] }, "ecoMidiatico": [5, 12], "atributoPeso": "oratoria" },
+      "peso": 0.85
+    }
+  ]
+}

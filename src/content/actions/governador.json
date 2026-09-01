@@ -1,0 +1,71 @@
+{
+  "$comment": "Prioridade 4 — ações do Governador (executivo estadual). Escala de estado: pacotes regionais, articulação com a Assembleia, verba da União, crise estadual, rodar o interior.",
+  "acoes": [
+    {
+      "id": "pacote_estadual",
+      "categoria": "MANDATO",
+      "titulo": "Pacote de investimento no estado",
+      "desc": "Estradas, hospitais regionais, escola técnica no interior. Anúncio com secretários e prefeitos.",
+      "custo": { "tempo": 3, "energia": 12 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "satisfacaoTema": "mobilidade", "impactoGeral": [1.5, 3.5], "ecoMidiatico": [2, 6], "reputacao": { "aprovacao": [1, 3] }, "atributoPeso": "organizacao" },
+      "peso": 1.4,
+      "variantes": [
+        { "titulo": "Pacote de saúde para o interior" },
+        { "titulo": "Programa estadual de estradas" },
+        { "titulo": "Rede de escolas técnicas no estado" },
+        { "titulo": "Plano estadual de segurança" }
+      ]
+    },
+    {
+      "id": "articular_assembleia",
+      "categoria": "POLITICA",
+      "titulo": "Articular a Assembleia Legislativa",
+      "desc": "Negociar o orçamento e os projetos do governo com as bancadas estaduais.",
+      "custo": { "tempo": 2, "energia": 9 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "apoioPartido": [2, 5], "relacionamentosNovos": 1, "atributoPeso": "negociacao" },
+      "peso": 1.1
+    },
+    {
+      "id": "recurso_uniao_estado",
+      "categoria": "MANDATO",
+      "titulo": "Buscar recursos na União",
+      "desc": "Agenda em Brasília com ministros e a bancada federal do estado. Convênio, repasse, obra.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 3000 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "viagem": "brasilia", "gabineteBonus": [40000, 120000], "reputacao": { "notoriedade": [1, 3] }, "atributoPeso": "negociacao" },
+      "peso": 1
+    },
+    {
+      "id": "gerir_crise_estadual",
+      "categoria": "MANDATO",
+      "titulo": "Gerir uma crise estadual",
+      "desc": "Seca, greve da polícia, colapso num hospital regional. Sala de situação, decisão rápida.",
+      "custo": { "tempo": 2, "energia": 11 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "conterCascata": true, "reputacao": { "notoriedade": [1, 3] }, "atributoPeso": "lideranca" },
+      "peso": 1.6
+    },
+    {
+      "id": "rodar_interior",
+      "categoria": "COMUNIDADE",
+      "titulo": "Rodar o interior do estado",
+      "desc": "Semana no sertão e no agreste: inauguração, comício de trabalho, reunião com lideranças locais.",
+      "custo": { "tempo": 3, "energia": 14, "dinheiroPessoal": 2500 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "territorioBairroAlvo": { "presenca": [4, 9], "penetracao": [2, 5] }, "relacionamentosNovos": 2, "reputacao": { "notoriedade": [1, 3] }, "atributoPeso": "carisma" },
+      "peso": 1.2
+    },
+    {
+      "id": "pronunciamento_estadual",
+      "categoria": "MIDIA",
+      "titulo": "Pronunciamento em cadeia estadual",
+      "desc": "Rede estadual de rádio e TV. Prestação de contas ou anúncio grande. Todo mundo assistindo.",
+      "custo": { "tempo": 1, "energia": 8 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "reputacao": { "notoriedade": [1, 4], "aprovacao": [-1, 3], "rejeicao": [0, 2] }, "ecoMidiatico": [3, 8], "atributoPeso": "oratoria" },
+      "peso": 0.8
+    }
+  ]
+}
