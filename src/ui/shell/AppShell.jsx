@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
-import { abasVisiveis, abasDaSecao, secaoDaAba, SECOES } from './tabsConfig';
+import { abasVisiveis, abasDaSecao, secaoDaAba, secaoInfo, SECOES } from './tabsConfig';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
-import SubNav from './SubNav';
+import SectionHub from './SectionHub';
 import CriarPersonagem from '../tabs/CriarPersonagem';
 import ModalHost from './ModalHost';
 import DicaTutorial from '../components/DicaTutorial';
@@ -13,42 +13,57 @@ export default function AppShell() {
   const estado = useGame((g) => g.estado);
   const hidratado = useGame((g) => g._hidratado);
   const [secao, setSecao] = useState('inicio');
-  // aba escolhida por seção (lembra a última visitada em cada uma)
-  const [abaPorSecao, setAbaPorSecao] = useState({});
-
-  const abas = estado ? abasVisiveis(estado) : [];
-  const daSecao = estado ? abasDaSecao(estado, secao) : [];
-  const abaAtual = abaPorSecao[secao] && daSecao.some((t) => t.id === abaPorSecao[secao])
-    ? abaPorSecao[secao]
-    : daSecao[0]?.id;
+  const [aba, setAba] = useState(null); // sub-página aberta dentro da seção (null = hub)
 
   const feed = useMemo(() => (estado ? acontecendoAgora(estado) : []), [estado]);
 
   if (!hidratado) return <div className="carregando">Carregando…</div>;
   if (!estado) return <CriarPersonagem />;
 
-  const Ativa = (abas.find((t) => t.id === abaAtual) || abas[0]).comp;
+  const abas = abasVisiveis(estado);
+  const daSecao = abasDaSecao(estado, secao);
+  const info = secaoInfo(secao);
+
+  // Início → dashboard direto. Seção com 1 sub-página → ela direto. Senão → hub/sub-página.
+  let conteudoAba = aba && daSecao.some((t) => t.id === aba) ? aba : null;
+  const mostraHub = secao !== 'inicio' && daSecao.length > 1 && !conteudoAba;
+  if (secao === 'inicio') conteudoAba = 'dashboard';
+  else if (daSecao.length === 1) conteudoAba = daSecao[0].id;
+
+  const abaMeta = abas.find((t) => t.id === conteudoAba);
+  const Ativa = abaMeta?.comp;
 
   function irParaAba(abaId) {
     const sec = secaoDaAba(abaId);
     setSecao(sec);
-    setAbaPorSecao((m) => ({ ...m, [sec]: abaId }));
+    setAba(abaId);
   }
   function trocarSecao(secId) {
     setSecao(secId);
+    setAba(null); // volta pro hub da seção
   }
 
   const alertas = { inicio: feed.filter((f) => f.urgente).length };
 
   return (
     <div className="app">
-      <TopBar feed={feed} irPara={irParaAba} />
+      <TopBar />
       <main className="app-main">
-        <DicaTutorial aba={abaAtual} />
-        <SubNav abas={daSecao} ativa={abaAtual} onTrocar={(id) => setAbaPorSecao((m) => ({ ...m, [secao]: id }))} />
-        <div key={abaAtual} className="page-fade">
-          <Ativa irPara={irParaAba} feed={feed} />
-        </div>
+        {mostraHub ? (
+          <div key={`hub-${secao}`} className="page-fade">
+            <SectionHub titulo={info?.titulo || ''} abas={daSecao} onAbrir={setAba} />
+          </div>
+        ) : (
+          <div key={conteudoAba} className="page-fade">
+            {conteudoAba !== 'dashboard' && daSecao.length > 1 && (
+              <button className="backbar" onClick={() => setAba(null)}>
+                <span aria-hidden="true">‹</span> {info?.titulo || 'voltar'}
+              </button>
+            )}
+            <DicaTutorial aba={conteudoAba} />
+            {Ativa && <Ativa irPara={irParaAba} feed={feed} />}
+          </div>
+        )}
       </main>
       <BottomNav secao={secao} onTrocar={trocarSecao} alertas={alertas} />
       <ModalHost irPara={irParaAba} />
@@ -56,5 +71,4 @@ export default function AppShell() {
   );
 }
 
-// (mantém SECOES exportado disponível para outros módulos que já importam daqui)
 export { SECOES };
