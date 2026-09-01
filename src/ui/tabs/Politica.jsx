@@ -144,10 +144,11 @@ export default function Politica() {
       if (filtro === 'ALIADOS') return x.relacaoJogador >= 40;
       if (filtro === 'ADVERSARIOS') return x.relacaoJogador <= -20;
       if (filtro === 'LIDERANCAS') return x.lider || x.influencia >= 65;
-      return true;
+      if (filtro === 'NACIONAIS') return x.real;
+      return !x.real; // "Todos" = cena local; figuras nacionais têm filtro próprio
     })
     .sort((a, b) => b.influencia - a.influencia)
-    .slice(0, 40);
+    .slice(0, 45);
 
   if (!p) {
     return (
@@ -250,10 +251,10 @@ export default function Politica() {
         <p className="small faint" style={{ marginTop: 8 }}>Aliados dão eco na imprensa, caixa e território no início da campanha — proporcional à influência.</p>
       </Card>
 
-      <Card title="Cenário político do Recife" aside={`${politicos.length} atores`}>
+      <Card title="Cenário político" aside={`${politicos.length} atores`}>
         <p className="small dim" style={{ marginBottom: 8 }}>Clique num nome para conversar, telefonar, tentar aliança, pedir apoio ou acompanhar a relação.</p>
         <div className="chips" style={{ marginBottom: 10 }}>
-          {[['TODOS', 'Todos'], ['MEU_PARTIDO', 'Meu partido'], ['LIDERANCAS', 'Lideranças'], ['ALIADOS', 'Próximos a mim'], ['ADVERSARIOS', 'Adversários']].map(([id, nome]) => (
+          {[['TODOS', 'Recife'], ['NACIONAIS', 'Nacionais'], ['MEU_PARTIDO', 'Meu partido'], ['LIDERANCAS', 'Lideranças'], ['ALIADOS', 'Próximos a mim'], ['ADVERSARIOS', 'Adversários']].map(([id, nome]) => (
             <button key={id} className={`btn sm ${filtro === id ? '' : 'ghost'}`} onClick={() => setFiltro(id)}>{nome}</button>
           ))}
         </div>

@@ -90,7 +90,7 @@ export function inicializarMundo(state) {
     const membros = Object.values(politicos).filter((x) => x.partidoId === p.id);
     const lideres = membros.filter((m) => m.lider).map((m) => m.id);
     // presidente do diretório municipal: dirigente/liderança da sigla, NUNCA o prefeito
-    const candidatosPres = membros.filter((m) => m.cargo !== 'PREFEITO'
+    const candidatosPres = membros.filter((m) => m.cargo !== 'PREFEITO' && !m.real
       && (m.cargo === 'LIDERANCA' || m.lider || m.cargo === 'VEREADOR'));
     const presidente = candidatosPres.length
       ? rng.weighted(candidatosPres, (m) => m.influencia + (m.cargo === 'LIDERANCA' ? 20 : 0))
@@ -115,7 +115,18 @@ export function inicializarMundo(state) {
 }
 
 function garantirInit(state) {
-  if (!state.mundo.inicializado) inicializarMundo(state);
+  if (!state.mundo.inicializado) { inicializarMundo(state); return; }
+  // Item 5 — saves antigos: adiciona figuras da semente que ainda não estão no mundo
+  const rng = streamRng(state.meta.seed, 'seedadd', state.tempo.mes);
+  const bairros = bairrosDaCidade(state.personagem.cidade);
+  for (const s of polDef.semente) {
+    if (state.mundo.politicos[s.id]) continue;
+    state.mundo.politicos[s.id] = {
+      ...s, atributos: {}, baseBairros: baseBairros(rng, 4, bairros),
+      relacaoJogador: 0, ultimoContatoMes: -99, aliados: [], ecoMidiatico: 0,
+      caixa: rng.int(50000, 400000), ativo: true, gerado: false,
+    };
+  }
 }
 
 // --- ações dos NPCs ---
@@ -135,6 +146,13 @@ function alvoAtaque(pol, todos, state, rng) {
 }
 
 function agirPolitico(pol, state, rng, noticias, mes) {
+  // Item 5 — figuras públicas reais: o motor não gera ataques/alianças/trocas de
+  // partido autônomos em nome delas (só o jogador inicia interações). Mantém só
+  // a presença neutra na imprensa.
+  if (pol.real) {
+    if (rng.chance(0.10)) pol.notoriedade = Math.min(99, pol.notoriedade + rng.range([0, 1]));
+    return;
+  }
   const est = ESTILOS[pol.estilo] || ESTILOS.tecnico;
   const roll = rng.float();
   const todos = Object.values(state.mundo.politicos);
@@ -248,7 +266,7 @@ export function worldTick(s) {
 
   // troca de partido rara
   for (const pol of lista) {
-    if (pol.cargo !== 'PREFEITO' && rng.chance(0.006)) {
+    if (pol.cargo !== 'PREFEITO' && !pol.real && rng.chance(0.006)) {
       const novo = rng.pick(PARTIDO_IDS.filter((x) => x !== pol.partidoId));
       noticias.push({ mes, tipo: 'PARTIDO', destaque: pol.influencia > 55, atores: [pol.id],
         texto: `${pol.nome} deixou o ${pol.partidoId} e se filiou ao ${novo}.` });

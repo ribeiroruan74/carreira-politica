@@ -54,7 +54,7 @@ export default function FichaPolitico({ polId, onClose }) {
             <h2 style={{ margin: '2px 0 4px' }}>{pol.nome}</h2>
             <p className="small dim">
               <span className="pill" style={{ borderColor: corPartido(pol.partidoId), color: corPartido(pol.partidoId) }}>{pol.partidoId}</span>
-              {' '}{nomePartido(pol.partidoId)} · {eixoLabel(pol.ideologiaEixo)}
+              {' '}{pol.partidoReal || nomePartido(pol.partidoId)} · {eixoLabel(pol.ideologiaEixo)}
             </p>
           </div>
           <button className="btn sm ghost" onClick={onClose}>fechar</button>

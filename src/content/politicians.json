@@ -19,7 +19,26 @@
     { "id": "np_joao_campos", "nome": "João Campos", "cargo": "PREFEITO", "partidoId": "PSB", "influencia": 92, "notoriedade": 88, "rejeicao": 24, "ideologiaEixo": -25, "estilo": "articulador", "objetivo": "reeleicao", "lider": true },
     { "id": "np_lider_pt", "nome": "Liderança do PT na Câmara", "cargo": "VEREADOR", "partidoId": "PT", "influencia": 70, "notoriedade": 55, "rejeicao": 30, "ideologiaEixo": -60, "estilo": "combativo", "objetivo": "pauta", "lider": true },
     { "id": "np_lider_pl", "nome": "Liderança do PL na Câmara", "cargo": "VEREADOR", "partidoId": "PL", "influencia": 68, "notoriedade": 58, "rejeicao": 38, "ideologiaEixo": 65, "estilo": "combativo", "objetivo": "subir", "lider": true },
-    { "id": "np_presidente_camara", "nome": "Presidente da Câmara", "cargo": "VEREADOR", "partidoId": "PSD", "influencia": 78, "notoriedade": 50, "rejeicao": 22, "ideologiaEixo": 15, "estilo": "articulador", "objetivo": "influencia", "lider": true }
+    { "id": "np_presidente_camara", "nome": "Presidente da Câmara", "cargo": "VEREADOR", "partidoId": "PSD", "influencia": 78, "notoriedade": 50, "rejeicao": 22, "ideologiaEixo": 15, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+
+    { "id": "np_lula", "nome": "Luiz Inácio Lula da Silva", "real": true, "cargo": "PRESIDENTE", "partidoId": "PT", "influencia": 98, "notoriedade": 99, "rejeicao": 42, "ideologiaEixo": -55, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+    { "id": "np_alckmin", "nome": "Geraldo Alckmin", "real": true, "cargo": "VICE-PRESIDENTE", "partidoId": "PSB", "influencia": 82, "notoriedade": 84, "rejeicao": 30, "ideologiaEixo": -10, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+    { "id": "np_motta", "nome": "Hugo Motta", "real": true, "cargo": "DEPUTADO FEDERAL", "partidoId": "REPUBLICANOS", "influencia": 88, "notoriedade": 70, "rejeicao": 22, "ideologiaEixo": 20, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+    { "id": "np_alcolumbre", "nome": "Davi Alcolumbre", "real": true, "partidoReal": "União Brasil", "cargo": "SENADOR", "partidoId": "MDB", "influencia": 87, "notoriedade": 66, "rejeicao": 24, "ideologiaEixo": 15, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+    { "id": "np_tarcisio", "nome": "Tarcísio de Freitas", "real": true, "cargo": "GOVERNADOR", "partidoId": "REPUBLICANOS", "influencia": 86, "notoriedade": 88, "rejeicao": 34, "ideologiaEixo": 45, "estilo": "midiatico", "objetivo": "subir", "lider": true },
+    { "id": "np_ratinho", "nome": "Ratinho Jr.", "real": true, "cargo": "GOVERNADOR", "partidoId": "PSD", "influencia": 78, "notoriedade": 74, "rejeicao": 26, "ideologiaEixo": 30, "estilo": "articulador", "objetivo": "subir", "lider": true },
+    { "id": "np_zema", "nome": "Romeu Zema", "real": true, "cargo": "GOVERNADOR", "partidoId": "NOVO", "influencia": 74, "notoriedade": 72, "rejeicao": 36, "ideologiaEixo": 60, "estilo": "combativo", "objetivo": "subir", "lider": true },
+    { "id": "np_caiado", "nome": "Ronaldo Caiado", "real": true, "partidoReal": "União Brasil", "cargo": "GOVERNADOR", "partidoId": "PSD", "influencia": 75, "notoriedade": 70, "rejeicao": 32, "ideologiaEixo": 55, "estilo": "combativo", "objetivo": "subir", "lider": true },
+    { "id": "np_jeronimo", "nome": "Jerônimo Rodrigues", "real": true, "cargo": "GOVERNADOR", "partidoId": "PT", "influencia": 70, "notoriedade": 58, "rejeicao": 30, "ideologiaEixo": -45, "estilo": "cabo_eleitoral", "objetivo": "reeleicao", "lider": true },
+    { "id": "np_raquel_lyra", "nome": "Raquel Lyra", "real": true, "partidoReal": "PSDB", "cargo": "GOVERNADOR", "partidoId": "PSD", "influencia": 80, "notoriedade": 76, "rejeicao": 36, "ideologiaEixo": 10, "estilo": "articulador", "objetivo": "reeleicao", "lider": true },
+    { "id": "np_humberto_costa", "nome": "Humberto Costa", "real": true, "cargo": "SENADOR", "partidoId": "PT", "influencia": 72, "notoriedade": 60, "rejeicao": 32, "ideologiaEixo": -50, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+    { "id": "np_teresa_leitao", "nome": "Teresa Leitão", "real": true, "cargo": "SENADOR", "partidoId": "PT", "influencia": 64, "notoriedade": 48, "rejeicao": 28, "ideologiaEixo": -55, "estilo": "combativo", "objetivo": "pauta", "lider": true },
+    { "id": "np_dueire", "nome": "Fernando Dueire", "real": true, "cargo": "SENADOR", "partidoId": "MDB", "influencia": 62, "notoriedade": 40, "rejeicao": 22, "ideologiaEixo": 0, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+    { "id": "np_marilia_arraes", "nome": "Marília Arraes", "real": true, "cargo": "DEPUTADO FEDERAL", "partidoId": "SOLIDARIEDADE", "influencia": 66, "notoriedade": 64, "rejeicao": 34, "ideologiaEixo": -30, "estilo": "midiatico", "objetivo": "subir", "lider": true },
+    { "id": "np_eduardo_fonte", "nome": "Eduardo da Fonte", "real": true, "cargo": "DEPUTADO FEDERAL", "partidoId": "PP", "influencia": 68, "notoriedade": 46, "rejeicao": 26, "ideologiaEixo": 25, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+    { "id": "np_andre_de_paula", "nome": "André de Paula", "real": true, "cargo": "DEPUTADO FEDERAL", "partidoId": "PSD", "influencia": 64, "notoriedade": 38, "rejeicao": 20, "ideologiaEixo": 15, "estilo": "articulador", "objetivo": "influencia", "lider": true },
+    { "id": "np_tulio_gadelha", "nome": "Túlio Gadêlha", "real": true, "cargo": "DEPUTADO FEDERAL", "partidoId": "REDE", "influencia": 58, "notoriedade": 62, "rejeicao": 30, "ideologiaEixo": -35, "estilo": "midiatico", "objetivo": "pauta", "lider": true },
+    { "id": "np_gilson_machado", "nome": "Gilson Machado", "real": true, "cargo": "DEPUTADO FEDERAL", "partidoId": "PL", "influencia": 60, "notoriedade": 58, "rejeicao": 40, "ideologiaEixo": 55, "estilo": "combativo", "objetivo": "subir", "lider": true }
   ],
   "cargosGerados": [
     { "cargo": "VEREADOR", "qtd": 20, "influencia": [30, 65], "notoriedade": [15, 55] },
@@ -31,6 +50,11 @@
     "PREFEITO": "Prefeito",
     "VEREADOR": "Vereador(a)",
     "DEPUTADO ESTADUAL": "Deputado(a) estadual",
+    "DEPUTADO FEDERAL": "Deputado(a) federal",
+    "SENADOR": "Senador(a)",
+    "GOVERNADOR": "Governador(a)",
+    "VICE-PRESIDENTE": "Vice-presidente",
+    "PRESIDENTE": "Presidente da República",
     "SECRETARIO": "Secretário(a) municipal",
     "LIDERANCA": "Dirigente partidário"
   }

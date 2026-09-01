@@ -1,15 +1,23 @@
+import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { Card, Meter, Pill, PageHead } from '../components/primitives';
 import { formatBRL } from '../../engine/tick';
-import { progressoAtributo, TREINAVEIS } from '../../engine/attributes';
+import { progressoAtributo, TREINAVEIS_IDS, custoTreinoAtributo, treinarAtributoPago } from '../../engine/attributes';
 import attributesDef from '../../content/attributes.json';
 import professionsDef from '../../content/professions.json';
 
-const TREINAVEL_IDS = new Set(TREINAVEIS.map((t) => t.id));
+const TREINAVEL_IDS = TREINAVEIS_IDS;
 
 export default function Personagem() {
   const s = useGame((g) => g.estado);
+  const aplicar = useGame((g) => g.aplicar);
+  const [msg, setMsg] = useState(null);
   const { personagem: p, financas } = s;
+
+  function treinar(attrId) {
+    try { let r; aplicar((st) => { r = treinarAtributoPago(st, attrId); }); setMsg(r ? `+${r.ganho} — agora ${Math.round(r.valor)}` : null); }
+    catch (e) { setMsg(e.message); }
+  }
   const prof = professionsDef.profissoes.find((x) => x.id === p.profissaoId);
   const traço = attributesDef.traços.find((t) => t.id === p.traçoId);
   const atributos = attributesDef.atributos;
@@ -22,23 +30,33 @@ export default function Personagem() {
 
       <div className="grid cols-2">
         <Card title="Atributos de personalidade" aside="0–100">
-          <div className="grid cols-2" style={{ gap: 8 }}>
+          <div className="stack" style={{ gap: 10 }}>
             {atributos.map((a) => {
               const v = p.atributos[a.id] ?? 0;
               const treinavel = TREINAVEL_IDS.has(a.id);
               const prog = treinavel ? progressoAtributo(s, a.id) : null;
+              const c = treinavel && !prog?.noTeto ? custoTreinoAtributo(s, a.id) : null;
+              const podePagar = c && financas.pessoal >= c.dinheiro && s.tempo.energia >= c.energia;
               return (
                 <div key={a.id}>
                   <Meter label={a.nome} value={v} tone={v >= 60 ? 'ok' : v <= 35 ? 'bad' : 'warn'} />
-                  {prog && prog.noTeto && (
+                  {prog?.noTeto ? (
                     <div className="small faint" style={{ marginTop: 2 }}>no teto</div>
+                  ) : c && (
+                    <button className="btn sm ghost" style={{ marginTop: 4 }}
+                      disabled={!podePagar}
+                      title={`Treino particular: ${formatBRL(c.dinheiro)} + ${c.energia} energia`}
+                      onClick={() => treinar(a.id)}>
+                      Treinar · {formatBRL(c.dinheiro)} · {c.energia}⚡
+                    </button>
                   )}
                 </div>
               );
             })}
           </div>
+          {msg && <p className="small" style={{ marginTop: 8, color: 'var(--ink-soft)' }}>{msg}</p>}
           <p className="small faint" style={{ marginTop: 10 }}>
-            Atributos evoluem com curso, treino, mentoria (Agenda) e prática (discursos, entrevistas, debates, podcasts). Sobe mais devagar perto do teto.
+            Treino particular sobe o atributo na hora (dinheiro + energia). Também evolui com prática na Agenda (discursos, entrevistas, debates). Sobe mais devagar perto do teto.
           </p>
         </Card>
 
