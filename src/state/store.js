@@ -6,6 +6,7 @@ import { novoJogo } from './newGame';
 import { runMonth } from '../engine/runMonth';
 import { resolverEvento } from '../engine/events';
 import { montarEntrevista, responderPergunta } from '../engine/interview';
+import { responderMinigamePasso } from '../engine/minigame';
 
 // Persistência em IndexedDB (funciona offline, sem servidor).
 const idbStorage = {
@@ -33,6 +34,7 @@ export const useGame = create(
         if (!estado) return;
         if (estado.fimDeJogo) return; // Fase 30 — carreira encerrada
         if (estado.eventoPendente) return; // resolva a crise antes de avançar
+        if (estado.minigameAtivo && !estado.minigameAtivo.concluido) return; // termine o mini-jogo
         const work = structuredClone(estado);
         const { eventos } = runMonth(work);
         set({ estado: work, ultimoTick: eventos });
@@ -80,6 +82,21 @@ export const useGame = create(
         const estado = get().estado;
         if (!estado) return;
         set({ estado: { ...estado, entrevistaAtiva: null } });
+      },
+
+      responderMinigame(opcaoIdx) {
+        const estado = get().estado;
+        if (!estado?.minigameAtivo || estado.minigameAtivo.concluido) return null;
+        const novo = structuredClone(estado);
+        const r = responderMinigamePasso(novo, opcaoIdx);
+        set({ estado: novo });
+        return r;
+      },
+
+      fecharMinigame() {
+        const estado = get().estado;
+        if (!estado) return;
+        set({ estado: { ...estado, minigameAtivo: null } });
       },
 
       // aplica uma mutação parcial ao estado (usado pelos sistemas de ação)

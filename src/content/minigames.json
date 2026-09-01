@@ -1,0 +1,197 @@
+{
+  "$comment": "Mini-jogos: sequência curta de escolhas (argumento → tom → reação) antes do resultado. 'atributo' governa o preparo. Cada opção tem 'score' (-2..2). Convenção: opção 0 = escolha sólida, opção 1 = razoável, opção 2 = arriscada. O placar médio + atributo define o tier (otimo/bom/neutro/ruim) que multiplica os efeitos da ação e dá um empurrão de reputação.",
+  "tiers": {
+    "otimo": { "min": 1.6, "mult": 1.28, "rep": { "notoriedade": [1, 3] } },
+    "bom": { "min": 0.45, "mult": 1.0, "rep": {} },
+    "neutro": { "min": -0.4, "mult": 0.82, "rep": {} },
+    "ruim": { "min": -99, "mult": 0.55, "rep": { "rejeicao": [1, 4], "ecoMidiatico": [1, 4] } }
+  },
+  "modelos": {
+    "discurso": {
+      "titulo": "Discurso",
+      "atributo": "oratoria",
+      "passos": [
+        {
+          "prompt": "Qual o eixo do discurso?",
+          "opcoes": [
+            { "texto": "Dados, entregas e propostas concretas", "score": 1 },
+            { "texto": "História de vida e emoção", "score": 1 },
+            { "texto": "Confronto direto com a gestão / o adversário", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "E o tom?",
+          "opcoes": [
+            { "texto": "Firme, contido, de estadista", "score": 1 },
+            { "texto": "Próximo, coloquial, de conversa", "score": 1 },
+            { "texto": "Inflamado, para arrancar aplauso", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "Parte da plateia reage com ceticismo. Você:",
+          "opcoes": [
+            { "texto": "Reconhece a dúvida e responde com um número", "score": 2 },
+            { "texto": "Faz uma piada e segue em frente", "score": 0 },
+            { "texto": "Sobe o tom e insiste na tese", "score": -1 }
+          ]
+        }
+      ]
+    },
+    "debate": {
+      "titulo": "Debate",
+      "atributo": "improviso",
+      "passos": [
+        {
+          "prompt": "O adversário te ataca no primeiro bloco. Resposta:",
+          "opcoes": [
+            { "texto": "Rebater com fato e devolver a pergunta", "score": 2 },
+            { "texto": "Ignorar e apresentar sua proposta", "score": 1 },
+            { "texto": "Revidar no mesmo tom agressivo", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "Pergunta difícil da mediação sobre um ponto fraco seu:",
+          "opcoes": [
+            { "texto": "Assumir o limite e dizer o que fará diferente", "score": 1 },
+            { "texto": "Contextualizar e mostrar o outro lado", "score": 1 },
+            { "texto": "Negar o problema", "score": -2 }
+          ]
+        },
+        {
+          "prompt": "Considerações finais:",
+          "opcoes": [
+            { "texto": "Síntese das 3 prioridades, olhando para a câmera", "score": 2 },
+            { "texto": "Recado emocional para um público específico", "score": 1 },
+            { "texto": "Última alfinetada no adversário", "score": -1 }
+          ]
+        }
+      ]
+    },
+    "comicio": {
+      "titulo": "Ato de campanha",
+      "atributo": "carisma",
+      "passos": [
+        {
+          "prompt": "Como abrir o ato?",
+          "opcoes": [
+            { "texto": "Citar demandas concretas daquele território", "score": 2 },
+            { "texto": "Discurso genérico de campanha", "score": 0 },
+            { "texto": "Puxar palavra de ordem contra o adversário", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "A imprensa local está registrando. Você:",
+          "opcoes": [
+            { "texto": "Dá uma declaração curta e clara", "score": 1 },
+            { "texto": "Ignora e foca na militância", "score": 0 },
+            { "texto": "Improvisa uma promessa nova", "score": -1 }
+          ]
+        }
+      ]
+    },
+    "reuniao": {
+      "titulo": "Reunião",
+      "atributo": "negociacao",
+      "passos": [
+        {
+          "prompt": "Como conduzir a conversa?",
+          "opcoes": [
+            { "texto": "Ouvir primeiro, mapear o que cada um quer", "score": 2 },
+            { "texto": "Chegar com a proposta pronta", "score": 0 },
+            { "texto": "Impor sua posição de saída", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "Surge um impasse. Você:",
+          "opcoes": [
+            { "texto": "Oferece uma contrapartida específica", "score": 1 },
+            { "texto": "Adia a decisão para amadurecer", "score": 0 },
+            { "texto": "Bate o pé", "score": -1 }
+          ]
+        }
+      ]
+    },
+    "evento": {
+      "titulo": "Evento",
+      "atributo": "carisma",
+      "passos": [
+        {
+          "prompt": "Ao chegar, para onde você vai primeiro?",
+          "opcoes": [
+            { "texto": "Cumprimentar quem organizou e circular sem pressa", "score": 1 },
+            { "texto": "Direto para as fotos e a mesa principal", "score": 0 },
+            { "texto": "Fazer uma fala não combinada", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "Alguém puxa um assunto polêmico perto de câmeras:",
+          "opcoes": [
+            { "texto": "Chamar para conversar em outro momento", "score": 2 },
+            { "texto": "Desconversar com elegância e mudar de tema", "score": 1 },
+            { "texto": "Dar uma opinião firme ali mesmo", "score": -1 }
+          ]
+        }
+      ]
+    },
+    "negociacao": {
+      "titulo": "Negociação política",
+      "atributo": "negociacao",
+      "passos": [
+        {
+          "prompt": "Abertura da conversa:",
+          "opcoes": [
+            { "texto": "Mostrar o que você tem a oferecer em troca", "score": 1 },
+            { "texto": "Apelar para afinidade e projeto comum", "score": 1 },
+            { "texto": "Lembrar de um favor antigo", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "O outro lado pede mais do que você quer dar:",
+          "opcoes": [
+            { "texto": "Oferecer parte agora e o resto condicionado", "score": 2 },
+            { "texto": "Recuar e procurar outro caminho", "score": 0 },
+            { "texto": "Aceitar para fechar logo", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "Fechamento:",
+          "opcoes": [
+            { "texto": "Combinar por escrito o que cada um faz", "score": 2 },
+            { "texto": "Aperto de mão e confiança", "score": 0 },
+            { "texto": "Deixar pontas soltas para depois", "score": -1 }
+          ]
+        }
+      ]
+    },
+    "projeto": {
+      "titulo": "Negociação do projeto",
+      "atributo": "negociacao",
+      "passos": [
+        {
+          "prompt": "Por qual bancada começar?",
+          "opcoes": [
+            { "texto": "A indecisa — onde o voto ainda está em jogo", "score": 2 },
+            { "texto": "A mais próxima ideologicamente — garantir a base", "score": 1 },
+            { "texto": "A oposição — tentar um acordo amplo", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "Um líder pede uma emenda que descaracteriza o projeto:",
+          "opcoes": [
+            { "texto": "Aceitar uma versão suave da emenda", "score": 1 },
+            { "texto": "Recusar e manter o texto", "score": 0 },
+            { "texto": "Aceitar tudo para ter o voto", "score": -1 }
+          ]
+        },
+        {
+          "prompt": "Véspera da votação:",
+          "opcoes": [
+            { "texto": "Rodar gabinete por gabinete confirmando voto", "score": 2 },
+            { "texto": "Confiar no que já foi combinado", "score": 0 },
+            { "texto": "Levar à votação e torcer", "score": -1 }
+          ]
+        }
+      ]
+    }
+  }
+}

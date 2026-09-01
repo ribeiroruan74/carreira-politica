@@ -2,6 +2,7 @@ import { useGame } from '../../state/store';
 import TickEventos from './TickEventos';
 import CriseModal from './CriseModal';
 import EntrevistaModal from './EntrevistaModal';
+import MinigameModal from './MinigameModal';
 import ResultadoEleicao from '../tabs/ResultadoEleicao';
 import BiografiaFinal from './BiografiaFinal';
 
@@ -15,12 +16,14 @@ export default function ModalHost({ irPara }) {
   const fimDeJogo = useGame((g) => !!g.estado?.fimDeJogo);
   const apurando = useGame((g) => g.estado?.eleicao?.status === 'APURADO');
   const naEntrevista = useGame((g) => !!g.estado?.entrevistaAtiva);
+  const noMinigame = useGame((g) => !!g.estado?.minigameAtivo);
   const temCrise = useGame((g) => !!g.estado?.eventoPendente);
   const temResumo = useGame((g) => (g.ultimoTick || []).some((e) => e.tipo !== 'INFO' && e.tipo !== 'MES'));
 
   if (fimDeJogo) return <BiografiaFinal />;
   if (apurando) return <ResultadoEleicao irPara={irPara} />;
   if (naEntrevista) return <EntrevistaModal />;
+  if (noMinigame) return <MinigameModal />;
   if (temCrise) return <CriseModal />;
   if (temResumo) return <TickEventos />;
   return null;

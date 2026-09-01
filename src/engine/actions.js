@@ -26,6 +26,7 @@ import { impactoDeTema, impactoGeral, cortejarGrupo, GRUPOS_LISTA } from './elec
 import { gravarPodcast } from './podcasts';
 import { cultivarInfluenciador, colaborarInfluenciador } from './influencers';
 import { ganharXp } from './attributes';
+import { MINIGAME_DE_ACAO, montarMinigame } from './minigame';
 
 const FASES = ['VIDA', 'VIDA_PUBLICA', 'PARTIDO', 'CANDIDATO', 'MANDATO'];
 const TODAS = [
@@ -564,10 +565,12 @@ export function registrarEfeito(chave, handler, { antesDe } = {}) {
 export function aplicarAcao(state, acaoId, opts = {}) {
   const acao = acaoPorId(acaoId);
   if (!acao) throw new Error('Ação inexistente.');
-  if (!elegivel(acao, state)) throw new Error('Ação indisponível agora.');
-  if ((acao.custo.dinheiroPessoal || 0) > state.financas.pessoal) throw new Error('Dinheiro pessoal insuficiente.');
-  if ((acao.custo.campanhaGasto || 0) > state.financas.campanha) throw new Error('Caixa de campanha insuficiente.');
-  if ((acao.custo.gabineteGasto || 0) > state.financas.gabinete) throw new Error('Verba de gabinete insuficiente.');
+  if (!opts._minigameFeito) {
+    if (!elegivel(acao, state)) throw new Error('Ação indisponível agora.');
+    if ((acao.custo.dinheiroPessoal || 0) > state.financas.pessoal) throw new Error('Dinheiro pessoal insuficiente.');
+    if ((acao.custo.campanhaGasto || 0) > state.financas.campanha) throw new Error('Caixa de campanha insuficiente.');
+    if ((acao.custo.gabineteGasto || 0) > state.financas.gabinete) throw new Error('Verba de gabinete insuficiente.');
+  }
 
   const ef = acao.efeitos || {};
   const alvoPolId = ef.cultivarPoliticoFixo || opts.politicoId;
@@ -581,18 +584,31 @@ export function aplicarAcao(state, acaoId, opts = {}) {
   if (ef.trocarEmprego && !opts.empregoId) throw new Error('Escolha uma vaga.');
 
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  const mult = bonusAtributo(state, ef.atributoPeso);
+  const mult = bonusAtributo(state, ef.atributoPeso) * (opts._tierMult || 1);
   const mes = state.tempo.mes;
   const resumo = [];
 
-  // custos — Item 1: energia é o recurso único; custo.energia dos JSONs não é mais usado
-  state.tempo.energia = Math.max(0, state.tempo.energia - (acao.custo.tempo || 0));
-  state.financas.pessoal -= acao.custo.dinheiroPessoal || 0;
-  if (acao.custo.campanhaGasto) {
-    state.financas.campanha -= acao.custo.campanhaGasto;
-    if (acao.custo.campanhaGasto < 0) resumo.push(`caixa de campanha +${brl(-acao.custo.campanhaGasto)}`);
+  // custos — Item 1: energia é o recurso único; custo.energia dos JSONs não é mais usado.
+  // Na 2ª passada (pós mini-jogo) os custos já foram cobrados.
+  if (!opts._minigameFeito) {
+    state.tempo.energia = Math.max(0, state.tempo.energia - (acao.custo.tempo || 0));
+    state.financas.pessoal -= acao.custo.dinheiroPessoal || 0;
+    if (acao.custo.campanhaGasto) {
+      state.financas.campanha -= acao.custo.campanhaGasto;
+      if (acao.custo.campanhaGasto < 0) resumo.push(`caixa de campanha +${brl(-acao.custo.campanhaGasto)}`);
+    }
+    if (acao.custo.gabineteGasto) state.financas.gabinete -= acao.custo.gabineteGasto;
   }
-  if (acao.custo.gabineteGasto) state.financas.gabinete -= acao.custo.gabineteGasto;
+
+  // Item 3 — ações importantes viram mini-jogo: cobra o custo, abre o mini-jogo e
+  // resolve os efeitos depois, escalados pelo desempenho.
+  if (!opts._minigameFeito && MINIGAME_DE_ACAO[acaoId]) {
+    state.meta.rngState = rng.state;
+    (state.meta.acoesRecentes ||= []).unshift({ id: acaoId, mes });
+    state.meta.acoesRecentes = state.meta.acoesRecentes.slice(0, 10);
+    state.minigameAtivo = montarMinigame(state, MINIGAME_DE_ACAO[acaoId], { acaoId, opts });
+    return { minigame: true };
+  }
 
   // P3 — cada chave de `efeitos` tem um handler registrado. Adicionar um efeito
   // novo = adicionar uma entrada em EFEITOS, sem tocar neste loop.

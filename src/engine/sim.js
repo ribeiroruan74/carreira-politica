@@ -6,6 +6,7 @@ import { novoJogo } from '../state/newGame.js';
 import { runMonth } from './runMonth';
 import { resolverEvento } from './events';
 import { aplicarAcao, acoesDisponiveis } from './actions';
+import { responderMinigamePasso } from './minigame';
 import { objetivoDaFase, aplicarObjetivo } from './career';
 import { protocolarProjeto, negociarVotosProjeto, contratarAssessor, candidatosAssessor } from './mandate';
 import { janelaCandidatura } from './calendar';
@@ -22,7 +23,16 @@ function avancarMes(s) {
 function aplicar(state, fn) {
   // clona antes de mutar: se a ação lançar no meio, o estado fica intacto
   const s = structuredClone(state);
-  try { fn(s); return s; } catch { return state; }
+  try {
+    fn(s);
+    // Item 3 — resolve mini-jogo automaticamente (jogador-IA escolhe a opção "sólida")
+    let guard = 0;
+    while (s.minigameAtivo && !s.minigameAtivo.concluido && guard++ < 8) {
+      responderMinigamePasso(s, 1); // opção "razoável" — representa o jogador médio
+    }
+    if (s.minigameAtivo?.concluido) s.minigameAtivo = null;
+    return s;
+  } catch { return state; }
 }
 
 // --- estratégia do jogador-IA ---

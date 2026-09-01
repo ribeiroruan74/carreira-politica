@@ -9,6 +9,7 @@ import committeesDef from '../content/committees.json';
 import neighborhoods from '../content/neighborhoods/recife.json';
 import partiesDef from '../content/parties.json';
 import pressDef from '../content/press.json';
+import { montarMinigame } from './minigame';
 
 const pressJornalistas = pressDef.jornalistas;
 
@@ -365,12 +366,12 @@ export function proporProjeto(state, proposta, rng) {
   state.log.unshift({ mes: state.tempo.mes, tipo: 'MANDATO', texto: `Você protocolou: "${proposta.titulo}" (apoio inicial estimado ${proposta.apoio}%).` });
 }
 
-export function negociarVotos(state, projetoId, rng) {
+export function negociarVotos(state, projetoId, rng, mult = 1) {
   const pj = state.mandato.projetos.find((p) => p.id === projetoId);
   if (!pj || pj.status !== 'TRAMITANDO') throw new Error('Projeto não está em tramitação.');
   const skill = forcaGabinete(state, 'negociacao_votos');
   const nego = (state.personagem.atributos.negociacao - 50) / 120;
-  const ganho = clamp((rng.range([6, 15]) * skill) + nego * 10, 2, 28);
+  const ganho = clamp(((rng.range([6, 15]) * skill) + nego * 10) * mult, 1, 32);
   pj.apoio = clamp(pj.apoio + ganho, 0, 98);
   pj.custoPolitico += 1;
   // custa capital: leve queda de relação com quem discorda
@@ -735,11 +736,18 @@ export function protocolarProjeto(state, { tema, tipo, bairroId }) {
 
 export function negociarVotosProjeto(state, projetoId) {
   if (state.tempo.energia < 2) throw new Error('Sem energia suficiente este mês (custa 2).');
-  const rng = createRng(state.meta.seed, state.meta.rngState);
+  const pj = state.mandato?.projetos?.find((p) => p.id === projetoId);
+  if (!pj || pj.status !== 'TRAMITANDO') throw new Error('Projeto não está em tramitação.');
   state.tempo.energia -= 2;
-  const g = negociarVotos(state, projetoId, rng);
-  state.meta.rngState = rng.state;
+  // Item 3 — a negociação vira mini-jogo; o resultado escala o ganho de apoio.
+  state.minigameAtivo = montarMinigame(state, 'projeto', { projetoId });
+}
+
+// aplicado por finalizarMinigame — resolve a negociação com o multiplicador do desempenho
+export function resolverNegociacaoProjeto(state, projetoId, mult, rng) {
+  const g = negociarVotos(state, projetoId, rng, mult);
   state.log.unshift({ mes: state.tempo.mes, tipo: 'MANDATO', texto: `Você negociou votos: apoio +${g}%.` });
+  return g;
 }
 
 // Fase 18/19 — ações institucionais (custo embutido)

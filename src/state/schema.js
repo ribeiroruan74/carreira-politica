@@ -125,6 +125,7 @@ export function emptyState() {
     eleicao: null, // preenchido na Etapa 2
     eventoPendente: null, // Etapa 5 — crise aguardando escolha do jogador (bloqueia o avanço do mês)
     entrevistaAtiva: null, // Fase 13 — { jornalistaId, veiculoNome, perguntas, idx, score, respostas }
+    minigameAtivo: null, // Item 3 — mini-jogo em andamento { tipo, passos, idx, score, origem }
     // Etapa 4 — mandato de vereador
     mandato: null, /* {
       mesInicio, mesFim, cargo,
@@ -215,6 +216,7 @@ const migracoes = {
   7: (s) => {
     s.mundo.investigacoes = s.mundo.investigacoes || [];
     s.entrevistaAtiva = s.entrevistaAtiva || null;
+    s.minigameAtivo = s.minigameAtivo || null;
     return s;
   },
   // v8 -> v9: Bloco D — eleitorado dinâmico, financiamento rastreado, cenário nacional, militância, vida pessoal
