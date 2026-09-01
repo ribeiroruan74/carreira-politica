@@ -7,7 +7,7 @@ import neighborhoods from '../content/neighborhoods/recife.json';
 
 const BAIRROS = neighborhoods.bairros;
 
-// meses de maior chuva no Recife (mai-ago)
+// meses de maior chuva no Recife (mai-ago). mes 1 = fevereiro.
 function mesChuvaBR(state) {
   const mesAno = (state.tempo.mes % 12);
   return mesAno >= 4 && mesAno <= 7;
@@ -26,6 +26,9 @@ function passaCondicoes(ev, state) {
   if (c.energiaMax != null && state.tempo.energia > c.energiaMax) return false;
   if (c.projetosAprovadosMin != null && (state.mandato?.indicadores.projetosAprovados || 0) < c.projetosAprovadosMin) return false;
   if (c.mesChuvaBR && !mesChuvaBR(state)) return false;
+  if (c.mesDoAnoIn && !c.mesDoAnoIn.includes(state.tempo.mes % 12)) return false;
+  if (c.cargoIn && !c.cargoIn.includes(p.cargoAtual)) return false;
+  if (c.rejeicaoMin != null && state.reputacao.rejeicao < c.rejeicaoMin) return false;
   for (const [k, v] of Object.entries(c.atributoMin || {})) if ((p.atributos[k] ?? 50) < v) return false;
   for (const [k, v] of Object.entries(c.atributoMax || {})) if ((p.atributos[k] ?? 50) > v) return false;
   return true;
