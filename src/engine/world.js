@@ -211,9 +211,21 @@ export function worldTick(s) {
     const pisoNoto = pol.cargo === 'PREFEITO' ? 80 : Math.round(pol.influencia / 3);
     if (pol.notoriedade > pisoNoto) pol.notoriedade = Math.max(pisoNoto, pol.notoriedade - 0.8);
     if (mes - (pol.ultimoContatoMes ?? -99) > 2) {
-      pol.relacaoJogador = pol.relacaoJogador > 0
-        ? Math.max(0, pol.relacaoJogador - 1)
-        : Math.min(0, pol.relacaoJogador + 0.5);
+      // Prioridade 5 — relações não dependem só de contato: convivência de partido
+      // e alinhamento ideológico puxam para uma linha de base (co-partidário aquece
+      // devagar sozinho; adversário ideológico esfria abaixo de zero).
+      const eixoJ = (partiesDef.partidos.find((x) => x.id === s.personagem.partidoId)?.eixo) ?? 0;
+      const dIdeo = Math.abs(eixoJ - (pol.ideologiaEixo ?? 0)); // 0..~160
+      const mesmoPartido = s.personagem.partidoId && pol.partidoId === s.personagem.partidoId;
+      let alvo = 0;
+      if (mesmoPartido) alvo = 22 - dIdeo / 12;
+      else if (dIdeo < 30) alvo = 8;
+      else if (dIdeo > 90) alvo = -6;
+      alvo = clamp(alvo, -12, 22);
+      const passo = pol.relacaoJogador < alvo ? 0.5 : pol.relacaoJogador > alvo ? -1 : 0;
+      if (passo) pol.relacaoJogador = passo > 0
+        ? Math.min(alvo, pol.relacaoJogador + passo)
+        : Math.max(alvo, pol.relacaoJogador + passo);
     }
     if (rng.chance(0.85)) agirPolitico(pol, s, rng, noticias, mes);
   }
@@ -360,6 +372,7 @@ const ACOES_RELACAO = {
   cafe: { nome: 'Tomar um café', tempo: 1, energia: 4, dinheiro: 60, base: 6, cat: 'contato' },
   conversar: { nome: 'Conversar', tempo: 1, energia: 4, dinheiro: 0, base: 6, cat: 'contato' },
   almoco: { nome: 'Almoçar', tempo: 2, energia: 7, dinheiro: 280, base: 11, cat: 'contato' },
+  jantar: { nome: 'Jantar reservado', tempo: 2, energia: 8, dinheiro: 650, base: 16, cat: 'contato' },
   reuniao: { nome: 'Reunião de trabalho', tempo: 2, energia: 9, dinheiro: 0, base: 11, cat: 'trabalho' },
   evento: { nome: 'Convidar para um evento', tempo: 2, energia: 7, dinheiro: 500, base: 9, noto: [1, 3], cat: 'publico' },
   elogiar: { nome: 'Elogiar publicamente', tempo: 1, energia: 3, dinheiro: 0, base: 7, noto: [0, 2], cat: 'publico', anuncio: 'elogio' },
@@ -376,11 +389,11 @@ export function acoesRelacaoInfo() { return ACOES_RELACAO; }
 // >1 = ele responde melhor a isso; <1 = friamente. Para `criticar` (base<0),
 // >1 significa que ele reage PIOR (relação despenca mais + tende a revidar).
 const REACAO_ESTILO = {
-  combativo: { criticar: 1.7, apoiar: 1.25, elogiar: 1.15, negociar: 0.75, parceria: 0.8 },
-  articulador: { negociar: 1.35, parceria: 1.35, pedir_apoio: 1.3, reuniao: 1.15, criticar: 0.7 },
-  tecnico: { reuniao: 1.3, negociar: 1.2, pedir_apoio: 1.1, evento: 0.75, elogiar: 0.85 },
-  midiatico: { elogiar: 1.45, evento: 1.35, apoiar: 1.2, criticar: 1.4, reuniao: 0.7, cafe: 0.8 },
-  cabo_eleitoral: { cafe: 1.35, almoco: 1.3, conversar: 1.2, telefonar: 1.15, negociar: 0.85 },
+  combativo: { criticar: 1.7, apoiar: 1.25, elogiar: 1.15, negociar: 0.75, parceria: 0.8, jantar: 1.1 },
+  articulador: { negociar: 1.35, parceria: 1.35, pedir_apoio: 1.3, reuniao: 1.15, criticar: 0.7, jantar: 1.3 },
+  tecnico: { reuniao: 1.3, negociar: 1.2, pedir_apoio: 1.1, evento: 0.75, elogiar: 0.85, jantar: 1.15 },
+  midiatico: { elogiar: 1.45, evento: 1.35, apoiar: 1.2, criticar: 1.4, reuniao: 0.7, cafe: 0.8, jantar: 0.9 },
+  cabo_eleitoral: { cafe: 1.35, almoco: 1.3, conversar: 1.2, telefonar: 1.15, negociar: 0.85, jantar: 1.25 },
 };
 function reacaoEstilo(p, tipo) {
   return (REACAO_ESTILO[p.estilo] || {})[tipo] ?? 1;
@@ -607,6 +620,31 @@ export function articularColigacao(state, partidoAlvoId) {
     return { ok: true, msg: `Acordo encaminhado: ${partidoAlvoId} deve coligar com o ${meu} na próxima eleição.` };
   }
   return { ok: false, msg: `${partidoAlvoId} não topou agora (chance era ~${Math.round(chance * 100)}%). Reforce sua posição e tente de novo.` };
+}
+
+// Prioridade 5 — propor coligação PELA ficha de um político influente da outra sigla:
+// se a relação com ele for boa e ele tiver peso, é a via mais direta.
+export function articularColigacaoVia(state, politicoId) {
+  const p = state.mundo.politicos[politicoId];
+  if (!p) return { ok: false, msg: 'Político não encontrado.' };
+  if (!state.personagem.partidoId) return { ok: false, msg: 'Você precisa estar filiado.' };
+  if (p.partidoId === state.personagem.partidoId) return { ok: false, msg: 'Ele já é do seu partido.' };
+  if ((p.relacaoJogador || 0) < 35) return { ok: false, msg: `Relação com ${p.nome} baixa demais (${Math.round(p.relacaoJogador)}/35) para ele bancar isso na sigla dele.` };
+  if (state.tempo.pontosRestantes < 2) return { ok: false, msg: 'Sem tempo (custa 2).' };
+  state.tempo.pontosRestantes -= 2;
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  const infl = (p.influencia || 50) / 100;
+  const chance = clamp(0.1 + (p.relacaoJogador - 35) / 90 + infl * 0.35 + (p.lider ? 0.15 : 0), 0.08, 0.85);
+  const ok = rng.chance(chance);
+  state.meta.rngState = rng.state;
+  const m = state.tempo.mes;
+  if (ok) {
+    state.mundo.coligacaoArticulada = { comPartido: p.partidoId, ateMes: m + 30 };
+    p.relacaoJogador = clamp(p.relacaoJogador + rng.int(2, 6), -100, 100);
+    state.mundo.noticias.unshift({ id: `nt_coligv_${m}`, mes: m, tipo: 'POLITICA', destaque: true, atores: [politicoId], texto: `${p.nome} (${p.partidoId}) acertou uma coligação com o partido de ${state.personagem.nome}.` });
+    return { ok: true, msg: `${p.nome} topou levar o ${p.partidoId} para a sua coligação.` };
+  }
+  return { ok: false, msg: `${p.nome} não conseguiu (ou não quis) fechar agora — ~${Math.round(chance * 100)}%. Continue cultivando.` };
 }
 
 // Etapa 5 — efeito mensal de manter um grupo político (chamado no worldTick).

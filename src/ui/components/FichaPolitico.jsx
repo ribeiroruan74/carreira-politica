@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { Pill, Meter } from './primitives';
 import { corPartido, nomePartido } from '../../engine/voteModel';
-import { acaoRelacao, acoesRelacaoInfo, tentarAlianca, romperAlianca, oferecerApoio, limiarAlianca, chanceAlianca } from '../../engine/world';
+import { acaoRelacao, acoesRelacaoInfo, tentarAlianca, romperAlianca, oferecerApoio, articularColigacaoVia, limiarAlianca, chanceAlianca } from '../../engine/world';
+import partiesDef from '../../content/parties.json';
 
 function eixoLabel(e) {
   if (e <= -50) return 'esquerda';
@@ -78,6 +79,14 @@ export default function FichaPolitico({ polId, onClose }) {
 
         {aliados.length > 0 && <p className="small dim" style={{ marginTop: 12 }}><strong>Alianças:</strong> {aliados.join(', ')}</p>}
         {typeof pol.aprovacao === 'number' && <p className="small dim" style={{ marginTop: 6 }}><strong>Aprovação (gestão):</strong> {Math.round(pol.aprovacao)}%</p>}
+        {(() => {
+          // Prioridade 5 — para onde a relação tende sozinha (partido + ideologia)
+          const eixoJ = (partiesDef.partidos.find((x) => x.id === s.personagem.partidoId)?.eixo) ?? 0;
+          const d = Math.abs(eixoJ - (pol.ideologiaEixo ?? 0));
+          const alvo = mesmoPartido ? Math.round(Math.max(-12, Math.min(22, 22 - d / 12))) : d < 30 ? 8 : d > 90 ? -6 : 0;
+          const rumo = alvo > rel + 2 ? 'esquenta' : alvo < rel - 2 ? 'esfria' : 'estável';
+          return <p className="small faint" style={{ marginTop: 6 }}>Sem contato, a relação {rumo} rumo a ~{alvo} ({mesmoPartido ? 'mesmo partido' : d < 30 ? 'ideologia próxima' : d > 90 ? 'campos opostos' : 'sem afinidade forte'}).</p>;
+        })()}
 
         <div style={{ marginTop: 14 }}>
           <div className="small faint mono" style={{ borderBottom: '1px solid var(--line)', paddingBottom: 3, marginBottom: 8 }}>INTERAGIR</div>
@@ -125,6 +134,14 @@ export default function FichaPolitico({ polId, onClose }) {
               <button className="btn sm ghost" style={{ color: 'var(--red)' }}
                 onClick={() => agir((st) => romperAlianca(st, polId))}>
                 Romper aliança
+              </button>
+            )}
+            {!mesmoPartido && s.personagem.partidoId && (pol.lider || pol.influencia >= 55) && (
+              <button className="btn sm ghost"
+                disabled={rel < 35 || semTempo(2)}
+                title={rel < 35 ? 'precisa de relação 35' : 'ele leva a sigla dele para a sua coligação'}
+                onClick={() => agir((st) => articularColigacaoVia(st, polId))}>
+                Propor coligação{rel >= 35 ? ' · 2t' : ''}
               </button>
             )}
           </div>
