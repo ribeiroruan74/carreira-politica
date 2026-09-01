@@ -1,7 +1,7 @@
-// Navegação em 2 níveis (rebuild visual):
-//  - 5 seções na barra inferior fixa (SECOES)
-//  - dentro de cada seção, sub-páginas (as abas de sempre) num seletor no topo da página
-// Uma aba só aparece quando `visivel` (se definido) retorna true.
+// Navegação em 2 níveis:
+//  - barra inferior fixa só de ícones (SECOES) — uma seção some se não tiver nenhuma sub-aba visível
+//  - dentro da seção, um hub de cards (as sub-abas). Seção com 1 sub-aba abre direto.
+// Uma sub-aba só aparece quando `visivel` (se definido) retorna true.
 
 import Dashboard from './Dashboard';
 import Personagem from '../tabs/Personagem';
@@ -25,42 +25,54 @@ import Historico from '../tabs/Historico';
 import Telefone from '../tabs/Telefone';
 import Config from '../tabs/Config';
 
-// `titulo` = rótulo no hub da seção; `resumo` = subtítulo do card
+const temMandato = (s) => !!s.mandato;
+const naoVida = (s) => s.personagem.fase !== 'VIDA';
+const comFama = (s) => s.reputacao.notoriedade >= 8 || naoVida(s);
+
+// `titulo` = título da sub-tela / rótulo no hub; `resumo` = subtítulo do card
 export const TABS = [
-  { id: 'dashboard', nome: 'Início', titulo: 'Início', ico: '🏠', comp: Dashboard, secao: 'inicio' },
+  { id: 'dashboard', titulo: 'Início', ico: '🏠', comp: Dashboard, secao: 'inicio' },
 
-  { id: 'agenda', nome: 'Agenda', titulo: 'Agenda do mês', resumo: 'Escolha onde investir seu tempo e energia', ico: '📅', comp: Agenda, secao: 'agenda' },
-  { id: 'eleicao', nome: 'Eleição', titulo: 'Campanha', resumo: 'Pesquisas, adversários e o relógio da eleição', ico: '🗳️', comp: Eleicao, secao: 'agenda', visivel: (s) => !!s.eleicao },
+  { id: 'agenda', titulo: 'Agenda do mês', resumo: 'Suas ações e compromissos', ico: '📅', comp: Agenda, secao: 'agenda' },
+  { id: 'eleicao', titulo: 'Campanha', resumo: 'Pesquisas, adversários e o relógio', ico: '🗳️', comp: Eleicao, secao: 'agenda', visivel: (s) => !!s.eleicao },
 
-  { id: 'mapa', nome: 'Recife', titulo: 'Recife', resumo: 'Mapa territorial, bairros e militância', ico: '🗺️', comp: Mapa, secao: 'politica' },
-  { id: 'mandato', nome: 'Câmara', titulo: 'Câmara & Projetos', resumo: 'Projetos de lei, comissões, base × oposição', ico: '🏛️', comp: Mandato, secao: 'politica', visivel: (s) => !!s.mandato },
-  { id: 'politica', nome: 'Partido', titulo: 'Partido & Alianças', resumo: 'Legenda, diretório, coligações e seu grupo', ico: '⚖️', comp: Politica, secao: 'politica', visivel: (s) => !!s.personagem.partidoId || s.personagem.fase !== 'VIDA' },
-  { id: 'pessoas', nome: 'Políticos', titulo: 'Políticos', resumo: 'Cenário político — converse, negocie, alie-se', ico: '👥', comp: Pessoas, secao: 'politica' },
-  { id: 'gabinete', nome: 'Gabinete', titulo: 'Gabinete', resumo: 'Chefe, assessores, delegações e prioridade', ico: '👔', comp: Gabinete, secao: 'politica', visivel: (s) => !!s.mandato },
+  { id: 'personagem', titulo: 'Perfil', resumo: 'Atributos, personalidade, trajetória', ico: '🧬', comp: Personagem, secao: 'personagem' },
+  { id: 'familia', titulo: 'Família & relações', resumo: 'Cônjuge, filhos, pais, bem-estar', ico: '👪', comp: Familia, secao: 'personagem' },
+  { id: 'estilo', titulo: 'Estilo de vida', resumo: 'Serviços mensais e energia', ico: '🛎️', comp: Estilo, secao: 'personagem' },
+  { id: 'conquistas', titulo: 'Conquistas', resumo: 'Marcos da carreira', ico: '🏆', comp: Conquistas, secao: 'personagem' },
+  { id: 'historico', titulo: 'Carreira & histórico', resumo: 'Linha do tempo e log', ico: '📜', comp: Historico, secao: 'personagem' },
+  { id: 'config', titulo: 'Ajustes', resumo: 'Tema, salvar/carregar, dicas', ico: '⚙️', comp: Config, secao: 'personagem' },
 
-  { id: 'inteligencia', nome: 'Central', titulo: 'Central de Inteligência', resumo: 'Pesquisar bairro/grupo/rival, temas, "o que propor?"', ico: '🧠', comp: Inteligencia, secao: 'inteligencia', visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
-  { id: 'pesquisas', nome: 'Pesquisas', titulo: 'Pesquisas & Opinião', resumo: 'Aprovação, notoriedade, intenção de voto, grupos', ico: '📊', comp: Pesquisas, secao: 'inteligencia' },
-  { id: 'imprensa', nome: 'Imprensa', titulo: 'Imprensa', resumo: 'Veículos, cobertura, entrevistas e o jornal', ico: '📰', comp: Imprensa, secao: 'inteligencia', visivel: (s) => s.reputacao.notoriedade >= 10 || s.personagem.fase !== 'VIDA' },
+  { id: 'pessoas', titulo: 'Políticos & rede', resumo: 'Cenário político — converse, negocie, alie-se', ico: '👥', comp: Pessoas, secao: 'politica' },
+  { id: 'politica', titulo: 'Partido & alianças', resumo: 'Legenda, diretório, coligações, seu grupo', ico: '⚖️', comp: Politica, secao: 'politica', visivel: (s) => !!s.personagem.partidoId || naoVida(s) },
 
-  { id: 'personagem', nome: 'Perfil', titulo: 'Personagem', resumo: 'Atributos, trajetória e imagem pública', ico: '👤', comp: Personagem, secao: 'perfil' },
-  { id: 'familia', nome: 'Família', titulo: 'Família', resumo: 'Cônjuge, filhos, pais e bem-estar', ico: '👪', comp: Familia, secao: 'perfil' },
-  { id: 'redes', nome: 'Redes', titulo: 'Redes sociais', resumo: 'Publicar, lives, caixa de perguntas, imagem', ico: '📷', comp: Instagram, secao: 'perfil' },
-  { id: 'telefone', nome: 'Contatos', titulo: 'Telefone', resumo: 'Ligar para mídia, famosos e políticos', ico: '📞', comp: Telefone, secao: 'perfil', visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
-  { id: 'financas', nome: 'Finanças', titulo: 'Finanças', resumo: 'Caixa, renda, gastos e financiadores', ico: '💰', comp: Financas, secao: 'perfil' },
-  { id: 'estilo', nome: 'Estilo de vida', titulo: 'Estilo de vida', resumo: 'Serviços mensais: motorista, chef, segurança, coach', ico: '🛎️', comp: Estilo, secao: 'perfil' },
-  { id: 'negocios', nome: 'Negócios', titulo: 'Patrimônio & Negócios', resumo: 'Empresas, instituições e investimentos', ico: '🏢', comp: Negocios, secao: 'perfil', visivel: (s) => s.personagem.fase !== 'VIDA' || s.personagem.patrimonio > 50000 },
-  { id: 'conquistas', nome: 'Conquistas', titulo: 'Conquistas', resumo: 'Marcos desbloqueados da sua carreira', ico: '🏆', comp: Conquistas, secao: 'perfil' },
-  { id: 'historico', nome: 'Carreira', titulo: 'Carreira & Histórico', resumo: 'Linha do tempo, mandatos e log', ico: '📜', comp: Historico, secao: 'perfil' },
-  { id: 'config', nome: 'Ajustes', titulo: 'Ajustes', resumo: 'Tema, salvar/carregar, dicas', ico: '⚙️', comp: Config, secao: 'perfil' },
+  { id: 'mandato', titulo: 'Câmara & projetos', resumo: 'Projetos, comissões, CPI, base × oposição', ico: '🏛️', comp: Mandato, secao: 'mandato', visivel: temMandato },
+  { id: 'gabinete', titulo: 'Gabinete', resumo: 'Chefe, assessores, delegações, prioridade', ico: '👔', comp: Gabinete, secao: 'mandato', visivel: temMandato },
+
+  { id: 'inteligencia', titulo: 'Central de inteligência', resumo: 'Pesquisar bairro/grupo/rival, "o que propor?"', ico: '🧠', comp: Inteligencia, secao: 'inteligencia', visivel: comFama },
+  { id: 'pesquisas', titulo: 'Pesquisas & opinião', resumo: 'Aprovação, fama, intenção de voto, grupos', ico: '📊', comp: Pesquisas, secao: 'inteligencia' },
+
+  { id: 'redes', titulo: 'Redes sociais', resumo: 'Publicar, lives, caixa de perguntas', ico: '📷', comp: Instagram, secao: 'midia' },
+  { id: 'imprensa', titulo: 'Imprensa', resumo: 'Veículos, cobertura, entrevistas, jornal', ico: '📰', comp: Imprensa, secao: 'midia', visivel: (s) => s.reputacao.notoriedade >= 10 || naoVida(s) },
+  { id: 'telefone', titulo: 'Contatos', resumo: 'Ligar para mídia, famosos, influenciadores e políticos', ico: '📞', comp: Telefone, secao: 'midia', visivel: comFama },
+
+  { id: 'financas', titulo: 'Finanças', resumo: 'Caixa, campanha, gastos, financiadores', ico: '💰', comp: Financas, secao: 'financas' },
+  { id: 'negocios', titulo: 'Patrimônio & negócios', resumo: 'Empresas, imóveis, carros, investimentos', ico: '🏢', comp: Negocios, secao: 'financas', visivel: (s) => naoVida(s) || s.personagem.patrimonio > 50000 },
+
+  { id: 'mapa', titulo: 'Recife', resumo: 'Mapa, bairros, problemas e militância', ico: '🗺️', comp: Mapa, secao: 'mundo' },
 ];
 
-// barra inferior fixa
+// barra inferior fixa — só ícones. `atalho` = sub-aba de destaque no hub.
 export const SECOES = [
-  { id: 'inicio', nome: 'Início', ico: '🏠', hub: false },
-  { id: 'agenda', nome: 'Agenda', ico: '📅', hub: false, titulo: 'Agenda' },
-  { id: 'politica', nome: 'Política', ico: '🏛️', hub: true, titulo: 'Política' },
-  { id: 'inteligencia', nome: 'Dados', ico: '📊', hub: true, titulo: 'Inteligência' },
-  { id: 'perfil', nome: 'Perfil', ico: '👤', hub: true, titulo: 'Perfil' },
+  { id: 'inicio', ico: '🏠', titulo: 'Início' },
+  { id: 'agenda', ico: '📅', titulo: 'Agenda' },
+  { id: 'personagem', ico: '👤', titulo: 'Personagem', atalho: { id: 'conquistas', rotulo: 'Conquistas', tone: 'gold' } },
+  { id: 'politica', ico: '🏛️', titulo: 'Política', atalho: { id: 'pessoas', rotulo: 'Cenário' } },
+  { id: 'mandato', ico: '📜', titulo: 'Mandato' },
+  { id: 'inteligencia', ico: '📊', titulo: 'Inteligência', atalho: { id: 'pesquisas', rotulo: 'Pesquisas' } },
+  { id: 'midia', ico: '📱', titulo: 'Mídia', atalho: { id: 'redes', rotulo: 'Redes' } },
+  { id: 'financas', ico: '💰', titulo: 'Finanças' },
+  { id: 'mundo', ico: '🌎', titulo: 'Mundo' },
 ];
 export const secaoInfo = (id) => SECOES.find((x) => x.id === id);
 
@@ -71,6 +83,11 @@ export function abasVisiveis(state) {
 // sub-páginas visíveis de uma seção
 export function abasDaSecao(state, secaoId) {
   return abasVisiveis(state).filter((t) => t.secao === secaoId);
+}
+
+// seções que têm ao menos uma sub-aba visível agora
+export function secoesVisiveis(state) {
+  return SECOES.filter((sec) => abasDaSecao(state, sec.id).length > 0);
 }
 
 export function secaoDaAba(abaId) {

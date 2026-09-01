@@ -121,11 +121,11 @@ button { font-family: inherit; }
   background: var(--paper);
 }
 .app-main {
-  padding: 14px 14px calc(96px + env(safe-area-inset-bottom));
+  padding: 14px 14px calc(84px + env(safe-area-inset-bottom));
 }
 @media (min-width: 800px) {
   .app { max-width: 720px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
-  .app-main { padding: 20px 22px calc(104px + env(safe-area-inset-bottom)); }
+  .app-main { padding: 20px 22px calc(92px + env(safe-area-inset-bottom)); }
 }
 
 .page-fade { animation: pageIn 0.22s ease; }
@@ -159,12 +159,12 @@ button { font-family: inherit; }
 .tb-chip-v { font-size: 11.5px; }
 @media (max-width: 340px) { .tb-chip[title="Tempo do mês"] { display: none; } }
 
-/* ---------- barra inferior fixa (grande, protagonista) ---------- */
+/* ---------- barra inferior fixa — só ícones, grande ---------- */
 .bottomnav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-  display: flex; justify-content: space-around; gap: 2px;
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
-  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  display: flex; justify-content: space-between; gap: 1px;
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--surface) 97%, transparent);
   backdrop-filter: saturate(1.5) blur(12px);
   border-top: 1px solid var(--line);
   box-shadow: 0 -6px 24px -14px rgba(0,0,0,0.35);
@@ -173,18 +173,22 @@ button { font-family: inherit; }
   .bottomnav { max-width: 720px; margin: 0 auto; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
 }
 .bn-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-  background: none; border: none; cursor: pointer; padding: 8px 2px 5px;
-  color: var(--ink-faint); border-radius: var(--r-md);
-  transition: color 0.15s ease, background 0.15s ease;
+  flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; padding: 10px 0;
+  border-radius: 14px;
+  transition: background 0.15s ease;
 }
-.bn-item .bn-ico { font-size: 25px; line-height: 1; position: relative; filter: grayscale(0.55) opacity(0.7); transition: filter 0.15s ease, transform 0.14s ease; }
-.bn-item .bn-lbl { font-size: 10.5px; font-weight: 700; letter-spacing: 0.01em; }
-.bn-item.on { color: var(--accent-ink); background: var(--accent-soft); }
-.bn-item.on .bn-ico { filter: none; transform: translateY(-2px) scale(1.12); }
-.bn-item:active .bn-ico { transform: scale(0.88); }
+.bn-item .bn-ico {
+  font-size: 27px; line-height: 1; position: relative;
+  filter: grayscale(0.6) opacity(0.6);
+  transition: filter 0.15s ease, transform 0.14s ease;
+}
+.bn-item.on { background: var(--accent-soft); }
+.bn-item.on .bn-ico { filter: none; transform: scale(1.18); }
+.bn-item:active .bn-ico { transform: scale(0.85); }
+@media (max-width: 400px) { .bn-item .bn-ico { font-size: 23px; } }
 .bn-dot {
-  position: absolute; top: -4px; right: -9px;
+  position: absolute; top: -5px; right: -10px;
   min-width: 16px; height: 16px; padding: 0 3px;
   background: var(--red); color: #fff; font-size: 9.5px; font-weight: 800;
   border-radius: 999px; display: flex; align-items: center; justify-content: center;
@@ -393,6 +397,9 @@ input, select, textarea {
 }
 .stile.good::before { background: var(--accent); }
 .stile.bad::before { background: var(--red); }
+.stile-btn { display: block; width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+.stile-btn:active { transform: scale(0.97); }
+.stile-btn:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
 .stile-top { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
 .stile-ico { font-size: 14px; }
 .stile-k { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }

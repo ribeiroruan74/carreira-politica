@@ -73,12 +73,13 @@ export function Sparkline({ data, width = 120, height = 32, marks }) {
   );
 }
 
-export function PageHead({ eyebrow, title, children }) {
+// Reorg de UI: o cabeçalho da tela mostra só o essencial (eyebrow + título).
+// As explicações (children) ficam ocultas — o jogador descobre os sistemas usando.
+export function PageHead({ eyebrow, title }) {
   return (
     <div className="page-head">
       {eyebrow && <p className="eyebrow">{eyebrow}</p>}
       <h2>{title}</h2>
-      {children && <p className="dim small" style={{ marginTop: 6 }}>{children}</p>}
     </div>
   );
 }

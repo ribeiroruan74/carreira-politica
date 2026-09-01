@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
-import { abasVisiveis, abasDaSecao, secaoDaAba, secaoInfo, SECOES } from './tabsConfig';
+import { abasVisiveis, abasDaSecao, secaoDaAba, secaoInfo, secoesVisiveis, SECOES } from './tabsConfig';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
 import SectionHub from './SectionHub';
@@ -21,43 +21,38 @@ export default function AppShell() {
   if (!estado) return <CriarPersonagem />;
 
   const abas = abasVisiveis(estado);
-  const daSecao = abasDaSecao(estado, secao);
-  const info = secaoInfo(secao);
+  const secoes = secoesVisiveis(estado);
+  const secaoAtiva = secoes.some((x) => x.id === secao) ? secao : 'inicio';
+  const daSecao = abasDaSecao(estado, secaoAtiva);
+  const info = secaoInfo(secaoAtiva);
 
   // Início → dashboard direto. Seção com 1 sub-página → ela direto. Senão → hub/sub-página.
   let conteudoAba = aba && daSecao.some((t) => t.id === aba) ? aba : null;
-  const mostraHub = secao !== 'inicio' && daSecao.length > 1 && !conteudoAba;
-  if (secao === 'inicio') conteudoAba = 'dashboard';
+  const mostraHub = secaoAtiva !== 'inicio' && daSecao.length > 1 && !conteudoAba;
+  if (secaoAtiva === 'inicio') conteudoAba = 'dashboard';
   else if (daSecao.length === 1) conteudoAba = daSecao[0].id;
 
   const abaMeta = abas.find((t) => t.id === conteudoAba);
   const Ativa = abaMeta?.comp;
 
   function irParaAba(abaId) {
-    const sec = secaoDaAba(abaId);
-    setSecao(sec);
+    setSecao(secaoDaAba(abaId));
     setAba(abaId);
   }
   function trocarSecao(secId) {
     setSecao(secId);
-    setAba(null); // volta pro hub da seção
+    setAba(null);
   }
 
   const alertas = { inicio: feed.filter((f) => f.urgente).length };
-
-  const ATALHOS = {
-    inteligencia: { id: 'pesquisas', rotulo: 'Pesquisas' },
-    perfil: { id: 'conquistas', rotulo: 'Conquistas', tone: 'gold' },
-    politica: { id: 'pessoas', rotulo: 'Cenário' },
-  };
-  const atalho = ATALHOS[secao] && daSecao.some((t) => t.id === ATALHOS[secao].id) ? ATALHOS[secao] : null;
+  const atalho = info?.atalho && daSecao.some((t) => t.id === info.atalho.id) ? info.atalho : null;
 
   return (
     <div className="app">
       <TopBar />
       <main className="app-main">
         {mostraHub ? (
-          <div key={`hub-${secao}`} className="page-fade">
+          <div key={`hub-${secaoAtiva}`} className="page-fade">
             <SectionHub titulo={info?.titulo || ''} abas={daSecao} onAbrir={setAba} atalho={atalho} />
           </div>
         ) : (
@@ -72,7 +67,7 @@ export default function AppShell() {
           </div>
         )}
       </main>
-      <BottomNav secao={secao} onTrocar={trocarSecao} alertas={alertas} />
+      <BottomNav secoes={secoes} secao={secaoAtiva} onTrocar={trocarSecao} alertas={alertas} />
       <ModalHost irPara={irParaAba} />
     </div>
   );

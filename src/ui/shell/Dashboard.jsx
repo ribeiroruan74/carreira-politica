@@ -34,13 +34,14 @@ function proximoPasso(s) {
   return '';
 }
 
-function StatTile({ ico, k, v, sub, tone }) {
+function StatTile({ ico, k, v, sub, tone, onClick }) {
+  const Tag = onClick ? 'button' : 'div';
   return (
-    <div className={`stile ${tone || ''}`}>
+    <Tag className={`stile ${tone || ''} ${onClick ? 'stile-btn' : ''}`} onClick={onClick}>
       <div className="stile-top"><span className="stile-ico">{ico}</span><span className="stile-k">{k}</span></div>
       <div className="stile-v mono">{v}</div>
       {sub && <div className="stile-sub">{sub}</div>}
-    </div>
+    </Tag>
   );
 }
 
@@ -48,11 +49,12 @@ export default function Dashboard({ irPara, feed = [] }) {
   const s = useGame((g) => g.estado);
   const avancarMes = useGame((g) => g.avancarMes);
   const { personagem: p, tempo, financas, reputacao, redes, mundo } = s;
-  const ano = tempo.anoInicial + Math.floor(tempo.mes / 12);
   const cargo = p.cargoAtual && p.cargoAtual !== 'NENHUM' ? cargoPorId(p.cargoAtual)?.nome : null;
   const pr = mundo.partidosRuntime?.[p.partidoId];
   const popular = pr ? Math.round(pr.popularidade) : Math.round(reputacao.notoriedade);
   const fama = relevanciaMidiatica(s);
+  const ultimaPesquisa = s.eleicao?.pesquisas?.[s.eleicao.pesquisas.length - 1];
+  const votoPct = ultimaPesquisa?.linhas?.find((l) => l.jogador)?.pct ?? null;
 
   return (
     <div className="stack dash">
@@ -69,14 +71,16 @@ export default function Dashboard({ irPara, feed = [] }) {
       </div>
 
       <div className="stile-grid">
-        <StatTile ico="💰" k="Dinheiro" v={fmtDin(financas.pessoal)} sub={`${fmtDin(financas.rendaMensal)}/mês`} />
-        <StatTile ico="👍" k="Aprovação" v={`${Math.round(reputacao.aprovacao)}%`} sub={`Rejeição ${Math.round(reputacao.rejeicao)}%`} tone={reputacao.aprovacao >= 50 ? 'good' : reputacao.rejeicao > 35 ? 'bad' : ''} />
-        <StatTile ico="⭐" k="Fama" v={`${fama}`} sub={`Notoriedade ${Math.round(reputacao.notoriedade)}`} />
-        <StatTile ico="📣" k="Seguidores" v={fmtCompact(redes.seguidores)} sub={`${redes.crescimentoMensal >= 0 ? '+' : ''}${fmtCompact(redes.crescimentoMensal)} no mês`} />
-        <StatTile ico="🏛️" k="Popularidade" v={`${popular}`} sub={pr ? 'do seu partido' : 'notoriedade'} />
-        <StatTile ico="🎖️" k="Influência" v={`${Math.round(p.atributos.influencia ?? 45)}`} sub={`${(p.grupoPolitico || []).length} aliado(s)`} />
-        <StatTile ico="⚡" k="Energia" v={`${tempo.energia}/${tempo.energiaMax}`} sub="ações no mês" tone={tempo.energia <= 3 ? 'bad' : ''} />
-        <StatTile ico="📅" k="Data" v={`${nomeMes(tempo.mes)}/${String(ano).slice(2)}`} sub={`mês ${tempo.mes}`} />
+        <StatTile ico="💰" k="Dinheiro" v={fmtDin(financas.pessoal)} sub={`${fmtDin(financas.rendaMensal)}/mês`} onClick={() => irPara('financas')} />
+        <StatTile ico="⚡" k="Energia" v={`${tempo.energia}/${tempo.energiaMax}`} sub="ações no mês" tone={tempo.energia <= 3 ? 'bad' : ''} onClick={() => irPara('agenda')} />
+        <StatTile ico="👍" k="Aprovação" v={`${Math.round(reputacao.aprovacao)}%`} sub={`Rejeição ${Math.round(reputacao.rejeicao)}%`} tone={reputacao.aprovacao >= 50 ? 'good' : reputacao.rejeicao > 35 ? 'bad' : ''} onClick={() => irPara('pesquisas')} />
+        {votoPct != null
+          ? <StatTile ico="🗳️" k="Intenção de voto" v={`${votoPct}%`} sub="na última pesquisa" onClick={() => irPara('eleicao')} />
+          : <StatTile ico="🏛️" k="Popularidade" v={`${popular}`} sub={pr ? 'do seu partido' : 'notoriedade'} onClick={() => irPara('pesquisas')} />}
+        <StatTile ico="⭐" k="Fama" v={`${fama}`} sub={`Notoriedade ${Math.round(reputacao.notoriedade)}`} onClick={() => irPara('pesquisas')} />
+        <StatTile ico="🔥" k="Repercussão" v={`${Math.round(reputacao.ecoMidiatico)}`} sub={reputacao.ecoMidiatico > 8 ? 'em alta' : reputacao.ecoMidiatico < -5 ? 'negativa' : 'estável'} tone={reputacao.ecoMidiatico < -5 ? 'bad' : ''} onClick={() => irPara('imprensa')} />
+        <StatTile ico="📣" k="Seguidores" v={fmtCompact(redes.seguidores)} sub={`${redes.crescimentoMensal >= 0 ? '+' : ''}${fmtCompact(redes.crescimentoMensal)} no mês`} onClick={() => irPara('redes')} />
+        <StatTile ico="🎖️" k="Influência" v={`${Math.round(p.atributos.influencia ?? 45)}`} sub={`${(p.grupoPolitico || []).length} aliado(s)`} onClick={() => irPara('pessoas')} />
       </div>
 
       <div className="card dash-next">
