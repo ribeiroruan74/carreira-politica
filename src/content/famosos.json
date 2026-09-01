@@ -1,5 +1,5 @@
 {
-  "$comment": "Item 10/19 — personagens públicos FICTÍCIOS para o universo do jogo (cantor, ator, atleta, apresentador, radialista, podcaster, personalidade). alcance 0-100 = tamanho da audiência; acessibilidade 0-100 = chance de atender/topar contato. 'eixo' -100..100 é uma inclinação leve de público, não posicionamento declarado. Efeito é alcance/notoriedade/repercussão — nunca voto direto.",
+  "$comment": "Item 10/19 — personagens públicos para o universo do jogo. Os fictícios (id fm_*) dão cor local ao Recife. Os marcados 'real: true' são personalidades públicas brasileiras descritas SÓ pelo trabalho público (tipo, gênero, tamanho de audiência) — 'eixo' 0, sem posicionamento político, sem fatos pessoais, sem acusações. alcance 0-100 = tamanho da audiência; acessibilidade 0-100 = chance de atender/topar contato. Efeito é alcance/notoriedade/repercussão — nunca voto direto.",
   "famosos": [
     { "id": "fm_dj_klev", "nome": "DJ Klev", "tipo": "cantor", "genero": "brega-funk", "alcance": 88, "acessibilidade": 45, "eixo": -10, "publico": ["jovens", "periferia", "informais"] },
     { "id": "fm_marina_sol", "nome": "Marina Sol", "tipo": "cantora", "genero": "MPB / forró", "alcance": 74, "acessibilidade": 55, "eixo": -25, "publico": ["classe_media", "estudantes_universitarios", "servidores"] },
@@ -12,6 +12,15 @@
     { "id": "fm_lelo_radio", "nome": "Lelo da Manhã", "tipo": "radialista", "genero": "rádio popular", "alcance": 69, "acessibilidade": 66, "eixo": 15, "publico": ["informais", "trabalhadores_formais", "idosos"] },
     { "id": "fm_bruna_pod", "nome": "Bruna Cast", "tipo": "podcaster", "genero": "podcast de cultura pop", "alcance": 60, "acessibilidade": 64, "eixo": -20, "publico": ["jovens", "estudantes_universitarios"] },
     { "id": "fm_seu_zé_pod", "nome": "Seu Zé Explica", "tipo": "podcaster", "genero": "podcast de história e cidade", "alcance": 47, "acessibilidade": 72, "eixo": -10, "publico": ["servidores", "estudantes_universitarios", "classe_media"] },
-    { "id": "fm_gil_influ", "nome": "Gil Maravilha", "tipo": "personalidade", "genero": "moda e lifestyle", "alcance": 76, "acessibilidade": 48, "eixo": 5, "publico": ["jovens", "classe_media", "informais"] }
+    { "id": "fm_gil_influ", "nome": "Gil Maravilha", "tipo": "personalidade", "genero": "moda e lifestyle", "alcance": 76, "acessibilidade": 48, "eixo": 5, "publico": ["jovens", "classe_media", "informais"] },
+
+    { "id": "fm_whindersson", "nome": "Whindersson Nunes", "real": true, "tipo": "comediante", "genero": "humor e shows", "alcance": 96, "acessibilidade": 30, "eixo": 0, "publico": ["jovens", "periferia", "informais", "trabalhadores_formais"] },
+    { "id": "fm_juliette", "nome": "Juliette", "real": true, "tipo": "cantora", "genero": "música e cultura nordestina", "alcance": 88, "acessibilidade": 38, "eixo": 0, "publico": ["jovens", "classe_media", "informais", "periferia"] },
+    { "id": "fm_safadao", "nome": "Wesley Safadão", "real": true, "tipo": "cantor", "genero": "forró / piseiro", "alcance": 90, "acessibilidade": 34, "eixo": 0, "publico": ["periferia", "informais", "trabalhadores_formais", "jovens"] },
+    { "id": "fm_gil_do_vigor", "nome": "Gil do Vigor", "real": true, "tipo": "personalidade", "genero": "economista e TV", "alcance": 78, "acessibilidade": 46, "eixo": 0, "publico": ["jovens", "estudantes_universitarios", "classe_media", "servidores"] },
+    { "id": "fm_priscila_senna", "nome": "Priscila Senna", "real": true, "tipo": "cantora", "genero": "brega / axé", "alcance": 70, "acessibilidade": 52, "eixo": 0, "publico": ["periferia", "informais", "jovens"] },
+    { "id": "fm_tirullipa", "nome": "Tirullipa", "real": true, "tipo": "comediante", "genero": "humor e shows", "alcance": 82, "acessibilidade": 40, "eixo": 0, "publico": ["jovens", "informais", "periferia", "classe_media"] },
+    { "id": "fm_ivete", "nome": "Ivete Sangalo", "real": true, "tipo": "cantora", "genero": "axé / pop", "alcance": 92, "acessibilidade": 32, "eixo": 0, "publico": ["classe_media", "trabalhadores_formais", "jovens", "idosos"] },
+    { "id": "fm_porchat", "nome": "Fábio Porchat", "real": true, "tipo": "comediante", "genero": "humor e teatro", "alcance": 80, "acessibilidade": 44, "eixo": 0, "publico": ["classe_media", "estudantes_universitarios", "servidores"] }
   ]
 }
