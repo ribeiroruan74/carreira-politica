@@ -1,6 +1,7 @@
 import { createRng, clamp } from './rng';
 import balance from '../content/balance.json';
 import { sincronizarRenda, horasEmprego } from './jobs';
+import { custoServicosMensal } from './lifestyle';
 
 const NIVEIS = balance.relacionamentos.niveis;
 const LIMIARES = balance.relacionamentos.limiaresConfianca;
@@ -42,7 +43,8 @@ export function runTick(s) {
   const custoPolitico = s.personagem.cargoAtual && s.personagem.cargoAtual !== 'NENHUM'
     ? { VEREADOR: 4500, DEPUTADO_ESTADUAL: 9000, DEPUTADO_FEDERAL: 12000, PREFEITO: 11000 }[s.personagem.cargoAtual] || 6000
     : 0;
-  const saldoMes = s.financas.rendaMensal - s.financas.custoVidaMensal - custoPolitico;
+  const custoServicos = custoServicosMensal(s); // Item 7 — assinaturas de estilo de vida
+  const saldoMes = s.financas.rendaMensal - s.financas.custoVidaMensal - custoPolitico - custoServicos;
   s.financas.pessoal += saldoMes;
   if (s.financas.pessoal < 0) {
     const rombo = -s.financas.pessoal;

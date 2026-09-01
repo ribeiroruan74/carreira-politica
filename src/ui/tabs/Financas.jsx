@@ -3,6 +3,7 @@ import { Card, Stat, PageHead } from '../components/primitives';
 import { formatBRL } from '../../engine/tick';
 import { doadoresResumo, exposicaoDoadores } from '../../engine/donors';
 import { resumoPatrimonio } from '../../engine/assets';
+import { custoServicosMensal } from '../../engine/lifestyle';
 
 const POLITICO = [
   { k: 'campanha', nome: 'Caixa de campanha', desc: 'Recursos de campanha, com regra própria. Ativado quando você for candidato.' },
@@ -24,9 +25,10 @@ export default function Financas({ irPara }) {
   const f = estado.financas;
   const p = estado.personagem;
   const rp = resumoPatrimonio(estado);
-  const saldoMes = f.rendaMensal - f.custoVidaMensal;
+  const saldoMes = f.rendaMensal + (rp.rendaPassivaEst || 0) - f.custoVidaMensal - (rp.manutencaoInst || 0) - custoServicosMensal(estado);
   const rendaPassiva = rp.rendaPassivaEst || 0;
   const despesasRec = rp.manutencaoInst || 0;
+  const custoEstilo = custoServicosMensal(estado);
   const liquido = (f.pessoal || 0) + (p.patrimonio || 0);
   const doadores = doadoresResumo(estado);
   const exposicao = exposicaoDoadores(estado);
@@ -50,6 +52,7 @@ export default function Financas({ irPara }) {
         {rendaPassiva > 0 && <Linha label="Renda passiva (empresas)" valor={`+${formatBRL(rendaPassiva)}`} cor="var(--accent)" />}
         <Linha label="Custo de vida" valor={`−${formatBRL(f.custoVidaMensal)}`} cor="var(--red)" />
         {despesasRec > 0 && <Linha label="Despesas recorrentes (instituições)" valor={`−${formatBRL(despesasRec)}`} cor="var(--red)" />}
+        {custoEstilo > 0 && <Linha label="Serviços de estilo de vida" valor={`−${formatBRL(custoEstilo)}`} cor="var(--red)" />}
         {saldoMes < 0 && <p className="small" style={{ color: 'var(--amber)', marginTop: 10 }}>Você gasta mais do que ganha. Sem uma renda melhor, o patrimônio vai encolhendo.</p>}
       </Card>
 

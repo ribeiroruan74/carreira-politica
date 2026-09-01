@@ -3,8 +3,9 @@ import { useGame } from '../../state/store';
 import { Card, PageHead, Pill, Meter, Stat } from '../components/primitives';
 import { formatBRL } from '../../engine/tick';
 import {
-  TIPOS_EMPRESA, TIPOS_INSTITUICAO, empresaDef, instituicaoDef, resumoPatrimonio,
+  TIPOS_EMPRESA, TIPOS_INSTITUICAO, TIPOS_BEM, empresaDef, instituicaoDef, bemDef, resumoPatrimonio,
   criarEmpresa, investirEmpresa, venderEmpresa, fundarInstituicao, ampliarInstituicao, fecharInstituicao,
+  comprarBem, venderBem,
   PERFIS_INVESTIMENTO, aportarInvestimento, resgatarInvestimento, definirPerfilInvestimento,
 } from '../../engine/assets';
 
@@ -15,6 +16,7 @@ export default function Negocios() {
   const [novoTipo, setNovoTipo] = useState(TIPOS_EMPRESA[0].id);
   const [instTipo, setInstTipo] = useState(TIPOS_INSTITUICAO[0].id);
   const [instNome, setInstNome] = useState('');
+  const [bemTipo, setBemTipo] = useState(TIPOS_BEM[0].id);
 
   const p = s.personagem;
   const emp = p.empresas || [];
@@ -42,6 +44,29 @@ export default function Negocios() {
       </div>
 
       {erro && <Card><p className="small" style={{ color: 'var(--red)', margin: 0 }}>{erro}</p></Card>}
+
+      <Card title="🏡 Bens pessoais" aside={r.nBens ? `${r.nBens} bem(ns) · ${formatBRL(r.valorBens)}` : null}>
+        <p className="small dim" style={{ marginBottom: 8 }}>
+          Imóveis valorizam devagar; veículos depreciam. Todos custam manutenção todo mês e entram no patrimônio declarado.
+        </p>
+        {(p.bens || []).map((b) => {
+          const d = bemDef(b.tipo);
+          return (
+            <div key={b.id} className="row" style={{ alignItems: 'baseline' }}>
+              <span className="grow"><span className="name">{b.nome}</span> <span className="small faint">· {d?.tipo} · manut. {formatBRL(d?.manutencaoMes || 0)}/mês</span></span>
+              <span className="num small">{formatBRL(b.valor)}</span>
+              <button className="btn sm ghost" style={{ color: 'var(--red)' }} onClick={() => agir((st) => venderBem(st, b.id))}>Vender</button>
+            </div>
+          );
+        })}
+        <div className="row" style={{ gap: 8, marginTop: 10 }}>
+          <select value={bemTipo} onChange={(e) => setBemTipo(e.target.value)} style={{ flex: 1, minWidth: 0 }}>
+            {TIPOS_BEM.map((t) => <option key={t.id} value={t.id}>{t.nome} — {formatBRL(t.preco)}</option>)}
+          </select>
+          <button className="btn sm" disabled={s.financas.pessoal < (bemDef(bemTipo)?.preco || 0)}
+            onClick={() => agir((st) => comprarBem(st, bemTipo))}>Comprar</button>
+        </div>
+      </Card>
 
       <Card title="📈 Investimentos financeiros" aside={`saldo ${formatBRL(inv.valor)}`}>
         <p className="small dim" style={{ marginBottom: 8 }}>

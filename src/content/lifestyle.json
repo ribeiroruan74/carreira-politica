@@ -1,0 +1,61 @@
+{
+  "$comment": "Item 7 — serviços de estilo de vida. Assinatura mensal paga do caixa pessoal. 'efeitos' aplicados todo mês: energiaMax (soma à energia máxima, teto global de +5 pelo conjunto), saudeMes, bemEstarMes, notoriedadeMes, riscoCriseReduz (0..1, teto 0.28). Cancelar é imediato e sem multa.",
+  "servicos": [
+    {
+      "id": "alimentacao", "nome": "Alimentação", "ico": "🍽️", "categoria": "Rotina",
+      "niveis": [
+        { "nome": "Marmita saudável na entrega", "custoMes": 1200, "efeitos": { "saudeMes": 0.4 } },
+        { "nome": "Personal chef", "custoMes": 3500, "efeitos": { "saudeMes": 0.8, "energiaMax": 1 } },
+        { "nome": "Chef + nutricionista", "custoMes": 7000, "efeitos": { "saudeMes": 1.2, "energiaMax": 2, "bemEstarMes": 0.4 } }
+      ]
+    },
+    {
+      "id": "transporte", "nome": "Transporte", "ico": "🚗", "categoria": "Rotina",
+      "niveis": [
+        { "nome": "App executivo mensal", "custoMes": 1500, "efeitos": { "energiaMax": 1 } },
+        { "nome": "Motorista particular", "custoMes": 5000, "efeitos": { "energiaMax": 2, "bemEstarMes": 0.3 } },
+        { "nome": "Motorista + carro blindado", "custoMes": 12000, "efeitos": { "energiaMax": 3, "bemEstarMes": 0.5 } }
+      ]
+    },
+    {
+      "id": "casa", "nome": "Gestão doméstica", "ico": "🏠", "categoria": "Rotina",
+      "niveis": [
+        { "nome": "Diarista 2x por semana", "custoMes": 1000, "efeitos": { "bemEstarMes": 0.4 } },
+        { "nome": "Secretária doméstica", "custoMes": 2500, "efeitos": { "energiaMax": 1, "bemEstarMes": 0.5 } },
+        { "nome": "Governanta + gestão completa", "custoMes": 6000, "efeitos": { "energiaMax": 2, "bemEstarMes": 0.8 } }
+      ]
+    },
+    {
+      "id": "saude", "nome": "Saúde e preparo físico", "ico": "💪", "categoria": "Bem-estar",
+      "niveis": [
+        { "nome": "Academia", "custoMes": 300, "efeitos": { "saudeMes": 0.5 } },
+        { "nome": "Personal trainer", "custoMes": 1800, "efeitos": { "saudeMes": 1.0, "energiaMax": 1 } },
+        { "nome": "Plano premium + check-ups", "custoMes": 4500, "efeitos": { "saudeMes": 1.5, "energiaMax": 1 } }
+      ]
+    },
+    {
+      "id": "bem_estar", "nome": "Terapia e coaching", "ico": "🧠", "categoria": "Bem-estar",
+      "niveis": [
+        { "nome": "Terapia quinzenal", "custoMes": 1200, "efeitos": { "bemEstarMes": 0.8 } },
+        { "nome": "Terapeuta + coach", "custoMes": 3500, "efeitos": { "bemEstarMes": 1.2, "energiaMax": 1 } },
+        { "nome": "Coach executivo + retiro mensal", "custoMes": 8000, "efeitos": { "bemEstarMes": 1.6, "energiaMax": 1, "saudeMes": 0.4 } }
+      ]
+    },
+    {
+      "id": "imagem", "nome": "Imagem e estilo", "ico": "👔", "categoria": "Exposição",
+      "niveis": [
+        { "nome": "Personal stylist", "custoMes": 1500, "efeitos": { "notoriedadeMes": 0.3 } },
+        { "nome": "Stylist + assessoria de imagem", "custoMes": 4000, "efeitos": { "notoriedadeMes": 0.6, "bemEstarMes": 0.2 } },
+        { "nome": "Equipe de imagem + concierge", "custoMes": 9000, "efeitos": { "notoriedadeMes": 1.0, "bemEstarMes": 0.4 } }
+      ]
+    },
+    {
+      "id": "seguranca", "nome": "Segurança pessoal", "ico": "🛡️", "categoria": "Exposição",
+      "niveis": [
+        { "nome": "Segurança pontual em eventos", "custoMes": 3000, "efeitos": { "riscoCriseReduz": 0.05 } },
+        { "nome": "Equipe de segurança fixa", "custoMes": 9000, "efeitos": { "riscoCriseReduz": 0.11, "bemEstarMes": 0.3 } },
+        { "nome": "Esquema completo de proteção", "custoMes": 20000, "efeitos": { "riscoCriseReduz": 0.18, "bemEstarMes": 0.5 } }
+      ]
+    }
+  ]
+}

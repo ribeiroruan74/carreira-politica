@@ -3,13 +3,17 @@ import { useGame } from '../../state/store';
 import { Card, PageHead, Sparkline, Stat } from '../components/primitives';
 import { formatBRL } from '../../engine/tick';
 import { corPartido } from '../../engine/voteModel';
+import { autofinanciarCampanha, limiteAutofinanciamento, autofinanciado } from '../../engine/donors';
 
 export default function Eleicao({ irPara }) {
   const s = useGame((g) => g.estado);
+  const aplicar = useGame((g) => g.aplicar);
   const avancarMes = useGame((g) => g.avancarMes);
   const el = s.eleicao;
   const [busca, setBusca] = useState('');
   const [verTodos, setVerTodos] = useState(false);
+  const [aporte, setAporte] = useState('');
+  const [msgApt, setMsgApt] = useState(null);
 
   if (!el) return null;
 
@@ -70,6 +74,31 @@ export default function Eleicao({ irPara }) {
         <Card><Stat k="Seus votos estimados" v={(hist[hist.length - 1] || 0).toLocaleString('pt-BR')} delta={hist.length > 1 ? (hist[hist.length - 1] - hist[hist.length - 2]) : 0} /></Card>
         <Card><Stat k="Caixa de campanha" v={formatBRL(s.financas.campanha)} sub={`aporte inicial ${formatBRL(el.aporteInicial)}`} /></Card>
       </div>
+
+      <Card title="Recursos próprios na campanha">
+        {(() => {
+          const teto = limiteAutofinanciamento(s);
+          const jah = autofinanciado(s);
+          const restante = Math.max(0, teto - jah);
+          return (
+            <>
+              <div className="row"><span className="grow small dim">Já aportado do seu bolso</span><span className="num">{formatBRL(jah)}</span></div>
+              <div className="row"><span className="grow small dim">Teto para este cargo</span><span className="num">{formatBRL(teto)}</span></div>
+              <div className="row" style={{ gap: 8, marginTop: 8 }}>
+                <input type="number" inputMode="numeric" placeholder="R$" value={aporte}
+                  onChange={(e) => setAporte(e.target.value)} style={{ flex: 1, minWidth: 0 }} />
+                <button className="btn sm" disabled={restante <= 0}
+                  onClick={() => {
+                    try { aplicar((st) => autofinanciarCampanha(st, Number(aporte))); setAporte(''); setMsgApt('Transferência feita.'); }
+                    catch (e) { setMsgApt(e.message); }
+                  }}>Transferir</button>
+              </div>
+              {msgApt && <p className="small" style={{ marginTop: 6, color: 'var(--ink-soft)' }}>{msgApt}</p>}
+              <p className="small faint" style={{ marginTop: 8 }}>Sai do caixa pessoal, entra na campanha e fica declarado. Recurso próprio não aumenta a exposição do financiamento.</p>
+            </>
+          );
+        })()}
+      </Card>
 
       {hist.length > 1 && (
         <Card title="Sua trajetória de votos">

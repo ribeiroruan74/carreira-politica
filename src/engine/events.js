@@ -3,6 +3,7 @@ import { semear, nomeBairro } from './cascade';
 import { registrarFato } from './worldMemory';
 import { resolverCobrancaDoador } from './donors';
 import crisesDef from '../content/crises.json';
+import { bonusServicos } from './lifestyle';
 import neighborhoods from '../content/neighborhoods/recife.json';
 
 const BAIRROS = neighborhoods.bairros;
@@ -48,9 +49,9 @@ export function sortearEvento(state) {
   });
   if (elegiveis.length === 0) return null;
 
-  // chance base de acontecer algo num mês
-  const chanceBase = state.personagem.fase === 'CANDIDATO' ? 0.55
-    : state.personagem.fase === 'MANDATO' ? 0.4 : 0.3;
+  // chance base de acontecer algo num mês (Item 7 — segurança pessoal reduz o risco)
+  const chanceBase = (state.personagem.fase === 'CANDIDATO' ? 0.55
+    : state.personagem.fase === 'MANDATO' ? 0.4 : 0.3) * (1 - bonusServicos(state).riscoCriseReduz);
   if (!rng.chance(chanceBase)) return null;
 
   const ev = rng.weighted(elegiveis, (e) => e.peso ?? 1);

@@ -35,6 +35,8 @@ export function emptyState() {
       partidoId: null,
       atributos: {},
       skills: {},
+      servicos: {}, // Item 7 — { servicoId: nivelIndex } assinaturas de estilo de vida
+      bens: [], // Item 8 — casas, carros e outros bens pessoais
       patrimonio: 0,
       historicoProfissional: [],
       historicoPolitico: [],

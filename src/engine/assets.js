@@ -11,8 +11,64 @@ import { registrarFato } from './worldMemory';
 
 export const TIPOS_EMPRESA = assetsDef.empresas;
 export const TIPOS_INSTITUICAO = assetsDef.instituicoes;
+export const TIPOS_BEM = assetsDef.bens || [];
 export const empresaDef = (id) => TIPOS_EMPRESA.find((e) => e.id === id) || null;
 export const instituicaoDef = (id) => TIPOS_INSTITUICAO.find((i) => i.id === id) || null;
+export const bemDef = (id) => TIPOS_BEM.find((b) => b.id === id) || null;
+
+// ---------- BENS PESSOAIS (Item 8) ----------
+export function comprarBem(state, tipoId) {
+  const def = bemDef(tipoId);
+  if (!def) throw new Error('Bem inválido.');
+  if ((state.financas.pessoal || 0) < def.preco) throw new Error('Caixa pessoal insuficiente (bens são pagos à vista).');
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  state.financas.pessoal -= def.preco;
+  (state.personagem.bens ||= []).push({
+    id: `bem_${state.tempo.mes}_${rng.int(100, 999)}`, tipo: tipoId,
+    nome: def.nome, valor: def.preco, mesCompra: state.tempo.mes,
+  });
+  state.meta.rngState = rng.state;
+  state.personagem.patrimonio += def.preco;
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'FINANCAS', texto: `Comprou: ${def.nome} (${brl(def.preco)}).` });
+  return { ok: true };
+}
+
+export function venderBem(state, id) {
+  const arr = state.personagem.bens || [];
+  const i = arr.findIndex((x) => x.id === id);
+  if (i < 0) throw new Error('Bem não encontrado.');
+  const b = arr[i];
+  const liquido = Math.round(b.valor * (bemDef(b.tipo)?.tipo === 'imovel' ? 0.95 : 0.9));
+  arr.splice(i, 1);
+  state.personagem.patrimonio = Math.max(0, state.personagem.patrimonio - b.valor);
+  state.financas.pessoal += liquido;
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'FINANCAS', texto: `Vendeu: ${b.nome} por ${brl(liquido)}.` });
+  return { ok: true, liquido };
+}
+
+export function custoManutencaoBens(state) {
+  return (state.personagem?.bens || []).reduce((s, b) => s + (bemDef(b.tipo)?.manutencaoMes || 0), 0);
+}
+export function valorBens(state) {
+  return (state.personagem?.bens || []).reduce((s, b) => s + b.valor, 0);
+}
+// tick mensal: valoriza/deprecia e aplica efeitos
+export function tickBens(state) {
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  for (const b of state.personagem.bens || []) {
+    const def = bemDef(b.tipo);
+    if (!def) continue;
+    const taxaMes = (def.valoriza || 0) / 12;
+    const antes = b.valor;
+    b.valor = Math.max(Math.round(def.preco * 0.1), Math.round(b.valor * (1 + taxaMes + rng.range([-0.004, 0.004]))));
+    state.personagem.patrimonio += b.valor - antes;
+    const v = (state.personagem.vida ||= {});
+    if (def.efeitoMes?.bemEstar) v.bemEstar = clamp((v.bemEstar ?? 60) + def.efeitoMes.bemEstar, 0, 100);
+    if (def.efeitoMes?.saude) v.saude = clamp((v.saude ?? 100) + def.efeitoMes.saude, 0, 100);
+    if (def.efeitoMes?.notoriedade) state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + def.efeitoMes.notoriedade, 0, 100);
+  }
+  state.meta.rngState = rng.state;
+}
 
 function pagar(state, valor) {
   if (state.financas.pessoal >= valor) { state.financas.pessoal -= valor; return; }
@@ -136,6 +192,14 @@ export function tickAssets(s) {
   const rng = streamRng(s.meta.seed, 'assets', s.tempo.mes);
   const clima = climaNacional(s) / 100; // -1..1
   const emMandato = !!s.mandato;
+
+  // Item 8 — bens pessoais: valoriza/deprecia + efeitos + manutenção
+  tickBens(s);
+  const manutBens = custoManutencaoBens(s);
+  if (manutBens > 0) {
+    if (s.financas.pessoal >= manutBens) s.financas.pessoal -= manutBens;
+    else { const falta = manutBens - s.financas.pessoal; s.financas.pessoal = 0; p.patrimonio = Math.max(0, p.patrimonio - falta); }
+  }
 
   // empresas: valor oscila, paga dividendo, pode quebrar
   for (const e of p.empresas || []) {
@@ -279,9 +343,12 @@ export function resumoPatrimonio(state) {
       const d = empresaDef(e.tipo);
       return s + (e.saude > 45 && d ? Math.round(e.valor * d.retornoMensal * 0.6 * (e.saude / 100)) : 0);
     }, 0),
-    manutencaoInst: inst.reduce((s, i) => s + (instituicaoDef(i.tipo)?.manutencao || 0) * i.nivel, 0),
+    manutencaoInst: inst.reduce((s, i) => s + (instituicaoDef(i.tipo)?.manutencao || 0) * i.nivel, 0)
+      + custoManutencaoBens(state),
     impactoSocial: Math.round(state.personagem.legado?.impactoSocial || 0),
     valorInvestido: state.personagem.investimentos?.valor || 0,
+    valorBens: valorBens(state),
+    nBens: (state.personagem.bens || []).length,
   };
 }
 

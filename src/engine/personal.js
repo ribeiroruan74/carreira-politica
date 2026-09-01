@@ -4,6 +4,7 @@
 // energia máxima.
 
 import { streamRng, clamp } from './rng';
+import { tickServicos, bonusServicos } from './lifestyle';
 
 const HOBBIES = ['corrida', 'música', 'culinária', 'leitura', 'futebol', 'jardinagem', 'pesca', 'cinema'];
 
@@ -29,6 +30,9 @@ export function tickVidaPessoal(s) {
   const v = (s.personagem.vida ||= estadoVida(s));
   const rng = streamRng(s.meta.seed, 'vida', s.tempo.mes);
 
+  // Item 7 — serviços de estilo de vida: aplica saúde/bem-estar/notoriedade do mês
+  tickServicos(s);
+
   // saúde segue o ritmo: mês puxado (pouca energia sobrando) desgasta; folga recompõe.
   // o peso da idade só entra a partir dos ~58 e cresce devagar.
   const folga = s.tempo.energia / Math.max(1, s.tempo.energiaMax);
@@ -37,8 +41,10 @@ export function tickVidaPessoal(s) {
   v.saude = clamp(v.saude + dSaude, 8, 100);
 
   // Item 1 — energia máxima (recurso único do mês) modulada por saúde e bem-estar.
+  // Item 7 — serviços de estilo de vida somam por cima (teto +5).
   const bem = v.bemEstar ?? 60;
-  s.tempo.energiaMax = Math.round(clamp(10 + v.saude / 18 + (bem - 55) / 28, 9, 16));
+  const baseMax = clamp(10 + v.saude / 18 + (bem - 55) / 28, 9, 16);
+  s.tempo.energiaMax = Math.round(clamp(baseMax + bonusServicos(s).energiaMax, 9, 21));
 
   if (v.saude <= 30 && s.tempo.mes % 2 === 0) {
     eventos.push({ tipo: 'ALERTA', texto: `Sua saúde está no limite (${Math.round(v.saude)}). Considere desacelerar.` });

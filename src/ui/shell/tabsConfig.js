@@ -18,6 +18,7 @@ import Imprensa from '../tabs/Imprensa';
 import Inteligencia from '../tabs/Inteligencia';
 import Pesquisas from '../tabs/Pesquisas';
 import Financas from '../tabs/Financas';
+import Estilo from '../tabs/Estilo';
 import Negocios from '../tabs/Negocios';
 import Conquistas from '../tabs/Conquistas';
 import Historico from '../tabs/Historico';
@@ -46,6 +47,7 @@ export const TABS = [
   { id: 'redes', nome: 'Redes', titulo: 'Redes sociais', resumo: 'Publicar, lives, caixa de perguntas, imagem', ico: '📷', comp: Instagram, secao: 'perfil' },
   { id: 'telefone', nome: 'Contatos', titulo: 'Telefone', resumo: 'Ligar para mídia, famosos e políticos', ico: '📞', comp: Telefone, secao: 'perfil', visivel: (s) => s.reputacao.notoriedade >= 8 || s.personagem.fase !== 'VIDA' },
   { id: 'financas', nome: 'Finanças', titulo: 'Finanças', resumo: 'Caixa, renda, gastos e financiadores', ico: '💰', comp: Financas, secao: 'perfil' },
+  { id: 'estilo', nome: 'Estilo de vida', titulo: 'Estilo de vida', resumo: 'Serviços mensais: motorista, chef, segurança, coach', ico: '🛎️', comp: Estilo, secao: 'perfil' },
   { id: 'negocios', nome: 'Negócios', titulo: 'Patrimônio & Negócios', resumo: 'Empresas, instituições e investimentos', ico: '🏢', comp: Negocios, secao: 'perfil', visivel: (s) => s.personagem.fase !== 'VIDA' || s.personagem.patrimonio > 50000 },
   { id: 'conquistas', nome: 'Conquistas', titulo: 'Conquistas', resumo: 'Marcos desbloqueados da sua carreira', ico: '🏆', comp: Conquistas, secao: 'perfil' },
   { id: 'historico', nome: 'Carreira', titulo: 'Carreira & Histórico', resumo: 'Linha do tempo, mandatos e log', ico: '📜', comp: Historico, secao: 'perfil' },

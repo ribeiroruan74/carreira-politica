@@ -15,5 +15,19 @@
     { "id": "instituto", "nome": "Instituto", "custo": 500000, "manutencao": 11000, "impactoBase": 4, "tema": "assistencia" },
     { "id": "centro_cultural", "nome": "Centro cultural", "custo": 350000, "manutencao": 8000, "impactoBase": 3, "tema": "cultura" },
     { "id": "projeto_social", "nome": "Projeto social", "custo": 150000, "manutencao": 5000, "impactoBase": 3, "tema": "assistencia" }
+  ],
+  "$comentarioBens": "Item 8 — bens pessoais. 'manutencaoMes' pesa nas contas. 'valoriza' anual (imóvel sobe, veículo cai). 'efeitoMes' aplicado todo mês (bemEstar/notoriedade).",
+  "bens": [
+    { "id": "apto_medio", "nome": "Apartamento de 2 quartos", "tipo": "imovel", "preco": 420000, "manutencaoMes": 1200, "valoriza": 0.03, "efeitoMes": {} },
+    { "id": "casa_nobre", "nome": "Casa em bairro nobre", "tipo": "imovel", "preco": 1400000, "manutencaoMes": 4500, "valoriza": 0.04, "efeitoMes": { "bemEstar": 0.3 } },
+    { "id": "cobertura", "nome": "Cobertura à beira-mar", "tipo": "imovel", "preco": 3500000, "manutencaoMes": 11000, "valoriza": 0.045, "efeitoMes": { "bemEstar": 0.5, "notoriedade": 0.2 } },
+    { "id": "casa_praia", "nome": "Casa de praia", "tipo": "imovel", "preco": 900000, "manutencaoMes": 3000, "valoriza": 0.025, "efeitoMes": { "bemEstar": 0.4 } },
+    { "id": "sitio", "nome": "Sítio no interior", "tipo": "imovel", "preco": 1100000, "manutencaoMes": 3500, "valoriza": 0.02, "efeitoMes": { "bemEstar": 0.4, "saude": 0.2 } },
+    { "id": "carro_popular", "nome": "Carro popular", "tipo": "veiculo", "preco": 90000, "manutencaoMes": 700, "valoriza": -0.12, "efeitoMes": {} },
+    { "id": "suv", "nome": "SUV", "tipo": "veiculo", "preco": 260000, "manutencaoMes": 1600, "valoriza": -0.14, "efeitoMes": {} },
+    { "id": "carro_luxo", "nome": "Carro de luxo", "tipo": "veiculo", "preco": 550000, "manutencaoMes": 3200, "valoriza": -0.16, "efeitoMes": { "notoriedade": 0.2 } },
+    { "id": "carro_blindado", "nome": "Sedã blindado", "tipo": "veiculo", "preco": 420000, "manutencaoMes": 2600, "valoriza": -0.13, "efeitoMes": {} },
+    { "id": "lancha", "nome": "Lancha", "tipo": "outro", "preco": 700000, "manutencaoMes": 6000, "valoriza": -0.1, "efeitoMes": { "bemEstar": 0.4, "notoriedade": 0.3 } },
+    { "id": "obra_arte", "nome": "Obra de arte de acervo", "tipo": "outro", "preco": 300000, "manutencaoMes": 400, "valoriza": 0.05, "efeitoMes": {} }
   ]
 }

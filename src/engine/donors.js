@@ -64,6 +64,40 @@ export function captarDoacao(state, rng, base = 30000) {
   return { doador, valor, setor };
 }
 
+// Item 8 — autofinanciamento: mover dinheiro pessoal para o caixa de campanha,
+// declarado e com teto por cargo. Recurso próprio não gera risco de exposição.
+const TETO_AUTO = {
+  VEREADOR: 150000, DEPUTADO_ESTADUAL: 500000, DEPUTADO_FEDERAL: 1200000,
+  PREFEITO: 900000, GOVERNADOR: 4000000, SENADOR: 3000000, PRESIDENTE: 15000000,
+};
+export function limiteAutofinanciamento(state) {
+  return TETO_AUTO[state.eleicao?.cargoId] || 200000;
+}
+export function autofinanciado(state) {
+  return (state.financas?.doadores || []).find((d) => d.id === 'self')?.valorTotal || 0;
+}
+export function autofinanciarCampanha(state, valor) {
+  if (state.personagem.fase !== 'CANDIDATO') throw new Error('Só é permitido durante a campanha.');
+  valor = Math.round(valor || 0);
+  if (valor <= 0) throw new Error('Informe um valor.');
+  if (valor > state.financas.pessoal) throw new Error('Dinheiro pessoal insuficiente.');
+  const teto = limiteAutofinanciamento(state);
+  const jah = autofinanciado(state);
+  if (jah + valor > teto) throw new Error(`Teto de recursos próprios para este cargo é R$ ${teto.toLocaleString('pt-BR')} (já usou R$ ${jah.toLocaleString('pt-BR')}).`);
+  const lista = (state.financas.doadores ||= []);
+  let d = lista.find((x) => x.id === 'self');
+  if (!d) {
+    d = { id: 'self', nome: 'Recursos próprios', setor: 'proprio', valorTotal: 0, risco: 0, mesUltima: state.tempo.mes, cobrado: false, investigado: false, interesse: '—' };
+    lista.push(d);
+  }
+  d.valorTotal += valor;
+  d.mesUltima = state.tempo.mes;
+  state.financas.pessoal -= valor;
+  state.financas.campanha += valor;
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'FINANCAS', texto: `Transferiu R$ ${valor.toLocaleString('pt-BR')} do caixa pessoal para a campanha (recursos próprios).` });
+  return { ok: true, restante: teto - (jah + valor) };
+}
+
 export function exposicaoDoadores(state) {
   const lista = state.financas?.doadores || [];
   if (!lista.length) return 0;
@@ -76,7 +110,7 @@ export function exposicaoDoadores(state) {
 export function doadoresResumo(state) {
   return [...(state.financas?.doadores || [])]
     .sort((a, b) => b.valorTotal - a.valorTotal)
-    .map((d) => ({ ...d, setorNome: setorPorId(d.setor)?.nome || d.setor }));
+    .map((d) => ({ ...d, setorNome: setorPorId(d.setor)?.nome || (d.setor === 'proprio' ? 'você mesmo' : d.setor) }));
 }
 
 export function tickDoadores(s) {
