@@ -7,12 +7,14 @@ import mandatoDef from '../content/actions/mandato.json';
 import prefeitoDef from '../content/actions/prefeito.json';
 import deputadoDef from '../content/actions/deputado.json';
 import midiaDef from '../content/actions/midia.json';
+import vidaDef from '../content/actions/vida.json';
 import contactsDef from '../content/contacts.json';
 import neighborhoods from '../content/neighborhoods/recife.json';
 import professionsDef from '../content/professions.json';
 import { cultivarPolitico, tentarAlianca, limiarAlianca } from './world';
 import { assumirEmprego, pedirAumento, freela } from './jobs';
 import { fiscalizar, registrarPromessa, cumprirPromessas, temaCanonico, multGabinete } from './mandate';
+import { janelaCandidatura } from './calendar';
 import { cascatasAtivas, conterCascata } from './cascade';
 import { captarDoacao } from './donors';
 import { recrutarMilitancia } from './militancy';
@@ -26,6 +28,7 @@ const FASES = ['VIDA', 'VIDA_PUBLICA', 'PARTIDO', 'CANDIDATO', 'MANDATO'];
 const TODAS = [
   ...etapa1Def.acoes, ...campanhaDef.acoes, ...politicaDef.acoes,
   ...mandatoDef.acoes, ...prefeitoDef.acoes, ...deputadoDef.acoes, ...midiaDef.acoes,
+  ...vidaDef.acoes,
 ];
 // Etapa 6 — ações de mandato que valem para QUALQUER cargo eletivo
 const MANDATO_COMPARTILHADAS = ['discurso_plenario', 'buscar_financiador', 'militancia_mandato', 'conter_repercussao',
@@ -73,7 +76,8 @@ export function acoesDisponiveis(state) {
     base = [...cargoPool, ...compart];
   } else base = [...etapa1Def.acoes, ...politicaDef.acoes];
   // Fase 14/15 — mídia/influência entra em qualquer fase; Etapa 10/11 — autocuidado também
-  base = [...base, ...midiaDef.acoes];
+  // Nova expansão — família/lazer/viagens também entram sempre
+  base = [...base, ...midiaDef.acoes, ...vidaDef.acoes];
   if (fase === 'CANDIDATO' || fase === 'MANDATO') {
     base = [...base, ...etapa1Def.acoes.filter((a) => AUTOCUIDADO.includes(a.id) && !base.some((b) => b.id === a.id))];
   }
@@ -144,6 +148,45 @@ export function pesoContextual(a, state) {
   // energia/saúde no chão → descanso e autocuidado
   if ((state.tempo.energia < 35 || (state.personagem.vida?.saude ?? 100) < 40)
     && (a.id === 'descansar' || a.id === 'cuidar_de_si')) m *= 2.5;
+
+  // Nova expansão — o leque reage a mais coisas do momento:
+  const cat = a.categoria;
+
+  // 1) proximidade de eleição: com uma eleição chegando, sobe campanha/entrega/mídia,
+  //    e cai lazer/família (não é hora de sumir).
+  let mesesAteEleicao = 99;
+  if (state.personagem.partidoId && state.personagem.fase !== 'VIDA') {
+    const tipo = state.mandato?.tipoPleito || 'MUNICIPAL';
+    mesesAteEleicao = janelaCandidatura(state, tipo)?.mesesAteEleicao ?? 99;
+  }
+  if (mesesAteEleicao <= 14 && state.personagem.fase !== 'CANDIDATO') {
+    if (cat === 'CAMPANHA' || DELIVERY_IDS.includes(a.id) || ef.entregaLocal || ef.territorioBairroAlvo) m *= 1.6;
+    if (MIDIA_IDS.includes(a.id) || cat === 'MIDIA') m *= 1.25;
+    if (cat === 'LAZER' || cat === 'FAMILIA' || cat === 'VIAGENS') m *= 0.4;
+  }
+
+  // 2) bem-estar / vida pessoal em baixa → família e lazer sobem
+  const bem = state.personagem.vida?.bemEstar ?? 60;
+  if (bem < 40 && (cat === 'FAMILIA' || cat === 'LAZER')) m *= 2.2;
+  else if (bem < 55 && (cat === 'FAMILIA' || cat === 'LAZER')) m *= 1.4;
+  const rel = state.personagem.vida?.conjuge?.relacao;
+  if (rel != null && rel < 40 && (cat === 'FAMILIA' || a.id === 'fim_de_semana_familia')) m *= 1.8;
+
+  // 3) sazonalidade: fim de ano → cerimônias/família/lazer; meio do ano → congressos
+  const mesDoAno = state.tempo.mes % 12; // 0 = Jan
+  if ((mesDoAno === 11 || mesDoAno === 0) && (cat === 'FAMILIA' || cat === 'LAZER' || a.id === 'cerimonia_oficial')) m *= 1.6;
+  if ((mesDoAno >= 4 && mesDoAno <= 8) && (a.id === 'congresso_setorial' || a.id === 'evento_academico' || a.id === 'evento_nacional')) m *= 1.5;
+
+  // 4) patamar de fama: quem já é grande recebe convite de evento maior;
+  //    quem é pequeno raramente viaja pra fora.
+  if (rep.notoriedade < 25 && cat === 'VIAGENS' && a.id !== 'viagem_brasilia') m *= 0.4;
+  if (rep.notoriedade > 55 && (a.id === 'evento_nacional' || a.id === 'premiacao' || a.id === 'mesa_redonda' || a.id === 'participar_programa')) m *= 1.5;
+
+  // 5) território fraco no mandato → ações de bairro sobem
+  if (state.mandato) {
+    const base = Object.values(state.territorio.porBairro || {}).filter((t) => t.presenca > 25).length;
+    if (base < 2 && (ef.territorioBairroAlvo || DELIVERY_IDS.includes(a.id))) m *= 1.5;
+  }
 
   // Agenda — anti-repetição: ação feita há pouco quase não reaparece
   const recentes = state.meta?.acoesRecentes || [];
@@ -362,6 +405,39 @@ const EFEITOS = {
   // Fase 22 — cuidar da saúde / vida pessoal
   cuidarDeSi({ state, rng, resumo }) { resumo.push(cuidarDeSi(state, rng)); },
 
+  // Nova expansão — tempo de família / lazer: bem-estar (e relação com o cônjuge)
+  bemEstar({ state, ef, rng, resumo }) {
+    const v = (state.personagem.vida ||= { bemEstar: 60 });
+    const g = rng.range(Array.isArray(ef.bemEstar) ? ef.bemEstar : [3, 7]);
+    v.bemEstar = clamp((v.bemEstar ?? 60) + g, 0, 100);
+    if (v.conjuge) v.conjuge.relacao = clamp((v.conjuge.relacao ?? 60) + rng.range([1, 4]), 0, 100);
+    if (v.paisVivos && rng.chance(0.4)) v.paisRelacao = clamp((v.paisRelacao ?? 55) + rng.range([1, 3]), 0, 100);
+    resumo.push(`bem-estar +${Math.round(g)}`);
+  },
+
+  // Nova expansão — viagem: rende contatos, mídia e (Brasília) articulação
+  viagem({ state, ef, rng, mult, resumo }) {
+    const tipo = ef.viagem || 'evento';
+    const nContatos = tipo === 'brasilia' || tipo === 'nacional' ? rng.int(1, 2) : rng.chance(0.6) ? 1 : 0;
+    for (let i = 0; i < nContatos; i++) {
+      const id = `p_${state.tempo.mes}_${rng.int(1000, 9999)}`;
+      state.relacionamentos.pessoas[id] = {
+        id, nome: `${rng.pick(contactsDef.nomes.primeiros)} ${rng.pick(contactsDef.nomes.sobrenomes)}`,
+        papel: tipo === 'brasilia' ? 'Contato em Brasília' : tipo === 'nacional' ? 'Articulador nacional' : 'Contato de fora',
+        profissao: '—', ideologiaEixo: rng.int(-60, 60), influencia: rng.int(25, 80),
+        confianca: rng.int(10, 24), nivel: 'CONHECIDO', ultimoContatoMes: state.tempo.mes, origem: 'viagem',
+      };
+    }
+    state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + rng.range([0.5, 2]) * mult, 0, 100);
+    state.reputacao.ecoMidiatico = clamp(state.reputacao.ecoMidiatico + rng.range([1, 5]), -50, 100);
+    if ((tipo === 'brasilia' || tipo === 'nacional') && state.personagem.partidoId) {
+      const pr = state.mundo.partidosRuntime?.[state.personagem.partidoId];
+      if (pr) pr.apoioAoJogador = clamp(pr.apoioAoJogador + rng.range([1, 4]), 0, 100);
+    }
+    if (state.personagem.vida) state.personagem.vida.bemEstar = clamp((state.personagem.vida.bemEstar ?? 60) + (tipo === 'lazer' ? rng.range([5, 12]) : rng.range([0, 3])), 0, 100);
+    resumo.push(nContatos ? `viagem — ${nContatos} novo(s) contato(s)` : 'viagem concluída');
+  },
+
   // Etapa 6 — recurso conquistado entra no caixa do gabinete
   gabineteBonus({ state, ef, rng, mult, resumo }) {
     const v = Math.round(rng.range(ef.gabineteBonus) * mult);
@@ -459,7 +535,7 @@ const ORDEM_EFEITOS = [
   'pedirAumento', 'trocarEmprego', 'apoioPartido', 'conterCascata',
   'captarDoacao', 'recrutarMilitancia', 'cuidarDeSi', 'satisfacaoTema',
   'gravarPodcast', 'cultivarInfluenciador', 'colaborarInfluenciador', 'entregaLocal', 'gabineteBonus',
-  'cortejarGrupo', 'cursoAtributo',
+  'cortejarGrupo', 'cursoAtributo', 'bemEstar', 'viagem',
 ];
 
 // permite a outros módulos (Bloco B) registrarem novos efeitos sem editar este arquivo

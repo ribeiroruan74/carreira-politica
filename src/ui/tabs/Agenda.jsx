@@ -12,8 +12,8 @@ import { formatBRL } from '../../engine/tick';
 import { bairrosDaCidade } from '../../engine/offices';
 import partiesDef from '../../content/parties.json';
 
-const CAT_LABEL = { PESSOAL: 'Pessoal', COMUNIDADE: 'Comunidade', VIDA_PUBLICA: 'Vida pública', CAMPANHA: 'Campanha', MIDIA: 'Mídia', MANDATO: 'Mandato', POLITICA: 'Política', DESENVOLVIMENTO: 'Desenvolvimento' };
-const CAT_ICO = { PESSOAL: '🙂', COMUNIDADE: '🏘️', VIDA_PUBLICA: '📣', CAMPANHA: '🚩', MIDIA: '📸', MANDATO: '🏛️', POLITICA: '⚖️', DESENVOLVIMENTO: '📚' };
+const CAT_LABEL = { PESSOAL: 'Pessoal', COMUNIDADE: 'Comunidade', VIDA_PUBLICA: 'Vida pública', CAMPANHA: 'Campanha', MIDIA: 'Mídia', MANDATO: 'Mandato', POLITICA: 'Política', DESENVOLVIMENTO: 'Desenvolvimento', FAMILIA: 'Família', LAZER: 'Lazer', VIAGENS: 'Viagens' };
+const CAT_ICO = { PESSOAL: '🙂', COMUNIDADE: '🏘️', VIDA_PUBLICA: '📣', CAMPANHA: '🚩', MIDIA: '📸', MANDATO: '🏛️', POLITICA: '⚖️', DESENVOLVIMENTO: '📚', FAMILIA: '👪', LAZER: '🎣', VIAGENS: '✈️' };
 
 function ObjetivoCard({ obj, aplicar, irPara }) {
   const [partidoId, setPartidoId] = useState(partiesDef.partidos[0].id);

@@ -1,0 +1,176 @@
+{
+  "$comment": "Nova expansão — ações de FAMÍLIA, LAZER e VIAGENS, disponíveis em qualquer fase (entram no leque como midia/autocuidado). Reusam efeitos existentes: bemEstar, viagem, relacionamentosNovos, energia, reputacao, ecoMidiatico.",
+  "acoes": [
+    {
+      "id": "jantar_familia",
+      "categoria": "FAMILIA",
+      "titulo": "Jantar em família",
+      "desc": "Telefone no silencioso, mesa posta, conversa sem pauta. Faz falta e você sabe.",
+      "custo": { "tempo": 1, "energia": 2 },
+      "requisitos": {},
+      "efeitos": { "bemEstar": [4, 8] },
+      "peso": 0.7
+    },
+    {
+      "id": "fim_de_semana_familia",
+      "categoria": "FAMILIA",
+      "titulo": "Fim de semana com a família",
+      "desc": "Dois dias longe do gabinete e do grupo. Recarrega — e o parceiro(a) nota.",
+      "custo": { "tempo": 2, "energia": 0, "dinheiroPessoal": 400 },
+      "requisitos": {},
+      "efeitos": { "bemEstar": [7, 13], "energia": [8, 16] },
+      "peso": 0.6,
+      "variantes": [
+        { "titulo": "Praia com a família no fim de semana" },
+        { "titulo": "Sítio com os filhos e os pais" },
+        { "titulo": "Fim de semana fora, sem celular" }
+      ]
+    },
+    {
+      "id": "visitar_pais",
+      "categoria": "FAMILIA",
+      "titulo": "Visitar os pais",
+      "desc": "Almoço na casa deles. Cobram o telefonema que você não deu, mas te recebem.",
+      "custo": { "tempo": 1, "energia": 3 },
+      "requisitos": {},
+      "efeitos": { "bemEstar": [3, 7] },
+      "peso": 0.55
+    },
+    {
+      "id": "aniversario",
+      "categoria": "FAMILIA",
+      "titulo": "Aniversário de alguém da família",
+      "desc": "Bolo, foto obrigatória, tios perguntando de política. Presença conta.",
+      "custo": { "tempo": 1, "energia": 4, "dinheiroPessoal": 300 },
+      "requisitos": {},
+      "efeitos": { "bemEstar": [3, 8], "reputacao": { "confianca": [0, 1] } },
+      "peso": 0.4
+    },
+    {
+      "id": "folga_lazer",
+      "categoria": "LAZER",
+      "titulo": "Tirar uma folga",
+      "desc": "Cinema, futebol, um dia sem agenda. Ninguém aguenta o ritmo o ano inteiro.",
+      "custo": { "tempo": 1, "energia": 0, "dinheiroPessoal": 150 },
+      "requisitos": {},
+      "efeitos": { "energia": [10, 20], "bemEstar": [4, 9] },
+      "peso": 0.6,
+      "variantes": [
+        { "titulo": "Tarde no estádio" },
+        { "titulo": "Cinema e um jantar tranquilo" },
+        { "titulo": "Dia de pescaria" },
+        { "titulo": "Trilha e ar livre" }
+      ]
+    },
+    {
+      "id": "hobby",
+      "categoria": "LAZER",
+      "titulo": "Tempo com um hobby",
+      "desc": "Violão, corrida, jardinagem — o que for. Cabeça no lugar rende mais depois.",
+      "custo": { "tempo": 1, "energia": 0 },
+      "requisitos": {},
+      "efeitos": { "bemEstar": [3, 7], "energia": [4, 10] },
+      "peso": 0.55
+    },
+    {
+      "id": "viagem_lazer",
+      "categoria": "VIAGENS",
+      "titulo": "Viagem de férias",
+      "desc": "Uma semana fora do estado, sem compromisso. Cara, mas você precisava.",
+      "custo": { "tempo": 3, "energia": 0, "dinheiroPessoal": 6000 },
+      "requisitos": {},
+      "efeitos": { "viagem": "lazer", "energia": [15, 28], "bemEstar": [12, 22] },
+      "peso": 0.35,
+      "variantes": [
+        { "titulo": "Férias no Nordeste com a família" },
+        { "titulo": "Uma semana no Sul, longe de tudo" },
+        { "titulo": "Viagem internacional curta" }
+      ]
+    },
+    {
+      "id": "viagem_brasilia",
+      "categoria": "VIAGENS",
+      "titulo": "Ir a Brasília",
+      "desc": "Ministérios, bancada, um café no Congresso. Emenda, verba e contato se resolvem lá.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 3500 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "viagem": "brasilia", "reputacao": { "notoriedade": [1, 3] } },
+      "peso": 0.6,
+      "variantes": [
+        { "titulo": "Agenda em Brasília com a bancada" },
+        { "titulo": "Rodada de ministérios em Brasília" },
+        { "titulo": "Encontro do partido em Brasília" }
+      ]
+    },
+    {
+      "id": "viagem_outro_estado",
+      "categoria": "VIAGENS",
+      "titulo": "Agenda em outro estado",
+      "desc": "Seminário, convite de um aliado, palestra. Amplia a rede para além de Pernambuco.",
+      "custo": { "tempo": 2, "energia": 9, "dinheiroPessoal": 2800 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "viagem": "nacional", "reputacao": { "notoriedade": [1, 3] }, "ecoMidiatico": [1, 4] },
+      "peso": 0.4
+    },
+    {
+      "id": "evento_nacional",
+      "categoria": "VIAGENS",
+      "titulo": "Evento nacional do setor",
+      "desc": "Congresso de prefeitos, encontro de parlamentares, fórum. Palanque e networking de peso.",
+      "custo": { "tempo": 2, "energia": 10, "dinheiroPessoal": 2200 },
+      "requisitos": { "faseMin": "MANDATO" },
+      "efeitos": { "viagem": "nacional", "reputacao": { "notoriedade": [2, 4] }, "ecoMidiatico": [2, 6], "apoioPartido": [0, 3] },
+      "peso": 0.45
+    },
+    {
+      "id": "jantar_lideranca_privado",
+      "categoria": "POLITICA",
+      "titulo": "Jantar reservado com uma liderança",
+      "desc": "Sem assessor, sem imprensa. É onde acordo de verdade se costura.",
+      "custo": { "tempo": 2, "energia": 7, "dinheiroPessoal": 700 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "apoioPartido": [2, 5], "relacionamentosNovos": 1, "atributoPeso": "negociacao" },
+      "peso": 0.7
+    },
+    {
+      "id": "reuniao_privada",
+      "categoria": "POLITICA",
+      "titulo": "Reunião privada de articulação",
+      "desc": "Sala fechada, três ou quatro nomes, uma pauta só. Ninguém precisa saber.",
+      "custo": { "tempo": 1, "energia": 6 },
+      "requisitos": { "faseMin": "PARTIDO" },
+      "efeitos": { "apoioPartido": [1, 4], "relacionamentosContato": true, "relacionamentosNovos": 1, "atributoPeso": "negociacao" },
+      "peso": 0.7
+    },
+    {
+      "id": "cerimonia_oficial",
+      "categoria": "COMUNIDADE",
+      "titulo": "Cerimônia oficial",
+      "desc": "Posse, homenagem, hasteamento. Terno, discurso curto, aperto de mão em série.",
+      "custo": { "tempo": 1, "energia": 6 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "reputacao": { "notoriedade": [1, 3] }, "relacionamentosNovos": 1 },
+      "peso": 0.45
+    },
+    {
+      "id": "evento_empresarial",
+      "categoria": "PESSOAL",
+      "titulo": "Evento empresarial",
+      "desc": "Lançamento, prêmio setorial, jantar de federação. Quem move dinheiro na cidade está lá.",
+      "custo": { "tempo": 2, "energia": 8, "dinheiroPessoal": 500 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "relacionamentosNovos": 1, "reputacao": { "notoriedade": [0, 2] }, "atributoPeso": "carisma" },
+      "peso": 0.5
+    },
+    {
+      "id": "evento_academico",
+      "categoria": "COMUNIDADE",
+      "titulo": "Evento acadêmico",
+      "desc": "Mesa numa universidade, banca, debate com pesquisadores. Plateia exigente.",
+      "custo": { "tempo": 2, "energia": 9 },
+      "requisitos": { "faseMin": "VIDA_PUBLICA" },
+      "efeitos": { "reputacao": { "notoriedade": [1, 3], "confianca": [0, 2] }, "relacionamentosNovos": 1, "atributoPeso": "oratoria" },
+      "peso": 0.4
+    }
+  ]
+}
