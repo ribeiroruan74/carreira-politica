@@ -45,9 +45,8 @@ export function gravarPodcast(state, podcastId, posturaId, { cobrarCusto = true 
 
   const rng = createRng(state.meta.seed, state.meta.rngState);
   if (cobrarCusto) {
-    if (state.tempo.pontosRestantes < pod.custo.tempo) throw new Error(`Sem tempo (custa ${pod.custo.tempo}).`);
-    state.tempo.pontosRestantes -= pod.custo.tempo;
-    state.tempo.energia = clamp(state.tempo.energia - pod.custo.energia, 0, state.tempo.energiaMax);
+    if (state.tempo.energia < pod.custo.tempo) throw new Error(`Sem energia (custa ${pod.custo.tempo}).`);
+    state.tempo.energia -= pod.custo.tempo;
   }
   // Etapa 9 — consome o convite se havia um
   if (state.mundo?.convitesMidia) {

@@ -1,7 +1,7 @@
 // Forma do save + versão + migrações. Salvar nunca pode quebrar entre updates:
 // toda mudança estrutural ganha um número de versão e uma função de migração.
 
-export const SAVE_VERSION = 20;
+export const SAVE_VERSION = 21;
 
 // Estado "vazio" de referência — documenta a forma completa do save.
 export function emptyState() {
@@ -18,10 +18,9 @@ export function emptyState() {
     tempo: {
       mes: 0, // meses decorridos desde o início
       anoInicial: 2026,
-      pontosRestantes: 12,
-      pontosPorMes: 12,
-      energia: 100,
-      energiaMax: 100,
+      // Item 1 — recurso único do mês. Máx 15 (modulado por saúde/bem-estar).
+      energia: 15,
+      energiaMax: 15,
     },
     personagem: {
       nome: '',
@@ -35,7 +34,6 @@ export function emptyState() {
       mandatosExercidos: [], // Fase 25 — cargoIds já exercidos (elegibilidade p/ cargos superiores)
       partidoId: null,
       atributos: {},
-      xpAtributos: {}, // Etapa 10 — { attrId: xp acumulado rumo ao próximo ponto }
       skills: {},
       patrimonio: 0,
       historicoProfissional: [],
@@ -333,6 +331,15 @@ const migracoes = {
     }
     return s;
   },
+  // v20 -> v21: Item 1 — recurso único do mês (energia máx 15), fim do XP de atributos
+  20: (s) => {
+    if ((s.tempo?.energiaMax ?? 15) > 20) s.tempo.energiaMax = 15;
+    if ((s.tempo?.energia ?? 15) > 15) s.tempo.energia = 15;
+    delete s.tempo?.pontosRestantes;
+    delete s.tempo?.pontosPorMes;
+    delete s.personagem?.xpAtributos;
+    return s;
+  },
 };
 
 export function migrar(save) {
@@ -349,8 +356,13 @@ export function migrar(save) {
     v++;
     s.meta.version = v;
   }
-  // garante que campos novos existam mesmo sem migração explícita
-  return deepMerge(emptyState(), s);
+  s = deepMerge(emptyState(), s);
+  // Item 1 — normaliza saves antigos que não passaram pela migração 20
+  if (s.tempo.energiaMax > 20) s.tempo.energiaMax = 15;
+  if (s.tempo.energia > 15) s.tempo.energia = 15;
+  delete s.tempo.pontosRestantes;
+  delete s.tempo.pontosPorMes;
+  return s;
 }
 
 function deepMerge(base, over) {

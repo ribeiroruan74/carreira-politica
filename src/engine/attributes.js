@@ -1,6 +1,5 @@
-// Etapa 10 — evolução de atributos por XP.
-// Nada de "ação → +10". Cada treino/prática/discurso/entrevista dá XP; ao
-// acumular o custo do nível atual, o atributo sobe 1 ponto. Fica caro no topo.
+// Item 1 — sem barra de XP. Treino/prática/discurso/entrevista sobem o atributo
+// direto, com retorno decrescente perto do teto (fica mais lento no topo).
 
 import { clamp } from './rng';
 
@@ -15,33 +14,22 @@ export const TREINAVEIS = [
 ];
 const TREINAVEIS_IDS = new Set([...TREINAVEIS.map((t) => t.id), 'inteligencia', 'improviso', 'coragem']);
 
-// custo (em XP) para sair do valor `n` para `n+1`. Cresce com o nível.
-export function custoNivel(n) {
-  return Math.round(14 + (Math.max(1, n) ** 1.32) / 3.4);
-}
+const TETO = 92;
 
-// Adiciona XP a um atributo. Sobe pontos enquanto houver XP acumulado suficiente.
+// Sobe o atributo direto. `xp` é a antiga "quantidade de treino" (~2..40);
+// aqui vira ganho fracionário em pontos, menor quanto mais perto do teto.
 export function ganharXp(state, attrId, xp) {
   if (!xp || xp <= 0 || !TREINAVEIS_IDS.has(attrId)) return { subiu: 0 };
-  const xpm = (state.personagem.xpAtributos ||= {});
   const atr = state.personagem.atributos;
   if (atr[attrId] == null) atr[attrId] = 45;
-  let acc = (xpm[attrId] || 0) + xp;
-  let subiu = 0;
-  while (atr[attrId] < 92) {
-    const custo = custoNivel(atr[attrId]);
-    if (acc < custo) break;
-    acc -= custo;
-    atr[attrId] += 1;
-    subiu += 1;
-  }
-  xpm[attrId] = Math.round(acc);
-  return { subiu, valor: atr[attrId] };
+  const antes = Math.floor(atr[attrId]);
+  const headroom = clamp((TETO - atr[attrId]) / 47, 0.12, 1);
+  const ganho = (xp / 45) * headroom;
+  atr[attrId] = Math.round(clamp(atr[attrId] + ganho, 5, TETO) * 10) / 10;
+  return { subiu: Math.floor(atr[attrId]) - antes, valor: atr[attrId] };
 }
 
 export function progressoAtributo(state, attrId) {
   const v = state.personagem.atributos[attrId] ?? 50;
-  const acc = state.personagem.xpAtributos?.[attrId] || 0;
-  const custo = custoNivel(v);
-  return { valor: v, xp: acc, custo, pct: Math.round(clamp((acc / custo) * 100, 0, 100)), noTeto: v >= 92 };
+  return { valor: v, noTeto: v >= TETO };
 }

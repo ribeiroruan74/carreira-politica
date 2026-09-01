@@ -163,10 +163,10 @@ export default function Agenda({ irPara }) {
   return (
     <div className="stack">
       <PageHead
-        eyebrow={`${s.tempo.pontosRestantes}/${s.tempo.pontosPorMes} tempo · energia ${Math.round(s.tempo.energia)}${emCampanha ? ` · campanha ${formatBRL(s.financas.campanha)}` : ''}`}
+        eyebrow={`Energia ${s.tempo.energia}/${s.tempo.energiaMax}${emCampanha ? ` · campanha ${formatBRL(s.financas.campanha)}` : ''}`}
         title={emCampanha ? `Campanha — ${s.eleicao.mesAtual}/${s.eleicao.totalMeses} meses` : 'Agenda do mês'}
       >
-        Você não consegue fazer tudo. A cada mês surge um conjunto diferente de oportunidades — escolha onde investir tempo, energia e dinheiro.
+        Você não consegue fazer tudo. A cada mês surge um conjunto diferente de oportunidades — escolha onde investir sua energia e seu dinheiro.
       </PageHead>
 
       {obj && <ObjetivoCard obj={obj} aplicar={aplicar} irPara={irPara} />}
@@ -177,7 +177,7 @@ export default function Agenda({ irPara }) {
 
       <div className="grid cols-2">
         {acoes.map((a) => {
-          const semTempo = (a.custo.tempo || 0) > s.tempo.pontosRestantes;
+          const semTempo = (a.custo.tempo || 0) > s.tempo.energia;
           const semGrana = (a.custo.dinheiroPessoal || 0) > s.financas.pessoal;
           const semCaixa = (a.custo.campanhaGasto || 0) > s.financas.campanha;
           const semVaga = precisaEmprego(a.id) && vagas.length === 0;
@@ -194,8 +194,7 @@ export default function Agenda({ irPara }) {
                 <p className="small" style={{ color: 'var(--amber)', margin: '4px 0 0' }}>▸ {contextoAgenda(a, s)}</p>
               )}
               <div className="chips" style={{ margin: '10px 0' }}>
-                <Pill tone={semTempo ? 'red' : undefined}>{a.custo.tempo} tempo</Pill>
-                {a.custo.energia > 0 && <Pill>{a.custo.energia} energia</Pill>}
+                <Pill tone={semTempo ? 'red' : undefined}>{a.custo.tempo} energia</Pill>
                 {a.custo.dinheiroPessoal > 0 && <Pill tone={semGrana ? 'red' : undefined}>{formatBRL(a.custo.dinheiroPessoal)} pessoal</Pill>}
                 {a.custo.campanhaGasto > 0 && <Pill tone={semCaixa ? 'red' : undefined}>{formatBRL(a.custo.campanhaGasto)} campanha</Pill>}
                 {a.custo.campanhaGasto < 0 && <Pill tone="accent">+{formatBRL(-a.custo.campanhaGasto)} caixa</Pill>}
@@ -302,7 +301,7 @@ export default function Agenda({ irPara }) {
         <p className="small dim">
           {emCampanha
             ? 'Avançar fecha o mês de campanha: adversários agem, sai nova pesquisa, e o relógio da eleição anda.'
-            : 'Energia e pontos se renovam, renda entra, contas saem, e vínculos sem contato esfriam.'}
+            : 'Sua energia se renova, renda entra, contas saem, e vínculos sem contato esfriam.'}
         </p>
         <button className="btn" disabled={!!s.eventoPendente} onClick={avancarMes}>Avançar o mês →</button>
       </Card>

@@ -27,7 +27,7 @@ export default function Telefone() {
   const s = useGame((g) => g.estado);
   const aplicar = useGame((g) => g.aplicar);
   const [msg, setMsg] = useState(null);
-  const semTempo = s.tempo.pontosRestantes < 1;
+  const semTempo = s.tempo.energia < 1;
 
   const { midia, famosos } = contatosTelefone(s);
   const politicos = Object.values(s.mundo.politicos || {})

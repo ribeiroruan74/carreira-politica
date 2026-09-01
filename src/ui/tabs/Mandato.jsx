@@ -84,11 +84,11 @@ export default function Mandato() {
                 <div className="small faint">{c.temas.join(' · ')}{c.gatekeeper ? ' · barra projetos' : ''}</div>
               </span>
               {!dentro && (
-                <button className="btn sm ghost" disabled={m.comissoes.participando.length >= 3 || s.tempo.pontosRestantes < 2}
+                <button className="btn sm ghost" disabled={m.comissoes.participando.length >= 3 || s.tempo.energia < 2}
                   onClick={() => agir((st) => acaoComissao(st, c.id, 'vaga'))}>Pedir vaga</button>
               )}
               {dentro && !preside && (
-                <button className="btn sm ghost" disabled={s.tempo.pontosRestantes < 2}
+                <button className="btn sm ghost" disabled={s.tempo.energia < 2}
                   onClick={() => agir((st) => acaoComissao(st, c.id, 'presidencia'))}>Disputar presidência</button>
               )}
             </div>
@@ -98,7 +98,7 @@ export default function Mandato() {
       )}
 
       {!m.executivo && (
-      <Card title="Protocolar novo projeto" aside="custa 3 tempo · 12 energia">
+      <Card title="Protocolar novo projeto" aside="custa 3 energia">
         <div className="field-row two">
           <div>
             <label>Tema</label>
@@ -117,7 +117,7 @@ export default function Mandato() {
         <select value={form.bairroId} onChange={(e) => setForm({ ...form, bairroId: e.target.value })}>
           {bairros.map((b) => <option key={b.id} value={b.id}>{b.nome} · {b.regiao}</option>)}
         </select>
-        <button className="btn" style={{ marginTop: 12 }} disabled={m.encerrando || s.tempo.pontosRestantes < 3}
+        <button className="btn" style={{ marginTop: 12 }} disabled={m.encerrando || s.tempo.energia < 3}
           onClick={() => agir((st) => protocolarProjeto(st, form))}>
           Protocolar
         </button>
@@ -147,9 +147,9 @@ export default function Mandato() {
               impacto {pj.impacto} · prazo mês {pj.prazo - m.mesInicio + 1}
               {pj.precisaMaioria ? ' · precisa de 20 votos' : ' · não precisa de maioria'}
             </div>
-            <button className="btn sm ghost" disabled={s.tempo.pontosRestantes < 2}
+            <button className="btn sm ghost" disabled={s.tempo.energia < 2}
               onClick={() => agir((st) => negociarVotosProjeto(st, pj.id))}>
-              Negociar votos (2 tempo)
+              Negociar votos (2 energia)
             </button>
           </div>
         ))}

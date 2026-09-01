@@ -45,7 +45,7 @@ function ColigacaoCard({ s, aplicar }) {
           <select value={sel} onChange={(e) => setAlvo(e.target.value)}>
             {outros.map((p) => <option key={p.id} value={p.id}>{p.id} — {p.nome}</option>)}
           </select>
-          <button className="btn sm" disabled={s.tempo.pontosRestantes < 2} onClick={tent}>Articular · 2t</button>
+          <button className="btn sm" disabled={s.tempo.energia < 2} onClick={tent}>Articular · 2t</button>
         </div>
       )}
       {msg && <p className="small" style={{ marginTop: 8, color: 'var(--ink-soft)' }}>{msg}</p>}
@@ -202,12 +202,12 @@ export default function Politica() {
                 <span className="grow">Sua base interna</span>
                 <span className="num">{baseInterna(s)}</span>
               </div>
-              <button className="btn sm" style={{ marginTop: 10 }} disabled={s.tempo.pontosRestantes < 3}
+              <button className="btn sm" style={{ marginTop: 10 }} disabled={s.tempo.energia < 3}
                 onClick={() => {
                   try { aplicar((st) => disputarDiretorioJogador(st)); setErro(null); }
                   catch (e) { setErro(e.message); }
                 }}>
-                Disputar a presidência do diretório (3 tempo)
+                Disputar a presidência do diretório (3 energia)
               </button>
               {erro && <p className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{erro}</p>}
             </>

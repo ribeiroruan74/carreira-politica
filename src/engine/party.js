@@ -230,11 +230,11 @@ export function tickPartido(s) {
 
 // --- wrappers para a UI (gerenciam rng + custo de tempo, como world.js) ---
 function comRng(state, custoTempo, fn) {
-  if ((state.tempo.pontosRestantes ?? 0) < custoTempo) {
+  if ((state.tempo.energia ?? 0) < custoTempo) {
     throw new Error(`Sem tempo suficiente este mês (custa ${custoTempo}).`);
   }
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= custoTempo;
+  state.tempo.energia -= custoTempo;
   const r = fn(rng);
   state.meta.rngState = rng.state;
   return r;

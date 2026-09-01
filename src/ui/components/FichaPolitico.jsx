@@ -38,7 +38,7 @@ export default function FichaPolitico({ polId, onClose }) {
   const noticias = (s.mundo.noticias || []).filter((n) => (n.atores || []).includes(polId) || n.texto.includes(pol.nome)).slice(0, 5);
   const aliados = (pol.aliados || []).map((id) => s.mundo.politicos?.[id]?.nome).filter(Boolean);
   const mesmoPartido = pol.partidoId === s.personagem.partidoId;
-  const semTempo = (n) => s.tempo.pontosRestantes < n;
+  const semTempo = (n) => s.tempo.energia < n;
 
   function agir(fn) {
     try { let r; aplicar((st) => { r = fn(st); }); setMsg(r?.msg || 'ok'); }

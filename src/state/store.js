@@ -57,10 +57,9 @@ export const useGame = create(
       iniciarEntrevista(jornalistaId, conviteId) {
         const estado = get().estado;
         if (!estado || estado.entrevistaAtiva) return;
-        if (estado.tempo.pontosRestantes < 2) return;
+        if (estado.tempo.energia < 2) return;
         const novo = structuredClone(estado);
-        novo.tempo.pontosRestantes -= 2;
-        novo.tempo.energia = Math.max(0, novo.tempo.energia - 10);
+        novo.tempo.energia -= 2;
         if (conviteId) {
           novo.mundo.convitesMidia = (novo.mundo.convitesMidia || []).filter((c) => c.id !== conviteId);
         }

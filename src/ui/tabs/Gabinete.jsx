@@ -95,7 +95,7 @@ export default function Gabinete() {
 
       <Card title="Gestão do gabinete">
         <div className="chips" style={{ marginBottom: 10 }}>
-          <button className="btn sm" disabled={m.gabinete.ultimaReuniao === s.tempo.mes || s.tempo.pontosRestantes < 1} onClick={reunir}>
+          <button className="btn sm" disabled={m.gabinete.ultimaReuniao === s.tempo.mes || s.tempo.energia < 1} onClick={reunir}>
             Reunião de alinhamento · 1t
           </button>
         </div>

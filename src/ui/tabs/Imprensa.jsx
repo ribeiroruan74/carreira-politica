@@ -25,7 +25,7 @@ export default function Imprensa() {
   const veiculos = tomCobertura(s);
   const edicao = montarEdicao(s);
   const noticiasMidia = (s.mundo.noticias || []).filter((n) => n.tipo === 'MIDIA' || (n.destaque && n.tipo === 'CIDADE')).slice(0, 12);
-  const bloq = !!s.eventoPendente || s.tempo.pontosRestantes < 2;
+  const bloq = !!s.eventoPendente || s.tempo.energia < 2;
   const convites = convitesMidiaAtivos(s);
 
   function entrevistar() {
@@ -121,7 +121,7 @@ export default function Imprensa() {
         })}
       </Card>
 
-      <Card title="Conceder entrevista" aside="custa 2 tempo · 10 energia">
+      <Card title="Conceder entrevista" aside="custa 2 energia">
         <label>Jornalista</label>
         <select value={jornalista} onChange={(e) => setJornalista(e.target.value)}>
           {JORNALISTAS.map((j) => {

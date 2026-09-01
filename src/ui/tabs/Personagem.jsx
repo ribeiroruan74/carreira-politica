@@ -30,15 +30,15 @@ export default function Personagem() {
               return (
                 <div key={a.id}>
                   <Meter label={a.nome} value={v} tone={v >= 60 ? 'ok' : v <= 35 ? 'bad' : 'warn'} />
-                  {prog && !prog.noTeto && prog.xp > 0 && (
-                    <div className="small faint" style={{ marginTop: 2 }}>XP {Math.round(prog.xp)}/{prog.custo} p/ próximo</div>
+                  {prog && prog.noTeto && (
+                    <div className="small faint" style={{ marginTop: 2 }}>no teto</div>
                   )}
                 </div>
               );
             })}
           </div>
           <p className="small faint" style={{ marginTop: 10 }}>
-            Atributos evoluem por XP: curso, treino, mentoria (Agenda) e prática (discursos, entrevistas, debates, podcasts). Fica mais caro no topo.
+            Atributos evoluem com curso, treino, mentoria (Agenda) e prática (discursos, entrevistas, debates, podcasts). Sobe mais devagar perto do teto.
           </p>
         </Card>
 

@@ -404,12 +404,11 @@ export function acaoRelacao(state, politicoId, tipo) {
   const p = state.mundo.politicos[politicoId];
   if (!cfg || !p) throw new Error('Ação inválida.');
   if (cfg.exigeContato && (p.ultimoContatoMes ?? -99) < 0) throw new Error('Você ainda não teve contato com essa pessoa.');
-  if (state.tempo.pontosRestantes < cfg.tempo) throw new Error(`Sem tempo (custa ${cfg.tempo}).`);
+  if (state.tempo.energia < cfg.tempo) throw new Error(`Sem energia (custa ${cfg.tempo}).`);
   if (cfg.dinheiro > state.financas.pessoal) throw new Error('Dinheiro pessoal insuficiente.');
 
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= cfg.tempo;
-  state.tempo.energia = clamp(state.tempo.energia - cfg.energia, 0, state.tempo.energiaMax);
+  state.tempo.energia = Math.max(0, state.tempo.energia - cfg.tempo);
   state.financas.pessoal -= cfg.dinheiro;
   const m = state.tempo.mes;
   const est = reacaoEstilo(p, tipo);
@@ -532,9 +531,8 @@ export function tentarAlianca(state, politicoId, { cobrarCusto = false } = {}) {
     return { ok: false, msg: `${p.nome} nem cogita — relação ${Math.round(p.relacaoJogador)}/${limiar}. Aproxime-se primeiro.` };
   }
   if (cobrarCusto) {
-    if (state.tempo.pontosRestantes < 2) return { ok: false, msg: 'Sem tempo (custa 2).' };
-    state.tempo.pontosRestantes -= 2;
-    state.tempo.energia = clamp(state.tempo.energia - 10, 0, state.tempo.energiaMax);
+    if (state.tempo.energia < 2) return { ok: false, msg: 'Sem energia (custa 2).' };
+    state.tempo.energia -= 2;
   }
   const rng = createRng(state.meta.seed, state.meta.rngState);
   const chance = chanceAlianca(state, p);
@@ -579,9 +577,9 @@ export function oferecerApoio(state, politicoId) {
   const p = state.mundo.politicos[politicoId];
   if (!p) throw new Error('Político não encontrado.');
   if (state.personagem.grupoPolitico.includes(politicoId)) return { ok: false, msg: `${p.nome} já é seu aliado.` };
-  if (state.tempo.pontosRestantes < 1) return { ok: false, msg: 'Sem tempo (custa 1).' };
+  if (state.tempo.energia < 1) return { ok: false, msg: 'Sem tempo (custa 1).' };
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= 1;
+  state.tempo.energia -= 1;
   const m = state.tempo.mes;
   p.relacaoJogador = clamp(p.relacaoJogador + rng.range([6, 12]), -100, 100);
   p._apoioRecebidoMes = m;
@@ -600,7 +598,7 @@ export function articularColigacao(state, partidoAlvoId) {
   const meu = state.personagem.partidoId;
   if (!meu) return { ok: false, msg: 'Você precisa estar filiado a um partido.' };
   if (partidoAlvoId === meu) return { ok: false, msg: 'Esse já é o seu partido.' };
-  if (state.tempo.pontosRestantes < 2) return { ok: false, msg: 'Sem tempo (custa 2).' };
+  if (state.tempo.energia < 2) return { ok: false, msg: 'Sem tempo (custa 2).' };
   const aliadosLa = (state.personagem.grupoPolitico || [])
     .map((id) => state.mundo.politicos[id]).filter((p) => p && p.partidoId === partidoAlvoId).length;
   const pr = state.mundo.partidosRuntime?.[meu];
@@ -608,7 +606,7 @@ export function articularColigacao(state, partidoAlvoId) {
   if (peso < 2) {
     return { ok: false, msg: 'Você ainda não tem cacife para isso — precisa presidir o diretório ou ter aliados na sigla-alvo.' };
   }
-  state.tempo.pontosRestantes -= 2;
+  state.tempo.energia -= 2;
   const rng = createRng(state.meta.seed, state.meta.rngState);
   const chance = clamp(0.25 + peso * 0.12 + aliadosLa * 0.08, 0.1, 0.85);
   const ok = rng.chance(chance);
@@ -630,8 +628,8 @@ export function articularColigacaoVia(state, politicoId) {
   if (!state.personagem.partidoId) return { ok: false, msg: 'Você precisa estar filiado.' };
   if (p.partidoId === state.personagem.partidoId) return { ok: false, msg: 'Ele já é do seu partido.' };
   if ((p.relacaoJogador || 0) < 35) return { ok: false, msg: `Relação com ${p.nome} baixa demais (${Math.round(p.relacaoJogador)}/35) para ele bancar isso na sigla dele.` };
-  if (state.tempo.pontosRestantes < 2) return { ok: false, msg: 'Sem tempo (custa 2).' };
-  state.tempo.pontosRestantes -= 2;
+  if (state.tempo.energia < 2) return { ok: false, msg: 'Sem tempo (custa 2).' };
+  state.tempo.energia -= 2;
   const rng = createRng(state.meta.seed, state.meta.rngState);
   const infl = (p.influencia || 50) / 100;
   const chance = clamp(0.1 + (p.relacaoJogador - 35) / 90 + infl * 0.35 + (p.lider ? 0.15 : 0), 0.08, 0.85);
@@ -735,10 +733,9 @@ export function disputarDiretorio(state, rng) {
 
 // wrapper com custo p/ a aba Política
 export function disputarDiretorioJogador(state) {
-  if (state.tempo.pontosRestantes < 3) throw new Error('Sem tempo suficiente este mês (custa 3).');
+  if (state.tempo.energia < 3) throw new Error('Sem energia suficiente este mês (custa 3).');
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= 3;
-  state.tempo.energia = clamp(state.tempo.energia - 14, 0, state.tempo.energiaMax);
+  state.tempo.energia -= 3;
   const r = disputarDiretorio(state, rng);
   state.meta.rngState = rng.state;
   return r;

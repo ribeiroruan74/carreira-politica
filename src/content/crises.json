@@ -589,7 +589,7 @@
       "peso": 0.6,
       "cooldown": 20,
       "quando": {
-        "energiaMax": 40
+        "energiaMax": 6
       },
       "titulo": "Seu corpo cobra a conta",
       "contexto": "Meses de ritmo puxado te derrubaram. O médico recomenda pausa.",
@@ -1007,6 +1007,110 @@
             "aprovacao": [-5, 3],
             "notoriedade": [4, 9]
           },
+          "cascata": "gafe_publica"
+        }
+      ]
+    },
+    {
+      "id": "propina_empreiteira",
+      "cat": "MANDATO",
+      "peso": 0.9,
+      "cooldown": 30,
+      "quando": {
+        "temMandato": true,
+        "cargoIn": ["VEREADOR", "PREFEITO", "DEPUTADO_ESTADUAL", "DEPUTADO_FEDERAL", "GOVERNADOR"]
+      },
+      "titulo": "Empreiteira oferece 'ajuda' por fora",
+      "contexto": "Um operador procura você discretamente. Uma construtora com contratos na sua área topa bancar despesas suas — sem nota, sem recibo — se você facilitar um aditivo. Tudo fictício, e tudo ilegal.",
+      "opcoes": [
+        {
+          "texto": "Recusar na hora e registrar a conversa",
+          "rep": { "confianca": [2, 6], "notoriedade": [0, 2] }
+        },
+        {
+          "texto": "Aceitar um repasse pequeno, com cuidado",
+          "dinheiroPessoal": [18000, 45000],
+          "rep": { "rejeicao": [0, 2] },
+          "memoria": "Você aceitou dinheiro de caixa dois de uma empreiteira.",
+          "memoriaDados": { "investigavel": true, "tituloInvestigacao": "O repasse da construtora que ninguém declarou" },
+          "gatilho": { "aposMeses": [5, 16], "chance": 0.72, "disparo": "INVESTIGACAO" }
+        },
+        {
+          "texto": "Aceitar um valor alto e prometer entregar o aditivo",
+          "dinheiroPessoal": [70000, 160000],
+          "rep": { "rejeicao": [1, 4], "confianca": [-3, 0] },
+          "relacaoPrefeitura": [4, 10],
+          "memoria": "Você fechou um acordo de propina por um aditivo de contrato.",
+          "memoriaDados": { "investigavel": true, "tituloInvestigacao": "O aditivo comprado da construtora" },
+          "gatilho": { "aposMeses": [3, 10], "chance": 0.88, "disparo": "INVESTIGACAO" },
+          "cascata": "gafe_publica"
+        }
+      ]
+    },
+    {
+      "id": "caixa_dois_campanha",
+      "cat": "CANDIDATO",
+      "peso": 1.0,
+      "cooldown": 99,
+      "quando": { "fase": "CANDIDATO" },
+      "titulo": "Proposta de caixa dois na campanha",
+      "contexto": "Um financiador oferece um valor gordo para a campanha — mas por fora, sem passar pela prestação de contas. 'Todo mundo faz', ele diz.",
+      "opcoes": [
+        {
+          "texto": "Recusar e manter tudo declarado",
+          "rep": { "confianca": [2, 5] }
+        },
+        {
+          "texto": "Aceitar uma parte, diluída em despesas",
+          "campanha": [30000, 80000],
+          "rep": { "rejeicao": [0, 2] },
+          "memoria": "Sua campanha recebeu recurso não contabilizado.",
+          "memoriaDados": { "investigavel": true, "tituloInvestigacao": "O caixa dois da sua campanha" },
+          "gatilho": { "aposMeses": [6, 18], "chance": 0.7, "disparo": "INVESTIGACAO" }
+        },
+        {
+          "texto": "Aceitar o pacote inteiro",
+          "campanha": [90000, 220000],
+          "rep": { "rejeicao": [1, 3], "confianca": [-2, 0] },
+          "memoria": "Você bancou boa parte da campanha com caixa dois.",
+          "memoriaDados": { "investigavel": true, "tituloInvestigacao": "O caixa dois que financiou sua eleição" },
+          "gatilho": { "aposMeses": [4, 12], "chance": 0.85, "disparo": "INVESTIGACAO" }
+        }
+      ]
+    },
+    {
+      "id": "nomeacao_barganha",
+      "cat": "MANDATO",
+      "peso": 0.8,
+      "cooldown": 24,
+      "quando": {
+        "temMandato": true,
+        "cargoIn": ["PREFEITO", "GOVERNADOR", "PRESIDENTE"]
+      },
+      "titulo": "Aliado cobra um cargo para um apadrinhado",
+      "contexto": "Um aliado importante condiciona o apoio dele a você nomear um afilhado político para um cargo de confiança — sem qualquer qualificação para a função.",
+      "opcoes": [
+        {
+          "texto": "Recusar e oferecer só espaço técnico com critério",
+          "rep": { "confianca": [1, 4] },
+          "apoioPartido": [-6, -1]
+        },
+        {
+          "texto": "Nomear para um cargo menor, discretamente",
+          "rep": { "aprovacao": [-2, 0] },
+          "apoioPartido": [3, 8],
+          "memoria": "Você trocou um cargo público por apoio político.",
+          "memoriaDados": { "investigavel": true, "tituloInvestigacao": "A nomeação de gabinete que pagou um acordo" },
+          "gatilho": { "aposMeses": [6, 18], "chance": 0.6, "disparo": "INVESTIGACAO" }
+        },
+        {
+          "texto": "Entregar um cargo de primeiro escalão",
+          "rep": { "aprovacao": [-5, -1], "rejeicao": [1, 4] },
+          "apoioPartido": [6, 14],
+          "relacaoPrefeitura": [3, 8],
+          "memoria": "Você loteou um cargo de primeiro escalão para fechar um acordo.",
+          "memoriaDados": { "investigavel": true, "tituloInvestigacao": "O loteamento de cargos do seu governo" },
+          "gatilho": { "aposMeses": [4, 12], "chance": 0.8, "disparo": "INVESTIGACAO" },
           "cascata": "gafe_publica"
         }
       ]

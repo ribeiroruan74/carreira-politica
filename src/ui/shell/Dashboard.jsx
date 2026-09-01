@@ -75,7 +75,7 @@ export default function Dashboard({ irPara, feed = [] }) {
         <StatTile ico="📣" k="Seguidores" v={fmtCompact(redes.seguidores)} sub={`${redes.crescimentoMensal >= 0 ? '+' : ''}${fmtCompact(redes.crescimentoMensal)} no mês`} />
         <StatTile ico="🏛️" k="Popularidade" v={`${popular}`} sub={pr ? 'do seu partido' : 'notoriedade'} />
         <StatTile ico="🎖️" k="Influência" v={`${Math.round(p.atributos.influencia ?? 45)}`} sub={`${(p.grupoPolitico || []).length} aliado(s)`} />
-        <StatTile ico="⚡" k="Energia" v={`${Math.round(tempo.energia)}`} sub={`Tempo ${tempo.pontosRestantes}/${tempo.pontosPorMes}`} tone={tempo.energia < 30 ? 'bad' : ''} />
+        <StatTile ico="⚡" k="Energia" v={`${tempo.energia}/${tempo.energiaMax}`} sub="ações no mês" tone={tempo.energia <= 3 ? 'bad' : ''} />
         <StatTile ico="📅" k="Data" v={`${nomeMes(tempo.mes)}/${String(ano).slice(2)}`} sub={`mês ${tempo.mes}`} />
       </div>
 

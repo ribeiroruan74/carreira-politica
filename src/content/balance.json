@@ -11,9 +11,7 @@
     "mesPrimeiraEleicaoGeral": 9
   },
   "tempo": {
-    "pontosPorMesBase": 12,
-    "energiaMaxBase": 100,
-    "energiaRecuperaPorMes": 35,
+    "energiaMaxBase": 15,
     "mesInicial": 0,
     "idadeInicialPadrao": 28
   },

@@ -49,11 +49,10 @@ export function estimarAlcance(state) {
 export function postar(state, formatoId, pautaId) {
   const f = FORMATOS.find((x) => x.id === formatoId) || FORMATOS[0];
   const pauta = PAUTAS.find((x) => x.id === pautaId) || PAUTAS[0];
-  if (state.tempo.pontosRestantes < f.tempo) throw new Error(`Sem tempo (custa ${f.tempo}).`);
+  if (state.tempo.energia < f.tempo) throw new Error(`Sem energia (custa ${f.tempo}).`);
 
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= f.tempo;
-  state.tempo.energia = clamp(state.tempo.energia - f.energia, 0, state.tempo.energiaMax);
+  state.tempo.energia -= f.tempo;
 
   const a = state.personagem.atributos;
   const skillMidia = state.personagem.skills.midia || 0;
@@ -205,11 +204,10 @@ export function perguntasCaixa(state) {
 
 // Faz uma live. modo: 'aberta' | 'bairro' | 'caixa'.
 export function fazerLive(state, { modo = 'aberta', bairroId = null, respostas = [] } = {}) {
-  if ((state.tempo.pontosRestantes ?? 0) < 2) throw new Error('Sem tempo (custa 2).');
+  if ((state.tempo.energia ?? 0) < 2) throw new Error('Sem energia (custa 2).');
   const r = state.redes;
   if ((r.ultimaLive ?? -99) === state.tempo.mes) throw new Error('Você já fez uma live este mês.');
-  state.tempo.pontosRestantes -= 2;
-  state.tempo.energia = clamp(state.tempo.energia - 12, 0, state.tempo.energiaMax);
+  state.tempo.energia -= 2;
   r.ultimaLive = state.tempo.mes;
 
   const rng = createRng(state.meta.seed, state.meta.rngState);

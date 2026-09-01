@@ -83,11 +83,10 @@ export function tomCobertura(state) {
 export function concederEntrevista(state, jornalistaId) {
   const j = JORNALISTAS.find((x) => x.id === jornalistaId);
   if (!j) throw new Error('Jornalista não encontrado.');
-  if (state.tempo.pontosRestantes < 2) throw new Error('Sem tempo (custa 2).');
+  if (state.tempo.energia < 2) throw new Error('Sem energia (custa 2).');
 
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= 2;
-  state.tempo.energia = clamp(state.tempo.energia - 10, 0, state.tempo.energiaMax);
+  state.tempo.energia -= 2;
 
   const a = state.personagem.atributos;
   const preparo = (a.comunicacao + a.inteligencia + a.oratoria) / 3;

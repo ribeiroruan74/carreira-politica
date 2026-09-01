@@ -214,8 +214,8 @@ export function reuniaoGabinete(state) {
   const g = state.mandato?.gabinete;
   if (!g) throw new Error('Sem gabinete.');
   if (g.ultimaReuniao === state.tempo.mes) throw new Error('Você já reuniu o gabinete este mês.');
-  if ((state.tempo.pontosRestantes ?? 0) < 1) throw new Error('Sem tempo (custa 1).');
-  state.tempo.pontosRestantes -= 1;
+  if ((state.tempo.energia ?? 0) < 1) throw new Error('Sem energia (custa 1).');
+  state.tempo.energia -= 1;
   g.ultimaReuniao = state.tempo.mes;
   const rng = createRng(state.meta.seed, state.meta.rngState);
   for (const a of Object.values(g.contratados)) {
@@ -725,20 +725,18 @@ export function mandateTick(s) {
 
 // --- wrappers usados direto pela aba Mandato (custo de tempo/energia embutido) ---
 export function protocolarProjeto(state, { tema, tipo, bairroId }) {
-  if (state.tempo.pontosRestantes < 3) throw new Error('Sem tempo suficiente este mês (custa 3).');
+  if (state.tempo.energia < 3) throw new Error('Sem energia suficiente este mês (custa 3).');
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= 3;
-  state.tempo.energia = clamp(state.tempo.energia - 12, 0, state.tempo.energiaMax);
+  state.tempo.energia -= 3;
   const proposta = gerarProposta(state, { tema, tipo, bairroId }, rng);
   proporProjeto(state, proposta, rng);
   state.meta.rngState = rng.state;
 }
 
 export function negociarVotosProjeto(state, projetoId) {
-  if (state.tempo.pontosRestantes < 2) throw new Error('Sem tempo suficiente este mês (custa 2).');
+  if (state.tempo.energia < 2) throw new Error('Sem energia suficiente este mês (custa 2).');
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= 2;
-  state.tempo.energia = clamp(state.tempo.energia - 12, 0, state.tempo.energiaMax);
+  state.tempo.energia -= 2;
   const g = negociarVotos(state, projetoId, rng);
   state.meta.rngState = rng.state;
   state.log.unshift({ mes: state.tempo.mes, tipo: 'MANDATO', texto: `Você negociou votos: apoio +${g}%.` });
@@ -752,10 +750,9 @@ export function declararPosicaoJogador(state, posicao) {
 }
 
 export function acaoComissao(state, comissaoId, tipo) {
-  if (state.tempo.pontosRestantes < 2) throw new Error('Sem tempo suficiente este mês (custa 2).');
+  if (state.tempo.energia < 2) throw new Error('Sem energia suficiente este mês (custa 2).');
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= 2;
-  state.tempo.energia = clamp(state.tempo.energia - 8, 0, state.tempo.energiaMax);
+  state.tempo.energia -= 2;
   const r = tipo === 'presidencia'
     ? disputarPresidenciaComissao(state, comissaoId, rng)
     : pedirVagaComissao(state, comissaoId, rng);

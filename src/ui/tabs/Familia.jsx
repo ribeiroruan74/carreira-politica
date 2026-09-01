@@ -11,7 +11,7 @@ export default function Familia() {
   const aplicar = useGame((g) => g.aplicar);
   const [msg, setMsg] = useState(null);
   const f = estadoFamilia(s);
-  const semTempo = (n) => s.tempo.pontosRestantes < n;
+  const semTempo = (n) => s.tempo.energia < n;
 
   function agir(nome) {
     try { let r; aplicar((st) => { r = acaoFamilia(st, nome); }); setMsg(r?.msg || 'ok'); }

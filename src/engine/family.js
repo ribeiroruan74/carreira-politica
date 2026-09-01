@@ -28,10 +28,9 @@ function vida(state) {
   return (state.personagem.vida ||= { estadoCivil: 'solteiro', conjuge: null, filhos: 0, filhosDetalhe: [], saude: 100, bemEstar: 60, paisRelacao: 55, paisVivos: true });
 }
 function gasta(state, tempo, energia, dinheiro = 0) {
-  if (state.tempo.pontosRestantes < tempo) throw new Error(`Sem tempo (custa ${tempo}).`);
+  if (state.tempo.energia < tempo) throw new Error(`Sem energia (custa ${tempo}).`);
   if (dinheiro > state.financas.pessoal) throw new Error('Dinheiro pessoal insuficiente.');
-  state.tempo.pontosRestantes -= tempo;
-  state.tempo.energia = clamp(state.tempo.energia - energia, 0, state.tempo.energiaMax);
+  state.tempo.energia = Math.max(0, state.tempo.energia - tempo);
   state.financas.pessoal -= dinheiro;
 }
 function log(state, texto) {
@@ -57,7 +56,7 @@ export function visitarPais(state, rng) {
   gasta(state, 1, 5);
   v.paisRelacao = clamp(v.paisRelacao + rng.range([4, 9]), 0, 100);
   v.bemEstar = clamp(v.bemEstar + rng.range([2, 5]), 0, 100);
-  state.tempo.energia = clamp(state.tempo.energia + rng.range([2, 6]), 0, state.tempo.energiaMax);
+  state.tempo.energia = clamp(state.tempo.energia + 1, 0, state.tempo.energiaMax + 1);
   return { ok: true, msg: `Você visitou a família de origem. Relação com os pais: ${Math.round(v.paisRelacao)}.` };
 }
 
@@ -82,7 +81,7 @@ export function tempoComParceiro(state, rng) {
   gasta(state, 1, 4);
   v.conjuge.relacao = clamp(v.conjuge.relacao + rng.range([4, 9]), 0, 100);
   v.bemEstar = clamp(v.bemEstar + rng.range([3, 6]), 0, 100);
-  state.tempo.energia = clamp(state.tempo.energia + rng.range([2, 5]), 0, state.tempo.energiaMax);
+  state.tempo.energia = clamp(state.tempo.energia + 1, 0, state.tempo.energiaMax + 1);
   return { ok: true, msg: `${v.conjuge.nome}: relação ${Math.round(v.conjuge.relacao)}.` };
 }
 
@@ -126,7 +125,7 @@ function nascerFilho(state, rng, via) {
   v.filhos += 1;
   v.filhosDetalhe = [...(v.filhosDetalhe || []), { nome: rng.pick(NOMES), nascidoMes: state.tempo.mes, via }];
   v.bemEstar = clamp(v.bemEstar + rng.range([8, 14]), 0, 100);
-  state.tempo.energia = clamp(state.tempo.energia - rng.range([8, 16]), 0, state.tempo.energiaMax);
+  state.tempo.energia = Math.max(0, state.tempo.energia - rng.range([1, 3]));
   ajustarImagem(state, { proximidade: 3 });
   registrarMarco(state, 'CARREIRA', via === 'adoção' ? 'Adotou uma criança.' : 'Teve um filho.');
   log(state, via === 'adoção' ? 'Sua família cresceu por adoção.' : 'Nasceu mais um filho. Noites mal dormidas — e uma foto de família que rende bem.');
@@ -138,7 +137,7 @@ export function tempoEmFamilia(state, rng) {
   gasta(state, 2, 4);
   v.bemEstar = clamp(v.bemEstar + rng.range([5, 10]), 0, 100);
   v.saude = clamp(v.saude + rng.range([2, 5]), 0, 100);
-  state.tempo.energia = clamp(state.tempo.energia + rng.range([5, 12]), 0, state.tempo.energiaMax);
+  state.tempo.energia = clamp(state.tempo.energia + rng.range([1, 2]), 0, state.tempo.energiaMax + 1);
   if (v.conjuge) v.conjuge.relacao = clamp(v.conjuge.relacao + rng.range([2, 5]), 0, 100);
   if (v.paisVivos) v.paisRelacao = clamp(v.paisRelacao + rng.range([1, 3]), 0, 100);
   return { ok: true, msg: 'Um tempo bom longe da política. Bem-estar recuperado.' };

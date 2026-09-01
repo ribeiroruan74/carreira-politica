@@ -133,9 +133,10 @@ export function resolverEvento(state, opcaoIndex) {
     resumo.push(`campanha +${brl(v)}`);
   }
   if (opc.energia) {
-    const v = rng.rangeInt(opc.energia);
-    state.tempo.energia = clamp(state.tempo.energia + v, 0, state.tempo.energiaMax);
-    resumo.push(`energia ${v > 0 ? '+' : ''}${v}`);
+    // Item 1 — opc.energia ainda é escala antiga (0-100); converte p/ a de 15.
+    const v = Math.round(rng.rangeInt(opc.energia) / 7) || (opc.energia[1] > 0 ? 1 : -1);
+    state.tempo.energia = clamp(state.tempo.energia + v, 0, state.tempo.energiaMax + 2);
+    if (v) resumo.push(`energia ${v > 0 ? '+' : ''}${v}`);
   }
   if (opc.seguidoresPct) {
     const d = Math.round(state.redes.seguidores * rng.range(opc.seguidoresPct));

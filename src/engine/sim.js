@@ -52,7 +52,7 @@ function agirMes(state, perfil) {
   if (perfil.esforco === 'casual' && fase !== 'CANDIDATO') {
     const r = streamRng(s.meta.seed, 'casual', s.tempo.mes);
     if (r.chance(0.4)) return s;
-    if (r.chance(0.5)) s.tempo.pontosRestantes = Math.min(s.tempo.pontosRestantes, 4);
+    if (r.chance(0.5)) s.tempo.energia = Math.min(s.tempo.energia, 4);
   }
 
   // objetivo de fase
@@ -75,8 +75,8 @@ function agirMes(state, perfil) {
 
   // ações do mês conforme a fase
   let guard = 0;
-  while (s.tempo.pontosRestantes >= 2 && guard++ < 8) {
-    const antes = s.tempo.pontosRestantes;
+  while (s.tempo.energia >= 2 && guard++ < 8) {
+    const antes = s.tempo.energia;
     if (fase === 'VIDA') {
       const acts = acoesDisponiveis(s).map((a) => a.id);
       const pick = s.reputacao.notoriedade < 9
@@ -100,9 +100,9 @@ function agirMes(state, perfil) {
       s = aplicar(s, (x) => aplicarAcao(x, pick, { bairroId: guard % 2 ? b1 : b2 }));
     } else if (fase === 'MANDATO' && s.mandato) {
       const foco = s.mandato.projetos.find((p) => p.status === 'TRAMITANDO' && p.precisaMaioria && p.apoio < 56);
-      if (foco && s.tempo.pontosRestantes >= 2) { s = aplicar(s, (x) => negociarVotosProjeto(x, foco.id)); continue; }
+      if (foco && s.tempo.energia >= 2) { s = aplicar(s, (x) => negociarVotosProjeto(x, foco.id)); continue; }
       const nTram = s.mandato.projetos.filter((p) => p.status === 'TRAMITANDO').length;
-      if (nTram < 2 && s.tempo.pontosRestantes >= 3) {
+      if (nTram < 2 && s.tempo.energia >= 3) {
         const temas = ['saneamento', 'saude', 'educacao', 'mobilidade', 'seguranca'];
         s = aplicar(s, (x) => protocolarProjeto(x, { tema: temas[s.tempo.mes % 5], tipo: s.tempo.mes % 3 === 0 ? 'indicacao' : 'projeto_lei', bairroId: b1 }));
         continue;
@@ -111,7 +111,7 @@ function agirMes(state, perfil) {
       const pick = ['atender_demanda', 'fiscalizar_obra', 'discurso_plenario', 'trabalhar_base'].find((id) => acts.includes(id)) || acts[0];
       s = aplicar(s, (x) => aplicarAcao(x, pick, { bairroId: b2 }));
     } else break;
-    if (s.tempo.pontosRestantes === antes) break; // ação falhou, evita loop
+    if (s.tempo.energia === antes) break; // ação falhou, evita loop
   }
 
   // monta o gabinete ao longo do mandato (respeita a verba)

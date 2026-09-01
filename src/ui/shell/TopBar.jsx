@@ -27,7 +27,7 @@ export default function TopBar() {
   const ano = tempo.anoInicial + Math.floor(tempo.mes / 12);
   const cargo = p.cargoAtual && p.cargoAtual !== 'NENHUM' ? cargoPorId(p.cargoAtual)?.nome : null;
   const status = cargo || FASE_LABEL[p.fase] || '—';
-  const energiaPct = Math.max(0, Math.min(100, (tempo.energia / (tempo.energiaMax || 100)) * 100));
+  const energiaPct = Math.max(0, Math.min(100, (tempo.energia / (tempo.energiaMax || 15)) * 100));
 
   return (
     <header className="topbar" style={{ paddingTop: 'max(10px, env(safe-area-inset-top))' }}>
@@ -41,12 +41,9 @@ export default function TopBar() {
           <span className="tb-chip-k">💰</span>
           <span className="tb-chip-v mono">{dinheiroCurto(financas.pessoal)}</span>
         </div>
-        <div className="tb-chip" title="Tempo do mês">
-          <span className="tb-chip-k">⏳</span>
-          <span className="tb-chip-v mono">{tempo.pontosRestantes}</span>
-        </div>
-        <div className="tb-chip" title={`Energia ${Math.round(tempo.energia)}`}>
+        <div className="tb-chip" title={`Energia do mês: ${tempo.energia}/${tempo.energiaMax}`}>
           <span className="tb-chip-k">⚡</span>
+          <span className="tb-chip-v mono">{tempo.energia}/{tempo.energiaMax}</span>
           <span className="tb-energy"><span className="tb-energy-fill" style={{ width: `${energiaPct}%` }} /></span>
         </div>
         <div className="tb-date mono">{nomeMes(tempo.mes)}/{String(ano).slice(2)}</div>

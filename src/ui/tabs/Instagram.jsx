@@ -19,7 +19,7 @@ export default function Instagram() {
   const serie = (s.series || []).map((x) => x.seguidores).filter((v) => v != null);
   const alcanceEst = estimarAlcance(s);
   const f = FORMATOS.find((x) => x.id === formato);
-  const bloq = !!s.eventoPendente || s.tempo.pontosRestantes < f.tempo;
+  const bloq = !!s.eventoPendente || s.tempo.energia < f.tempo;
   const img = imagemResumo(s);
   const influs = influenciadoresDisponiveis(s);
   const [mesesContrato, setMesesContrato] = useState(3);
@@ -86,12 +86,12 @@ export default function Instagram() {
         </Card>
       )}
 
-      <Card title="Nova publicação" aside={`${s.tempo.pontosRestantes} tempo disponível`}>
+      <Card title="Nova publicação" aside={`${s.tempo.energia} de energia`}>
         <div className="field-row two">
           <div>
             <label>Formato</label>
             <select value={formato} onChange={(e) => setFormato(e.target.value)}>
-              {FORMATOS.map((x) => <option key={x.id} value={x.id}>{x.nome} · {x.tempo} tempo</option>)}
+              {FORMATOS.map((x) => <option key={x.id} value={x.id}>{x.nome} · {x.tempo} energia</option>)}
             </select>
           </div>
           <div>
@@ -115,7 +115,7 @@ export default function Instagram() {
         )}
       </Card>
 
-      <Card title="Live" aside={`2 tempo · ${jaFezLive ? 'já fez este mês' : 'ao vivo é sem roteiro'}`}>
+      <Card title="Live" aside={`2 energia · ${jaFezLive ? 'já fez este mês' : 'ao vivo é sem roteiro'}`}>
         <div className="chips" style={{ marginBottom: 10 }}>
           {[['aberta', 'Live aberta'], ['bairro', 'Live de bairro'], ['caixa', 'Caixa de perguntas']].map(([id, nome]) => (
             <button key={id} className={`btn sm ${liveModo === id ? '' : 'ghost'}`} onClick={() => { setLiveModo(id); setLiveRes(null); }}>{nome}</button>
@@ -147,7 +147,7 @@ export default function Instagram() {
           {liveModo === 'bairro' && 'Alcance menor, mas firma sua presença e voto naquele bairro.'}
           {liveModo === 'caixa' && 'Interação direta: boa resposta cola confiança, má resposta vira corte.'}
         </p>
-        <button className="btn" disabled={jaFezLive || s.tempo.pontosRestantes < 2 || !!s.eventoPendente} onClick={transmitir}>Entrar ao vivo</button>
+        <button className="btn" disabled={jaFezLive || s.tempo.energia < 2 || !!s.eventoPendente} onClick={transmitir}>Entrar ao vivo</button>
         {liveRes && (
           <div className="card" style={{ marginTop: 12, background: 'var(--surface-2)' }}>
             <p className="small" style={{ margin: 0 }}>{liveRes.resumo}</p>

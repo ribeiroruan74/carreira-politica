@@ -56,7 +56,7 @@ function elegivel(acao, state) {
   // Item 18 — eventos que dependem de patrimônio (itens 16/17)
   if (r.temInstituicao && !(state.personagem.instituicoes || []).length) return false;
   if (r.temEmpresa && !(state.personagem.empresas || []).length) return false;
-  if ((acao.custo.tempo || 0) > state.tempo.pontosRestantes) return false;
+  if ((acao.custo.tempo || 0) > state.tempo.energia) return false;
   return true;
 }
 
@@ -152,7 +152,7 @@ export function pesoContextual(a, state) {
   if (Object.keys(state.relacionamentos.pessoas).length < 3 && NETWORK_IDS.includes(a.id)) m *= 1.8;
 
   // energia/saúde no chão → descanso e autocuidado
-  if ((state.tempo.energia < 35 || (state.personagem.vida?.saude ?? 100) < 40)
+  if ((state.tempo.energia < 6 || (state.personagem.vida?.saude ?? 100) < 40)
     && (a.id === 'descansar' || a.id === 'cuidar_de_si')) m *= 2.5;
 
   // Nova expansão — o leque reage a mais coisas do momento:
@@ -226,7 +226,7 @@ export function contextoAgenda(a, state) {
   if (state.personagem.fase === 'CANDIDATO' && (ef.captarDoacao || (a.custo?.campanhaGasto || 0) < 0) && state.financas.campanha < 10000) {
     return 'o caixa de campanha está no limite';
   }
-  if ((state.tempo.energia < 35) && (a.id === 'descansar' || a.id === 'cuidar_de_si')) {
+  if ((state.tempo.energia < 6) && (a.id === 'descansar' || a.id === 'cuidar_de_si')) {
     return 'sua energia está baixa';
   }
   return null;
@@ -242,8 +242,9 @@ function bonusAtributo(state, chave) {
 // ctx = { state, ef, opts, rng, mult, mes, resumo, acao, alvoPolId }
 const EFEITOS = {
   energia({ state, ef, rng, resumo }) {
-    const g = rng.rangeInt(ef.energia);
-    state.tempo.energia = clamp(state.tempo.energia + g, 0, state.tempo.energiaMax);
+    // Item 1 — ef.energia ainda é escala antiga (0-100); converte p/ a escala de 15.
+    const g = Math.max(1, Math.round(rng.rangeInt(ef.energia) / 7));
+    state.tempo.energia = clamp(state.tempo.energia + g, 0, state.tempo.energiaMax + 2);
     resumo.push(`energia +${g}`);
   },
 
@@ -584,9 +585,8 @@ export function aplicarAcao(state, acaoId, opts = {}) {
   const mes = state.tempo.mes;
   const resumo = [];
 
-  // custos
-  state.tempo.pontosRestantes -= acao.custo.tempo || 0;
-  state.tempo.energia = clamp(state.tempo.energia - (acao.custo.energia || 0), 0, state.tempo.energiaMax);
+  // custos — Item 1: energia é o recurso único; custo.energia dos JSONs não é mais usado
+  state.tempo.energia = Math.max(0, state.tempo.energia - (acao.custo.tempo || 0));
   state.financas.pessoal -= acao.custo.dinheiroPessoal || 0;
   if (acao.custo.campanhaGasto) {
     state.financas.campanha -= acao.custo.campanhaGasto;

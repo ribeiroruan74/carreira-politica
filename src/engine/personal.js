@@ -15,7 +15,7 @@ export function cuidarDeSi(state, rng) {
   const v = (state.personagem.vida ||= estadoVida(state));
   v.saude = clamp(v.saude + rng.range([8, 16]), 0, 100);
   v.bemEstar = clamp((v.bemEstar ?? 60) + rng.range([2, 6]), 0, 100);
-  state.tempo.energia = clamp(state.tempo.energia + rng.range([6, 14]), 0, state.tempo.energiaMax);
+  state.tempo.energia = clamp(state.tempo.energia + rng.range([2, 5]), 0, state.tempo.energiaMax + 2);
   state.reputacao.rejeicao = clamp(state.reputacao.rejeicao - rng.range([0, 1]), 0, 100);
   if (!v.hobby && rng.chance(0.5)) {
     v.hobby = rng.pick(HOBBIES);
@@ -36,9 +36,9 @@ export function tickVidaPessoal(s) {
   if (v.hobby) dSaude += 0.6;
   v.saude = clamp(v.saude + dSaude, 8, 100);
 
-  // energia máxima = base + saúde + bem-estar (autoridade única sobre energiaMax)
+  // Item 1 — energia máxima (recurso único do mês) modulada por saúde e bem-estar.
   const bem = v.bemEstar ?? 60;
-  s.tempo.energiaMax = Math.round(clamp(80 + v.saude / 5 + (bem - 50) / 12, 70, 115));
+  s.tempo.energiaMax = Math.round(clamp(10 + v.saude / 18 + (bem - 55) / 28, 9, 16));
 
   if (v.saude <= 30 && s.tempo.mes % 2 === 0) {
     eventos.push({ tipo: 'ALERTA', texto: `Sua saúde está no limite (${Math.round(v.saude)}). Considere desacelerar.` });
@@ -47,7 +47,7 @@ export function tickVidaPessoal(s) {
   // problema de saúde esporádico
   if (s.personagem.fase !== 'VIDA' && rng.chance(0.02)) {
     v.saude = clamp(v.saude - rng.range([6, 14]), 12, 100);
-    s.tempo.energia = clamp(s.tempo.energia - rng.range([5, 12]), 0, s.tempo.energiaMax);
+    s.tempo.energia = Math.max(0, s.tempo.energia - rng.range([1, 3]));
     const txt = 'Um problema de saúde tirou você de circulação por alguns dias.';
     eventos.push({ tipo: 'CIDADE', texto: txt });
     s.log.unshift({ mes: s.tempo.mes, tipo: 'PESSOAL', texto: txt });

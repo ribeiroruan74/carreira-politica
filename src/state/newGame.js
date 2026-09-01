@@ -34,9 +34,7 @@ export function novoJogo({
   s.meta.dificuldade = dificuldade;
   s.meta.criadoEm = new Date().toISOString();
 
-  // --- Tempo ---
-  s.tempo.pontosPorMes = balance.tempo.pontosPorMesBase;
-  s.tempo.pontosRestantes = balance.tempo.pontosPorMesBase;
+  // --- Energia (recurso único do mês) ---
   s.tempo.energiaMax = balance.tempo.energiaMaxBase;
   s.tempo.energia = balance.tempo.energiaMaxBase;
 
@@ -79,7 +77,7 @@ export function novoJogo({
   assumirEmprego(s, empInicialId, rng, true);
   s.personagem.historicoProfissional = [{ mes: 0, texto: `Começou a carreira como ${profissao.nome}.` }, ...s.personagem.historicoProfissional];
   sincronizarRenda(s);
-  s.tempo.pontosRestantes = Math.max(2, s.tempo.pontosPorMes - (s.personagem.emprego?.horas || 0));
+  s.tempo.energia = Math.max(2, s.tempo.energiaMax - (s.personagem.emprego?.horas || 0));
 
   // --- Reputação ---
   s.reputacao.aprovacao = balance.reputacao.aprovacaoInicial;

@@ -32,11 +32,9 @@ export function runTick(s) {
 
   // --- Recursos do mês ---
   sincronizarRenda(s);
+  // Item 1 — energia é o recurso único do mês; recompõe cheia (menos o que o emprego consome).
   const horas = horasEmprego(s);
-  s.tempo.pontosRestantes = Math.max(2, s.tempo.pontosPorMes - horas);
-  const recupEnergia = balance.tempo.energiaRecuperaPorMes
-    + Math.round((s.personagem.atributos.disciplina - 50) / 8);
-  s.tempo.energia = clamp(s.tempo.energia + recupEnergia, 0, s.tempo.energiaMax);
+  s.tempo.energia = Math.max(3, s.tempo.energiaMax - horas);
 
   // --- Finanças mensais ---
   // Etapa 13 — custo de vida de político: cargo eletivo puxa despesa pessoal

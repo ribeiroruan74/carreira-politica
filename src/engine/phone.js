@@ -62,7 +62,7 @@ function acharContato(id) {
 
 // wrapper de UI: gerencia rng + custo de tempo
 export function ligar(state, id) {
-  if ((state.tempo.pontosRestantes ?? 0) < 1) throw new Error('Sem tempo este mês.');
+  if ((state.tempo.energia ?? 0) < 1) throw new Error('Sem tempo este mês.');
   const c = acharContato(id);
   if (!c) throw new Error('Contato não encontrado.');
   const t = tel(state);
@@ -70,7 +70,7 @@ export function ligar(state, id) {
   if ((t.cooldown[id] || 0) > m) throw new Error(`${c.nome} pediu para ligar depois — tente no mês ${t.cooldown[id]}.`);
 
   const rng = createRng(state.meta.seed, state.meta.rngState);
-  state.tempo.pontosRestantes -= 1;
+  state.tempo.energia -= 1;
   const rel = t.relacoes[id] || 0;
 
   let desfecho; let msg;
