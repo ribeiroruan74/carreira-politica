@@ -6,6 +6,7 @@ import { streamRng } from '../../engine/rng';
 import {
   candidatosAssessor, contratarAssessor, demitirAssessor,
   reuniaoGabinete, definirPrioridade, delegar, promoverAssessor,
+  treinarAssessor, custoTreino,
   AREAS_GABINETE, DELEGACOES, capacidadeDelegacao, multGabinete, chefeGabinete,
 } from '../../engine/mandate';
 import staffDef from '../../content/staff.json';
@@ -63,6 +64,11 @@ export default function Gabinete() {
             </p>
             <div className="chips" style={{ marginTop: 8 }}>
               <button className="btn sm ghost" onClick={() => agir((st) => promoverAssessor(st, 'chefe_gabinete'))}>Promover</button>
+              <button className="btn sm ghost" disabled={(s.financas.pessoal || 0) < custoTreino(chefe)}
+                title={`Capacitação paga do seu bolso — sobe a experiência. Custa ${formatBRL(custoTreino(chefe))}`}
+                onClick={() => agir((st) => treinarAssessor(st, 'chefe_gabinete'))}>
+                Capacitar · {formatBRL(custoTreino(chefe))}
+              </button>
             </div>
           </>
         ) : (
@@ -148,12 +154,17 @@ export default function Gabinete() {
                   <span className="num">{formatBRL(a.salario)}/mês</span>
                 </div>
                 <div className="grid cols-2" style={{ gap: 10, marginTop: 8 }}>
-                  <Meter label="Competência" value={a.competencia} tone={a.competencia >= 60 ? 'ok' : 'warn'} />
+                  <Meter label={`Competência ${a.experiencia ? `(+${Math.round(a.experiencia * 6)} exp.)` : ''}`} value={Math.min(100, a.competencia + (a.experiencia || 0) * 6)} tone={a.competencia >= 60 ? 'ok' : 'warn'} />
                   <Meter label="Lealdade" value={a.lealdade} tone={a.lealdade >= 55 ? 'ok' : a.lealdade >= 40 ? 'warn' : 'bad'} />
                 </div>
                 {a.risco && <p className="small" style={{ color: 'var(--amber)', marginTop: 6 }}>Risco: {a.risco}</p>}
-                <button className="btn sm ghost" style={{ marginTop: 10, color: 'var(--red)', borderColor: 'var(--red)' }}
-                  onClick={() => agir((st) => demitirAssessor(st, cargo.chave))}>Demitir</button>
+                <div className="chips" style={{ marginTop: 10 }}>
+                  <button className="btn sm ghost" disabled={(s.financas.pessoal || 0) < custoTreino(a)}
+                    title={`Capacitação paga do seu bolso. Custa ${formatBRL(custoTreino(a))}`}
+                    onClick={() => agir((st) => treinarAssessor(st, cargo.chave))}>Capacitar · {formatBRL(custoTreino(a))}</button>
+                  <button className="btn sm ghost" style={{ color: 'var(--red)', borderColor: 'var(--red)' }}
+                    onClick={() => agir((st) => demitirAssessor(st, cargo.chave))}>Demitir</button>
+                </div>
               </>
             ) : (
               <>

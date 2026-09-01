@@ -250,6 +250,30 @@ export function promoverAssessor(state, cargoChave) {
   return { ok: true };
 }
 
+// Prioridade 7 — bancar capacitação do próprio bolso: sobe a experiência do
+// assessor (soma à competência efetiva), com retorno decrescente e cooldown.
+export function custoTreino(a) {
+  return Math.round((3500 + (a?.salario || 0) * 0.4) / 100) * 100;
+}
+export function treinarAssessor(state, cargoChave) {
+  const g = state.mandato?.gabinete;
+  const a = g?.contratados[cargoChave];
+  if (!a) throw new Error('Ninguém nesse cargo.');
+  if (a.ultimoTreino != null && state.tempo.mes - a.ultimoTreino < 4) throw new Error('Capacitação recente — espere alguns meses.');
+  const custo = custoTreino(a);
+  if ((state.financas.pessoal || 0) < custo) throw new Error('Sem dinheiro para bancar a capacitação.');
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  state.financas.pessoal -= custo;
+  const teto = 2.5;
+  const ganho = clamp((teto - (a.experiencia || 0)) * rng.range([0.18, 0.32]), 0.08, 0.6);
+  a.experiencia = Math.min(teto, (a.experiencia || 0) + ganho);
+  a.lealdade = clamp(a.lealdade + rng.range([2, 6]), 0, 100);
+  a.ultimoTreino = state.tempo.mes;
+  state.meta.rngState = rng.state;
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'GABINETE', texto: `${a.nome} fez uma capacitação (R$ ${custo.toLocaleString('pt-BR')}) — o rendimento melhora.` });
+  return { ok: true, ganho: Math.round(ganho * 6) };
+}
+
 export function demitirAssessor(state, cargoChave) {
   const g = state.mandato.gabinete;
   const a = g.contratados[cargoChave];
