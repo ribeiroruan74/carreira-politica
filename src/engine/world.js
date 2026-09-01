@@ -228,7 +228,7 @@ export function worldTick(s) {
     pol.ecoMidiatico = +(pol.ecoMidiatico * 0.6).toFixed(2);
     const pisoNoto = pol.cargo === 'PREFEITO' ? 80 : Math.round(pol.influencia / 3);
     if (pol.notoriedade > pisoNoto) pol.notoriedade = Math.max(pisoNoto, pol.notoriedade - 0.8);
-    if (mes - (pol.ultimoContatoMes ?? -99) > 2) {
+    if (mes - (pol.ultimoContatoMes ?? -99) > 3) {
       // Prioridade 5 — relações não dependem só de contato: convivência de partido
       // e alinhamento ideológico puxam para uma linha de base (co-partidário aquece
       // devagar sozinho; adversário ideológico esfria abaixo de zero).
@@ -240,7 +240,7 @@ export function worldTick(s) {
       else if (dIdeo < 30) alvo = 8;
       else if (dIdeo > 90) alvo = -6;
       alvo = clamp(alvo, -12, 22);
-      const passo = pol.relacaoJogador < alvo ? 0.5 : pol.relacaoJogador > alvo ? -1 : 0;
+      const passo = pol.relacaoJogador < alvo ? 0.4 : pol.relacaoJogador > alvo ? -0.6 : 0;
       if (passo) pol.relacaoJogador = passo > 0
         ? Math.min(alvo, pol.relacaoJogador + passo)
         : Math.max(alvo, pol.relacaoJogador + passo);

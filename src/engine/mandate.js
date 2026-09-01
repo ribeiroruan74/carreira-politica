@@ -251,6 +251,31 @@ export function promoverAssessor(state, cargoChave) {
   return { ok: true };
 }
 
+// Item 10 — conversa individual com o assessor: 1 de energia. Sobe lealdade e,
+// às vezes, traz um alerta útil (área frágil do gabinete ou risco em aberto).
+export function conversarAssessor(state, cargoChave) {
+  const g = state.mandato?.gabinete;
+  const a = g?.contratados[cargoChave];
+  if (!a) throw new Error('Ninguém nesse cargo.');
+  if (state.tempo.energia < 1) throw new Error('Sem energia (custa 1).');
+  if (a.ultimaConversa != null && state.tempo.mes - a.ultimaConversa < 2) throw new Error('Vocês já conversaram há pouco.');
+  const rng = createRng(state.meta.seed, state.meta.rngState);
+  state.tempo.energia -= 1;
+  const emp = (state.personagem.atributos.empatia ?? 50);
+  const ganho = clamp(rng.range([2, 5]) + (emp - 50) / 25, 0.5, 8);
+  a.lealdade = clamp(a.lealdade + ganho, 0, 100);
+  a.ultimaConversa = state.tempo.mes;
+  const cargo = staffDef.cargos.find((c) => c.chave === cargoChave);
+  const area = (cargo?.afeta || [])[0];
+  let dica = `${a.nome} agradeceu a atenção — lealdade em ${Math.round(a.lealdade)}.`;
+  if (area && multGabinete(state, area) < 1 && rng.chance(0.6)) {
+    dica = `${a.nome}: "${a.risco === 'vira rival' ? 'preciso de mais espaço aqui' : `a área de ${area.replace(/_/g, ' ')} está pedindo reforço`}." (lealdade ${Math.round(a.lealdade)})`;
+  }
+  state.meta.rngState = rng.state;
+  state.log.unshift({ mes: state.tempo.mes, tipo: 'GABINETE', texto: `Conversa com ${a.nome}: lealdade +${ganho.toFixed(1)}.` });
+  return { ok: true, msg: dica };
+}
+
 // Prioridade 7 — bancar capacitação do próprio bolso: sobe a experiência do
 // assessor (soma à competência efetiva), com retorno decrescente e cooldown.
 export function custoTreino(a) {

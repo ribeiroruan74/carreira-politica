@@ -6,7 +6,7 @@ import { streamRng } from '../../engine/rng';
 import {
   candidatosAssessor, contratarAssessor, demitirAssessor,
   reuniaoGabinete, definirPrioridade, delegar, promoverAssessor,
-  treinarAssessor, custoTreino,
+  treinarAssessor, custoTreino, conversarAssessor,
   AREAS_GABINETE, DELEGACOES, capacidadeDelegacao, multGabinete, chefeGabinete,
 } from '../../engine/mandate';
 import staffDef from '../../content/staff.json';
@@ -39,6 +39,10 @@ export default function Gabinete() {
     try { let r; aplicar((st) => { r = reuniaoGabinete(st); }); setBriefing(r?.briefing || null); setErro(null); }
     catch (e) { setErro(e.message); }
   }
+  function conversar(chave) {
+    try { let r; aplicar((st) => { r = conversarAssessor(st, chave); }); setBriefing(r?.msg ? [r.msg] : null); setErro(null); }
+    catch (e) { setErro(e.message); }
+  }
 
   const chefe = chefeGabinete(s);
   const cap = capacidadeDelegacao(s);
@@ -63,6 +67,7 @@ export default function Gabinete() {
               Um bom chefe multiplica toda a equipe e destrava até {cap} tarefa(s) delegada(s). {chefe.lealdade >= 60 ? 'Leal — segura a lealdade dos outros.' : chefe.risco === 'vira rival' ? 'Ambicioso — corrói a lealdade da equipe e pode romper com você.' : ''}
             </p>
             <div className="chips" style={{ marginTop: 8 }}>
+              <button className="btn sm ghost" onClick={() => conversar('chefe_gabinete')}>Conversar · 1⚡</button>
               <button className="btn sm ghost" onClick={() => agir((st) => promoverAssessor(st, 'chefe_gabinete'))}>Promover</button>
               <button className="btn sm ghost" disabled={(s.financas.pessoal || 0) < custoTreino(chefe)}
                 title={`Capacitação paga do seu bolso — sobe a experiência. Custa ${formatBRL(custoTreino(chefe))}`}
@@ -159,6 +164,7 @@ export default function Gabinete() {
                 </div>
                 {a.risco && <p className="small" style={{ color: 'var(--amber)', marginTop: 6 }}>Risco: {a.risco}</p>}
                 <div className="chips" style={{ marginTop: 10 }}>
+                  <button className="btn sm ghost" onClick={() => conversar(cargo.chave)}>Conversar · 1⚡</button>
                   <button className="btn sm ghost" disabled={(s.financas.pessoal || 0) < custoTreino(a)}
                     title={`Capacitação paga do seu bolso. Custa ${formatBRL(custoTreino(a))}`}
                     onClick={() => agir((st) => treinarAssessor(st, cargo.chave))}>Capacitar · {formatBRL(custoTreino(a))}</button>

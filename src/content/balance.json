@@ -57,7 +57,7 @@
     "confiancaInicial": 40,
     "rejeicaoInicial": 8,
     "notoriedadeInicial": 3,
-    "decaimentoEcoMidiaticoMensal": 0.63
+    "decaimentoEcoMidiaticoMensal": 0.75
   },
   "relacionamentos": {
     "niveis": [
@@ -76,7 +76,7 @@
       75,
       90
     ],
-    "decaimentoMensalSemContato": 1.2
+    "decaimentoMensalSemContato": 0.8
   },
   "redes": {
     "seguidoresIniciais": {

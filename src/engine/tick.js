@@ -57,13 +57,15 @@ export function runTick(s) {
   }
 
   // --- Relacionamentos: decaimento por falta de contato ---
+  // Item 9 — estabiliza: decai devagar e para numa linha de base (você não
+  // esquece de alguém que já conheceu; gente influente continua no seu radar).
   for (const p of Object.values(s.relacionamentos.pessoas)) {
     const mesesSemContato = mes - (p.ultimoContatoMes ?? 0);
-    if (mesesSemContato >= 2) {
-      p.confianca = clamp(
-        p.confianca - balance.relacionamentos.decaimentoMensalSemContato,
-        0, 100,
-      );
+    if (mesesSemContato >= 3) {
+      const piso = 12 + (p.influencia > 60 ? 8 : p.influencia > 45 ? 4 : 0);
+      const taxa = balance.relacionamentos.decaimentoMensalSemContato
+        * (p.confianca - piso > 20 ? 1 : 0.4); // desacelera perto do piso
+      p.confianca = Math.max(piso, +(p.confianca - taxa).toFixed(1));
     }
     const novoNivel = nivelPorConfianca(p.confianca);
     if (novoNivel !== p.nivel) {
