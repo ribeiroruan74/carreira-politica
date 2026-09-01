@@ -97,16 +97,20 @@ export function runTick(s) {
   // Fase 33 — o piso de notoriedade que os seguidores sustentam tem retorno
   // decrescente (500 mil seguidores não te deixam eternamente famoso), e a
   // notoriedade regride mais rápido quando você some do noticiário.
+  // Prioridade 3 — piso de notoriedade: atributo + seguidores + CARGO (quem
+  // ocupa um cargo eletivo não é esquecido enquanto está lá).
+  const PISO_CARGO = { VEREADOR: 12, DEPUTADO_ESTADUAL: 22, DEPUTADO_FEDERAL: 30, PREFEITO: 34, GOVERNADOR: 42, SENADOR: 44, PRESIDENTE: 60 };
   const pisoNotoriedade = clamp(
     3 + Math.round(s.personagem.atributos.popularidade / 12)
-      + Math.min(24, Math.round(Math.log10(1 + s.redes.seguidores / 1000) * 8)),
+      + Math.min(24, Math.round(Math.log10(1 + s.redes.seguidores / 1000) * 8))
+      + (PISO_CARGO[s.personagem.cargoAtual] || 0),
     0, 100,
   );
   // Item 8 — regressão PROPORCIONAL (menos oscilação): notoriedade alta escorre
-  // mais rápido, notoriedade perto do piso quase não se mexe. Sem quedas bruscas.
+  // devagar, notoriedade perto do piso quase não se mexe. Sem quedas bruscas.
   if (s.reputacao.notoriedade > pisoNotoriedade) {
     const excessoNoto = s.reputacao.notoriedade - pisoNotoriedade;
-    s.reputacao.notoriedade = Math.max(pisoNotoriedade, s.reputacao.notoriedade - (0.6 + excessoNoto * 0.06));
+    s.reputacao.notoriedade = Math.max(pisoNotoriedade, s.reputacao.notoriedade - (0.45 + excessoNoto * 0.05));
   }
 
   // Rejeição também não é permanente: esfria em direção a um piso, mais rápido

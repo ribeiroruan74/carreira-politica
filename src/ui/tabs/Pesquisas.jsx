@@ -42,7 +42,8 @@ export default function Pesquisas() {
             ['Notoriedade', `${Math.round(s.reputacao.notoriedade)}/100`, 'O quanto o eleitor te conhece. Entra no modelo de voto — não se vota em quem não se conhece.'],
             ['Repercussão', `${Math.round(s.reputacao.ecoMidiatico)}`, 'Barulho recente em torno do seu nome (eco midiático). Sobe com viral/entrevista e decai a cada mês.'],
             ['Fama / presença de mídia', `${relevanciaMidiatica(s)}/100`, 'Notoriedade + audiência + repercussão + peso do cargo. Alimenta convites de imprensa e o peso do seu nome no partido. Não é voto.'],
-            ['Aprovação', `${Math.round(s.reputacao.aprovacao)}%`, 'O quanto quem te conhece aprova o seu trabalho. Regride à média sozinha.'],
+            ['Popularidade do partido', s.mundo.partidosRuntime?.[s.personagem.partidoId] ? `${Math.round(s.mundo.partidosRuntime[s.personagem.partidoId].popularidade)}/100` : '—', 'Força da sua legenda no Recife. Peso do seu nome + dos filiados. Ajuda no quociente, não é seu voto pessoal.'],
+            ['Aprovação', `${Math.round(s.reputacao.aprovacao)}%`, 'O quanto quem te conhece aprova o seu trabalho. Regride à média sozinha — viral não muda isso na hora.'],
             ['Rejeição', `${Math.round(s.reputacao.rejeicao)}%`, 'Voto que você não pega de jeito nenhum. Também esfria com o tempo.'],
             ['Intenção de voto', s.eleicao?.pesquisas?.at(-1) ? 'ver abaixo' : 'só em campanha', 'Só existe durante uma eleição. É o resultado de tudo acima somado a território, ideologia e adversários.'],
           ].map(([nome, val, desc]) => (

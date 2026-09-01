@@ -90,10 +90,13 @@ export function postar(state, formatoId, pautaId) {
   state.redes.seguidores = Math.max(0, state.redes.seguidores + dSeg);
   state.redes.alcanceMedio = Math.round((state.redes.alcanceMedio * 2 + views) / 3);
 
-  // reputação
-  const noto = escala * rng.range([0.8, 1.6]);
-  state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + noto, 0, 100);
-  const eco = escala * rng.range([0.6, 1.4]) * (pauta.ecoBonus || 1);
+  // reputação — Prioridade 3: um post viral é BUZZ (repercussão) + AUDIÊNCIA
+  // (seguidores), não reconhecimento instantâneo. Notoriedade sobe pouco de uma vez
+  // e tem retorno decrescente conforme já é alta; o eco carrega o pico do momento.
+  const notoBruto = escala * rng.range([0.6, 1.2]);
+  const noto = notoBruto * clamp(1 - state.reputacao.notoriedade / 130, 0.25, 1) * (viralizou ? 0.6 : 1);
+  state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + Math.min(noto, 4), 0, 100);
+  const eco = escala * rng.range([0.7, 1.6]) * (pauta.ecoBonus || 1) * (viralizou ? 1.3 : 1);
   state.reputacao.ecoMidiatico = clamp(state.reputacao.ecoMidiatico + eco, -50, 100);
 
   if (pauta.aprovacao) {
@@ -256,8 +259,10 @@ export function fazerLive(state, { modo = 'aberta', bairroId = null, respostas =
 
   const dSeg = Math.round(views * rng.range([0.004, 0.02]) * (score > 0 ? 1.3 : 0.7));
   r.seguidores = Math.max(0, r.seguidores + dSeg);
-  const noto = clamp((Math.log10(1 + views) - 2) * rng.range([0.8, 1.8]), 0, 8);
-  state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + noto, 0, 100);
+  // Prioridade 3 — live viral = buzz + audiência, não reconhecimento instantâneo
+  const notoBruto = clamp((Math.log10(1 + views) - 2) * rng.range([0.7, 1.5]), 0, 6);
+  const noto = notoBruto * clamp(1 - state.reputacao.notoriedade / 130, 0.25, 1) * (viralizou ? 0.6 : 1);
+  state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + Math.min(noto, 3.5), 0, 100);
   state.reputacao.ecoMidiatico = clamp(state.reputacao.ecoMidiatico + (viralizou ? rng.range([4, 10]) : rng.range([1, 4])), -50, 100);
 
   // gafe: score baixo + sem preparo → escorregão ao vivo
