@@ -408,6 +408,10 @@ function aplicarAprovacao(state, pj, rng) {
   }
   // Fase 8 — a entrega agrada os grupos sociais mobilizados pela pauta
   impactoDeTema(state, pj.tema, pj.impacto * rng.range([0.35, 0.7]));
+  // Prioridade 6 — repercussão: entrega grande rende holofote e eco de mídia
+  const rep = clamp(pj.impacto / 24, 0.15, 1.2);
+  state.reputacao.notoriedade = clamp(state.reputacao.notoriedade + rep * rng.range([0.5, 1.3]), 0, 100);
+  state.reputacao.ecoMidiatico = clamp(state.reputacao.ecoMidiatico + rep * rng.range([0.6, 1.7]), -50, 100);
   // Etapa 2 — progride/cumpre promessas relacionadas (match estrutural, não string)
   cumprirPromessas(state, { tema: pj.tema, bairroId: pj.bairroFoco });
 }

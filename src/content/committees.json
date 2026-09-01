@@ -2,12 +2,12 @@
   "$comment": "Comissões permanentes da Câmara. 'temas' = pautas que a comissão relata (cruza com laws.json). CCJ tem poder de barrar qualquer projeto.",
   "comissoes": [
     { "id": "ccj", "nome": "Constituição, Legislação e Justiça", "temas": ["transparencia"], "gatekeeper": true, "prestigio": 90 },
-    { "id": "financas", "nome": "Finanças e Orçamento", "temas": ["empreendedorismo", "transparencia"], "prestigio": 85 },
-    { "id": "obras", "nome": "Obras e Serviços Públicos", "temas": ["mobilidade", "saneamento", "habitacao"], "prestigio": 75 },
-    { "id": "saude", "nome": "Saúde e Assistência Social", "temas": ["saude", "assistencia"], "prestigio": 65 },
-    { "id": "educacao", "nome": "Educação, Cultura e Esporte", "temas": ["educacao", "cultura", "esporte"], "prestigio": 60 },
-    { "id": "meio_ambiente", "nome": "Meio Ambiente e Sustentabilidade", "temas": ["meio_ambiente"], "prestigio": 50 },
+    { "id": "financas", "nome": "Finanças e Orçamento", "temas": ["empreendedorismo", "transparencia", "trabalho", "comercio_local", "tecnologia"], "prestigio": 85 },
+    { "id": "obras", "nome": "Obras e Serviços Públicos", "temas": ["mobilidade", "saneamento", "habitacao", "acessibilidade"], "prestigio": 75 },
+    { "id": "saude", "nome": "Saúde e Assistência Social", "temas": ["saude", "assistencia", "idoso"], "prestigio": 65 },
+    { "id": "educacao", "nome": "Educação, Cultura e Esporte", "temas": ["educacao", "cultura", "esporte", "juventude"], "prestigio": 60 },
+    { "id": "meio_ambiente", "nome": "Meio Ambiente e Sustentabilidade", "temas": ["meio_ambiente", "animais"], "prestigio": 50 },
     { "id": "seguranca", "nome": "Segurança Cidadã", "temas": ["seguranca"], "prestigio": 55 },
-    { "id": "direitos", "nome": "Direitos Humanos e Cidadania", "temas": ["assistencia", "habitacao"], "prestigio": 45 }
+    { "id": "direitos", "nome": "Direitos Humanos e Cidadania", "temas": ["assistencia", "habitacao", "mulher"], "prestigio": 45 }
   ]
 }
